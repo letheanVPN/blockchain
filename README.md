@@ -1,3 +1,7 @@
+0x73f7 - 'iT'
+0x6af7 - integrated 'iTH'
+0xdeaf7 - auditable addresses 'iTHn'
+0x7eaf7 -  auditable integrated 'iTHa'
 
 ## Cloning
 

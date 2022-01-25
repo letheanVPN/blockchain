@@ -25,7 +25,7 @@
 #define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  0x6af7 // integrated addresses start with 'iTH' (new format)
 #define CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX 0xdeaf7 // auditable addresses start with 'iTHn'
 #define CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX 0x7eaf7 // auditable integrated addresses start with 'iTHa'
-#define CURRENCY_MINED_MONEY_UNLOCK_WINDOW              10
+#define CURRENCY_MINED_MONEY_UNLOCK_WINDOW              60
 #define CURRENT_TRANSACTION_VERSION                     1
 #define HF1_BLOCK_MAJOR_VERSION                         1
 #define CURRENT_BLOCK_MAJOR_VERSION                     2
@@ -46,14 +46,14 @@
 #define CURRENCY_DISPLAY_DECIMAL_POINT                  12
 
 // COIN - number of smallest units in one coin
-#define COIN                                            ((uint64_t)1000000000000) // pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
+#define COIN                                            ((uint64_t)100000000) // pow(8, CURRENCY_DISPLAY_DECIMAL_POINT)
 #define BASE_REWARD_DUST_THRESHOLD                      ((uint64_t)1000000) // pow(10, 6) - change this will cause hard-fork!
 #define DEFAULT_DUST_THRESHOLD                          ((uint64_t)0)
 
-#define TX_DEFAULT_FEE                                  ((uint64_t)10000000000) // .01
-#define TX_MINIMUM_FEE                                  ((uint64_t)10000000000) // .01
+#define TX_DEFAULT_FEE                                  ((uint64_t)100000000) // .01
+#define TX_MINIMUM_FEE                                  ((uint64_t)100000000) // .01
 
-#define CURRENCY_BLOCK_REWARD                           1000000000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
+#define CURRENCY_BLOCK_REWARD                           10000000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
 
 
 #define WALLET_MAX_ALLOWED_OUTPUT_AMOUNT                ((uint64_t)0xffffffffffffffffLL)
@@ -168,9 +168,9 @@
 
 
 
-#define CURRENCY_NAME_ABR                               "ZANO"
-#define CURRENCY_NAME_BASE                              "Zano"
-#define CURRENCY_NAME_SHORT_BASE                        "Zano"
+#define CURRENCY_NAME_ABR                               "LTHN"
+#define CURRENCY_NAME_BASE                              "Lethean"
+#define CURRENCY_NAME_SHORT_BASE                        "Lethean"
 #ifndef TESTNET
 #define CURRENCY_NAME                                   CURRENCY_NAME_BASE
 #define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE
