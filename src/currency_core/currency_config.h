@@ -22,7 +22,7 @@
 #define CURRENCY_TX_MAX_ALLOWED_OUTS                    2000
 #define CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX           0xaf377   // addresses start with 'iTw3'
 #define CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX     0x73f7  // integrated addresses start with 'iT'
-#define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  0x6af7 // integrated addresses start with 'iTH' (new format)
+#define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  0x73f7 // integrated addresses start with 'iT' (new format)
 #define CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX 0xdeaf7 // auditable addresses start with 'iTHn'
 #define CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX 0x7eaf7 // auditable integrated addresses start with 'iTHa'
 #define CURRENCY_MINED_MONEY_UNLOCK_WINDOW              60
