@@ -1,0 +1,52 @@
+name: Linux
+
+on:
+  push:
+    branches:
+      - 'main'
+      - 'dev'
+      - 'v*'
+    tags:
+      - 'v*'
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    branches:
+      - 'main'
+      - 'dev'
+      - 'v*'
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+      - name: update apt
+        run: sudo apt update
+      - name: install lethean dependencies
+        run: sudo apt-get install -y build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev cmake git screen mesa-common-dev libglu1-mesa-dev
+      - name: build Boost
+        run: |
+          wget https://boostorg.jfrog.io/artifactory/main/release/1.68.0/source/boost_1_68_0.tar.bz2
+          tar -xjf boost_1_68_0.tar.bz2
+          cd boost_1_68_0
+          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer
+          ./b2
+      - name: Build QT
+        run: |
+          wget https://download.qt.io/new_archive/qt/5.11/5.11.2/qt-opensource-linux-x64-5.11.2.run
+          chmod +x qt-opensource-linux-x64-5.11.2.run
+          ./qt-opensource-linux-x64-5.11.2.run
+      - name: build Gui
+        run: |
+          export BOOST_ROOT=/home/user/boost_1_68_0  
+          export QT_PREFIX_PATH=/home/user/Qt5.11.2/5.11.2/gcc_64
+          make -j2
+          utils/build_sript_linux.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/build/
