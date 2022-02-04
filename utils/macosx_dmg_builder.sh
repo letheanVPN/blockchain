@@ -10,14 +10,14 @@ function build_fancy_dmg() # $1 - path to package folder, $2 - dmg output filena
   fi
 
   $curr_path/contrib/create-dmg/create-dmg \
-    --volname "Zano installer" \
+    --volname "Lethean installer" \
     --volicon "$curr_path/../src/gui/qt-daemon/app.icns" \
     --background "$curr_path/../resources/dmg_installer_bg.png" \
     --window-pos 200 120 \
     --window-size 487 290 \
     --icon-size 128	 \
-    --icon Zano.app 112 115 \
-    --hide-extension Zano.app \
+    --icon Lethean.app 112 115 \
+    --hide-extension Lethean.app \
     --app-drop-link 365 115 \
     --no-internet-enable \
     $2 \

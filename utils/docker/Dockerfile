@@ -1,28 +1,28 @@
 ###########################################################################################
-## zanod Dockerfile
+## letheand Dockerfile
 ###########################################################################################
 
 #
 # Usage:
-# (make sure you have correct permission for /var/data/zano-data prior to run!)
+# (make sure you have correct permission for /var/data/lethean-data prior to run!)
 #
-#   docker run --restart=always -v /var/data/zano-data:/home/zano/.Zano -p 11121:11121 -p 11211:11211 --name=zanod -dit sowle/zano-full-node
+#   docker run --restart=always -v /var/data/lethean-data:/home/lethean/.Lethean -p 11121:11121 -p 11211:11211 --name=letheand -dit sowle/lethean-full-node
 #
 # To get into container and interact with the daemon:
-#   docker attach zanod
+#   docker attach letheand
 #
 # To detach from container and left it running:
 #   Ctrl+P, Ctrl+Q
 #
 # To stop container:
-#   docker stop zanod
+#   docker stop letheand
 #
 
 #
-# Build Zano
+# Build Lethean
 #
 
-FROM ubuntu:18.04 as zano-build
+FROM ubuntu:18.04 as lethean-build
 
 RUN apt update && \
     apt install -y build-essential \
@@ -57,14 +57,14 @@ RUN curl  https://boostorg.jfrog.io/artifactory/main/release/1.68.0/source/boost
 
 ENV BOOST_ROOT=/root/boost_1_68_0
 
-# Zano
+# Lethean
 
 RUN pwd && mem_avail_gb=$(( $(getconf _AVPHYS_PAGES) * $(getconf PAGE_SIZE) / (1024 * 1024 * 1024) )) &&\
     make_job_slots=$(( $mem_avail_gb < 4 ? 1 : $mem_avail_gb / 4)) &&\
     echo make_job_slots=$make_job_slots &&\
     set -x &&\
-    git clone --single-branch https://github.com/hyle-team/zano.git &&\
-    cd zano &&\
+    git clone --single-branch https://github.com/hyle-team/lethean.git &&\
+    cd lethean &&\
     git submodule update --init --recursive &&\
     mkdir build && cd build &&\
     cmake -D STATIC=TRUE .. &&\
@@ -72,25 +72,25 @@ RUN pwd && mem_avail_gb=$(( $(getconf _AVPHYS_PAGES) * $(getconf PAGE_SIZE) / (1
 
 
 #
-# Run Zano
+# Run Lethean
 #
 
 FROM ubuntu:18.04
 
-RUN useradd -ms /bin/bash zano &&\
-    mkdir -p /home/zano/.Zano &&\
-    chown -R zano:zano /home/zano/.Zano
+RUN useradd -ms /bin/bash lethean &&\
+    mkdir -p /home/lethean/.Lethean &&\
+    chown -R lethean:lethean /home/lethean/.Lethean
 
-USER zano:zano
+USER lethean:lethean
 
-WORKDIR /home/zano
-COPY --chown=zano:zano --from=zano-build /root/zano/build/src/zanod .
-COPY --chown=zano:zano --from=zano-build /root/zano/build/src/simplewallet .
+WORKDIR /home/lethean
+COPY --chown=lethean:lethean --from=lethean-build /root/lethean/build/src/letheand .
+COPY --chown=lethean:lethean --from=lethean-build /root/lethean/build/src/simplewallet .
 
 # blockchain loaction
-VOLUME /home/zano/.Zano
+VOLUME /home/lethean/.Lethean
 
 EXPOSE 11121 11211
 
-ENTRYPOINT ["./zanod"]
+ENTRYPOINT ["./letheand"]
 CMD ["--disable-upnp", "--rpc-bind-ip=0.0.0.0", "--log-level=0"]

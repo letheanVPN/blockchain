@@ -11,7 +11,7 @@ git pull --ff-only
 
 build_no_before=`cat $version_file_path | grep 'PROJECT_VERSION_BUILD_NO ' | awk {'print $3'}`
 
-../../zano-tools-last-build/connectivity_tool --increment-build-no=$version_file_path
+../../lethean-tools-last-build/connectivity_tool --increment-build-no=$version_file_path
 
 build_no_after=`cat $version_file_path | grep 'PROJECT_VERSION_BUILD_NO ' | awk {'print $3'}`
 

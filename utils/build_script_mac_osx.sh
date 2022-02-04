@@ -9,7 +9,7 @@ curr_path=${BASH_SOURCE%/*}
 : "${ZANO_BUILD_DIR:?variable not set, see also macosx_build_config.command}"
 : "${CMAKE_OSX_SYSROOT:?CMAKE_OSX_SYSROOT should be set to macOS SDK path, e.g.: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk}"
 
-ARCHIVE_NAME_PREFIX=zano-macos-x64-
+ARCHIVE_NAME_PREFIX=lethean-macos-x64-
 
 if [ -n "$build_prefix" ]; then
   ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}${build_prefix}-
@@ -38,9 +38,9 @@ fi
 
 
 
-make -j Zano
+make -j Lethean
 if [ $? -ne 0 ]; then
-    echo "Failed to make Zano"
+    echo "Failed to make Lethean"
     exit 1
 fi
 
@@ -58,63 +58,63 @@ if [ $? -ne 0 ]; then
 fi
 
 # copy all necessary libs into the bundle in order to workaround El Capitan's SIP restrictions
-mkdir -p Zano.app/Contents/Frameworks/boost_libs
-cp -R "$ZANO_BOOST_LIBS_PATH/" Zano.app/Contents/Frameworks/boost_libs/
+mkdir -p Lethean.app/Contents/Frameworks/boost_libs
+cp -R "$ZANO_BOOST_LIBS_PATH/" Lethean.app/Contents/Frameworks/boost_libs/
 if [ $? -ne 0 ]; then
     echo "Failed to cp workaround to MacOS"
     exit 1
 fi
 
 # rename process name to big letter 
-mv Zano.app/Contents/MacOS/zano Zano.app/Contents/MacOS/Zano
+mv Lethean.app/Contents/MacOS/lethean Lethean.app/Contents/MacOS/Lethean
 if [ $? -ne 0 ]; then
     echo "Failed to rename process"
     exit 1
 fi
 
-cp zanod simplewallet Zano.app/Contents/MacOS/
+cp letheand simplewallet Lethean.app/Contents/MacOS/
 if [ $? -ne 0 ]; then
-    echo "Failed to copy binaries to Zano.app folder"
+    echo "Failed to copy binaries to Lethean.app folder"
     exit 1
 fi
 
 # fix boost libs paths in main executable and libs to workaround El Capitan's SIP restrictions
 source ../../../utils/macosx_fix_boost_libs_path.sh
-fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Zano.app/Contents/MacOS/Zano
-fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Zano.app/Contents/MacOS/simplewallet
-fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Zano.app/Contents/MacOS/zanod
-fix_boost_libs_in_libs @executable_path/../Frameworks/boost_libs Zano.app/Contents/Frameworks/boost_libs
+fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Lethean.app/Contents/MacOS/Lethean
+fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Lethean.app/Contents/MacOS/simplewallet
+fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Lethean.app/Contents/MacOS/letheand
+fix_boost_libs_in_libs @executable_path/../Frameworks/boost_libs Lethean.app/Contents/Frameworks/boost_libs
 
 
 
-"$ZANO_QT_PATH/clang_64/bin/macdeployqt" Zano.app
+"$ZANO_QT_PATH/clang_64/bin/macdeployqt" Lethean.app
 if [ $? -ne 0 ]; then
-    echo "Failed to macdeployqt Zano.app"
+    echo "Failed to macdeployqt Lethean.app"
     exit 1
 fi
 
 
 
-rsync -a ../../../src/gui/qt-daemon/layout/html Zano.app/Contents/MacOS --exclude less --exclude package.json --exclude gulpfile.js
+rsync -a ../../../src/gui/qt-daemon/layout/html Lethean.app/Contents/MacOS --exclude less --exclude package.json --exclude gulpfile.js
 if [ $? -ne 0 ]; then
     echo "Failed to cp html to MacOS"
     exit 1
 fi
 
-cp ../../../src/gui/qt-daemon/app.icns Zano.app/Contents/Resources
+cp ../../../src/gui/qt-daemon/app.icns Lethean.app/Contents/Resources
 if [ $? -ne 0 ]; then
     echo "Failed to cp app.icns to resources"
     exit 1
 fi
 
-codesign -s "Developer ID Application: Zano Limited" --timestamp --options runtime -f --entitlements ../../../utils/macos_entitlements.plist --deep ./Zano.app
+codesign -s "Developer ID Application: Lethean Limited" --timestamp --options runtime -f --entitlements ../../../utils/macos_entitlements.plist --deep ./Lethean.app
 if [ $? -ne 0 ]; then
-    echo "Failed to sign Zano.app"
+    echo "Failed to sign Lethean.app"
     exit 1
 fi
 
 
-read version_str <<< $(DYLD_LIBRARY_PATH=$ZANO_BOOST_LIBS_PATH ./connectivity_tool --version | awk '/^Zano/ { print $2 }')
+read version_str <<< $(DYLD_LIBRARY_PATH=$ZANO_BOOST_LIBS_PATH ./connectivity_tool --version | awk '/^Lethean/ { print $2 }')
 version_str=${version_str}
 echo $version_str
 
@@ -126,7 +126,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-mv Zano.app package_folder 
+mv Lethean.app package_folder
 if [ $? -ne 0 ]; then
     echo "Failed to top app package"
     exit 1
@@ -149,7 +149,7 @@ echo "############### Uploading... ################"
 
 package_filepath=$package_filename
 
-scp $package_filepath zano_build_server:/var/www/html/builds/
+scp $package_filepath lethean_build_server:/var/www/html/builds/
 if [ $? -ne 0 ]; then
     echo "Failed to upload to remote server"
     exit 1
@@ -159,12 +159,12 @@ fi
 read checksum <<< $( shasum -a 256 $package_filepath | awk '/^/ { print $1 }' )
 
 mail_msg="New ${build_prefix_label}${testnet_label}build for macOS-x64:<br>
-https://build.zano.org/builds/$package_filename<br>
+https://build.lethean.org/builds/$package_filename<br>
 sha256: $checksum"
 
 echo "$mail_msg"
 
-echo "$mail_msg" | mail -s "Zano macOS-x64 ${build_prefix_label}${testnet_label}build $version_str" ${emails}
+echo "$mail_msg" | mail -s "Lethean macOS-x64 ${build_prefix_label}${testnet_label}build $version_str" ${emails}
 
 
 ######################
@@ -177,11 +177,11 @@ echo "Notarizing..."
 
 # creating archive for notarizing
 echo "Creating archive for notarizing"
-rm -f Zano.zip
-/usr/bin/ditto -c -k --keepParent ./Zano.app ./Zano.zip
+rm -f Lethean.zip
+/usr/bin/ditto -c -k --keepParent ./Lethean.app ./Lethean.zip
 
 tmpfile="tmptmptmp"
-xcrun altool --notarize-app --primary-bundle-id "org.zano.desktop" -u "andrey@zano.org" -p "@keychain:Developer-altool" --file ./Zano.zip > $tmpfile 2>&1
+xcrun altool --notarize-app --primary-bundle-id "org.lethean.desktop" -u "hello@lt.hn" -p "@keychain:Developer-altool" --file ./Lethean.zip > $tmpfile 2>&1
 NOTARIZE_RES=$?
 NOTARIZE_OUTPUT=$( cat $tmpfile )
 rm $tmpfile
@@ -202,7 +202,7 @@ success=0
 
 # check notarization status
 for i in {1..10}; do
-    xcrun altool --notarization-info $GUID -u "andrey@zano.org" -p "@keychain:Developer-altool" > $tmpfile 2>&1
+    xcrun altool --notarization-info $GUID -u "hello@lt.hn" -p "@keychain:Developer-altool" > $tmpfile 2>&1
     NOTARIZE_OUTPUT=$( cat $tmpfile )
     rm $tmpfile 
     NOTARIZATION_LOG_URL=$(echo "$NOTARIZE_OUTPUT" | sed -n "s/.*LogFileURL\: \([[:graph:]]*\).*/\1/p")
