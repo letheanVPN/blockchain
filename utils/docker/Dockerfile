@@ -63,7 +63,7 @@ RUN pwd && mem_avail_gb=$(( $(getconf _AVPHYS_PAGES) * $(getconf PAGE_SIZE) / (1
     make_job_slots=$(( $mem_avail_gb < 4 ? 1 : $mem_avail_gb / 4)) &&\
     echo make_job_slots=$make_job_slots &&\
     set -x &&\
-    git clone --single-branch https://github.com/hyle-team/lethean.git &&\
+    git clone --single-branch https://github.com/letheanVPN/blockchain-iTw3.git &&\
     cd lethean &&\
     git submodule update --init --recursive &&\
     mkdir build && cd build &&\
