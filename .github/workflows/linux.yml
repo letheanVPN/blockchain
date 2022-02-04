@@ -37,9 +37,7 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer
           ./b2
       - name: build server
-        run: |
-          export BOOST_ROOT=/home/user/boost_1_68_0  
-          make -j2
+        run: BOOST_ROOT=/home/runner/work/blockchain-iTw3/blockchain-iTw3/boost_1_68_0/stage/lib make -j2
       - uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/build/
