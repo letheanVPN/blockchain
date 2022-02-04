@@ -36,17 +36,10 @@ jobs:
           cd boost_1_68_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer
           ./b2
-      - name: Build QT
-        run: |
-          wget https://download.qt.io/new_archive/qt/5.11/5.11.2/qt-opensource-linux-x64-5.11.2.run
-          chmod +x qt-opensource-linux-x64-5.11.2.run
-          ./qt-opensource-linux-x64-5.11.2.run
-      - name: build Gui
+      - name: build server
         run: |
           export BOOST_ROOT=/home/user/boost_1_68_0  
-          export QT_PREFIX_PATH=/home/user/Qt5.11.2/5.11.2/gcc_64
           make -j2
-          utils/build_sript_linux.sh
       - uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/build/
