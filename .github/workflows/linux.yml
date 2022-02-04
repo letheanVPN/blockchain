@@ -33,4 +33,4 @@ jobs:
         run: make -j2
       - uses: actions/upload-artifact@v2
         with:
-          path: ${{ github.workspace }}/build/
+          path: ${{ github.workspace }}/build/release
