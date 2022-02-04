@@ -20,24 +20,17 @@ on:
 
 jobs:
   ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v1
         with:
           submodules: recursive
       - name: update apt
-        run: sudo apt update
-      - name: install lethean dependencies
-        run: sudo apt-get install -y build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev cmake git screen mesa-common-dev libglu1-mesa-dev
-      - name: build Boost
-        run: |
-          wget https://boostorg.jfrog.io/artifactory/main/release/1.68.0/source/boost_1_68_0.tar.bz2
-          tar -xjf boost_1_68_0.tar.bz2
-          cd boost_1_68_0
-          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer
-          ./b2
+        run: sudo apt update & apt-get upgrade -y
+      - name: install dependencies
+        run: sudo apt-get install -y build-essential libboost-all-dev g++ python-dev autotools-dev libicu-dev libbz2-dev cmake git screen mesa-common-dev libglu1-mesa-dev
       - name: build server
-        run: BOOST_ROOT=/home/runner/work/blockchain-iTw3/blockchain-iTw3/boost_1_68_0/stage/lib make -j2
+        run: make -j2
       - uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/build/
