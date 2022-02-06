@@ -198,7 +198,7 @@ bool MainWindow::init_window()
   m_localization[localization_id_income_transfer_confirmed] = "Income transfer confirmed";
   m_localization[localization_id_locked] = "(locked)";
   m_localization[localization_id_mined] = "(mined)";
-  m_localization[localization_id_minimized_title] = "Zano app is minimized to tray";
+  m_localization[localization_id_minimized_title] = "Lethean app is minimized to tray";
   m_localization[localization_id_minimized_text] = "You can restore it with double-click or context menu";
   m_localization[localization_id_tray_menu_show] = "localization_id_tray_menu_show";
   m_localization[localization_id_tray_menu_minimize] = "localization_id_tray_menu_minimize";

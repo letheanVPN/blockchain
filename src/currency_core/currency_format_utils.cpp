@@ -2975,12 +2975,12 @@ namespace currency
   std::string get_account_address_as_str(const account_public_address& addr)
   {
     if (addr.flags == 0)
-      return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr.to_old())); // classic Zano address
+      return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr.to_old())); // classic Lethean address
 
     if (addr.flags & ACCOUNT_PUBLIC_ADDRESS_FLAG_AUDITABLE)
-      return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Zano address (auditable)
+      return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Lethean address (auditable)
     
-    return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Zano address (normal)
+    return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Lethean address (normal)
   }
   //-----------------------------------------------------------------------
   bool is_address_like_wrapped(const std::string& addr)
@@ -2993,12 +2993,12 @@ namespace currency
   std::string get_account_address_and_payment_id_as_str(const account_public_address& addr, const payment_id_t& payment_id)
   {
     if (addr.flags == 0)
-      return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr.to_old()) + payment_id); // classic integrated Zano address
+      return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr.to_old()) + payment_id); // classic integrated Lethean address
 
     if (addr.flags & ACCOUNT_PUBLIC_ADDRESS_FLAG_AUDITABLE)
-      return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Zano address (auditable)
+      return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Lethean address (auditable)
     
-    return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Zano address (normal)
+    return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Lethean address (normal)
   }
   //-----------------------------------------------------------------------
   bool get_account_address_from_str(account_public_address& addr, const std::string& str)

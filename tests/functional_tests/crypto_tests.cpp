@@ -933,25 +933,25 @@ TEST(crypto, hp)
   LOG_PRINT_L0("cn_fast_hash('') * G = " << zG.to_public_key() << " (pub_key)");
   ASSERT_EQ(zG, point_from_str("7849297236cd7c0d6c69a3c8c179c038d3c1c434735741bb3c8995c3c9d6f2ac"));
 
-  crypto::cn_fast_hash("zano", 4, hash);
-  LOG_PRINT_L0("cn_fast_hash('zano') = " << hash);
+  crypto::cn_fast_hash("lethean", 4, hash);
+  LOG_PRINT_L0("cn_fast_hash('lethean') = " << hash);
   ASSERT_EQ(hash, hash_from_str("23cea10abfdf3ace0b7132291d51e4eb5a392afb2147e67f907ff4f8f5dd4f9f"));
 
   z = hash;
   zG = z * c_point_G;
-  LOG_PRINT_L0("cn_fast_hash('zano') * G = " << zG.to_public_key() << " (pub_key)");
+  LOG_PRINT_L0("cn_fast_hash('lethean') * G = " << zG.to_public_key() << " (pub_key)");
   ASSERT_EQ(zG, point_from_str("71407d59e9d671fa02f26a6a7f4726c3087d8f1732453396638a1dc2929fb57a"));
 
   char buf[2000];
   for (size_t i = 0; i < sizeof buf; i += 4)
-    *(uint32_t*)&buf[i] = *(uint32_t*)"zano";
+    *(uint32_t*)&buf[i] = *(uint32_t*)"lethean";
   crypto::cn_fast_hash(buf, sizeof buf, (char*)&hash);
-  LOG_PRINT_L0("cn_fast_hash('zano' x 500) = " << hash);
+  LOG_PRINT_L0("cn_fast_hash('lethean' x 500) = " << hash);
   ASSERT_EQ(hash, hash_from_str("16d87120c601a6ef3e4ffa5e58176a36b814288199f23ec09ef178c554e8879b"));
 
   z = hash;
   zG = z * c_point_G;
-  LOG_PRINT_L0("cn_fast_hash('zano' x 500) * G = " << zG.to_public_key() << " (pub_key)");
+  LOG_PRINT_L0("cn_fast_hash('lethean' x 500) * G = " << zG.to_public_key() << " (pub_key)");
   ASSERT_EQ(zG, point_from_str("dd93067a02fb8661aa64504ac1503402a34426f43650d970c35147cec4b61d55"));
 
   return true;

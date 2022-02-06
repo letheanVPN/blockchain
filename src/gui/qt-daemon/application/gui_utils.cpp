@@ -29,7 +29,7 @@
 #include <stdint.h>
 #include <math.h>
 #include "currency_core/currency_config.h"
-#define GUI_LINK_NAME "Zano"
+#define GUI_LINK_NAME "Lethean"
 
 #ifdef WIN32
 #ifdef _WIN32_WINNT

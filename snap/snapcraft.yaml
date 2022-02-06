@@ -1,12 +1,8 @@
-name: zano
+name: lethean
 base: core18
-adopt-info: zano
-summary: "Zano coin: official wallet. Secure. Scalable. Easy to Use."
-description: |
-  Zano is a scalable and secure coin, designed for use in e-commerce.
-  The technology behind our blockchain provides reliability, security,
-  and flexibility a perfect option for P2P transactions.
-  More info: http://zano.org
+adopt-info: lethean
+summary: "Lethean: official wallet. Secure. Scalable. Easy to Use."
+description: "Lethean is a user psecurity project, utlizing a scalable e-commerce friendly confidential blockchain."
 grade: stable
 confinement: strict
 
@@ -15,8 +11,8 @@ architectures:
   - build-on: i386
 
 parts:
-  zano:
-    source: https://github.com/hyle-team/zano.git
+  lethean:
+    source: https://github.com/letheanVPN/blockchain-iTw3.git
     plugin: cmake
     override-pull: |
         snapcraftctl pull
@@ -25,11 +21,11 @@ parts:
       - -DBUILD_GUI=TRUE
     override-build: |
       snapcraftctl build
-      mkdir -p $SNAPCRAFT_PART_INSTALL/opt/Zano
-      cp $SNAPCRAFT_PART_BUILD/src/Zano $SNAPCRAFT_PART_INSTALL/opt/Zano/
-      cp $SNAPCRAFT_PART_BUILD/src/simplewallet $SNAPCRAFT_PART_INSTALL/opt/Zano/
-      cp $SNAPCRAFT_PART_BUILD/src/zanod $SNAPCRAFT_PART_INSTALL/opt/Zano/
-      rsync -a $SNAPCRAFT_PART_SRC/src/gui/qt-daemon/html $SNAPCRAFT_PART_INSTALL/opt/Zano --exclude less --exclude package.json --exclude gulpfile.js
+      mkdir -p $SNAPCRAFT_PART_INSTALL/opt/Lethean
+      cp $SNAPCRAFT_PART_BUILD/src/Lethean $SNAPCRAFT_PART_INSTALL/opt/Lethean/
+      cp $SNAPCRAFT_PART_BUILD/src/simplewallet $SNAPCRAFT_PART_INSTALL/opt/Lethean/
+      cp $SNAPCRAFT_PART_BUILD/src/letheand $SNAPCRAFT_PART_INSTALL/opt/Lethean/
+      rsync -a $SNAPCRAFT_PART_SRC/src/gui/qt-daemon/html $SNAPCRAFT_PART_INSTALL/opt/Lethean --exclude less --exclude package.json --exclude gulpfile.js
     build-packages:
       - make
       - g++
@@ -49,8 +45,8 @@ parts:
       - libboost-locale1.65.1
 
 apps:
-  zano:
-    command: opt/Zano/Zano --data-dir $SNAP_USER_COMMON
+  lethean:
+    command: opt/Lethean/Lethean --data-dir $SNAP_USER_COMMON
     extensions:
       - kde-neon
     plugs:
@@ -62,12 +58,12 @@ apps:
       - audio-playback
       - unity7 #for tray icon support
   simplewallet:
-    command: opt/Zano/simplewallet
+    command: opt/Lethean/simplewallet
     plugs:
       - network
       - home
-  zanod:
-    command: opt/Zano/zanod --data-dir $SNAP_USER_COMMON
+  letheand:
+    command: opt/Lethean/letheand --data-dir $SNAP_USER_COMMON
     environment:
       LC_ALL: C
     plugs:

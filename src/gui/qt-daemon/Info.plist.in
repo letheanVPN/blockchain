@@ -10,7 +10,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Zano</string>
+	<string>Lethean</string>
 	<key>CFBundleIconFile</key>
 	<string>app.icns</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -24,7 +24,7 @@
 	<key>CFBundleVersion</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>Zano</string>
+	<string>Lethean</string>
 	<key>CSResourcesFileMapped</key>
 	<true/>
 	<key>DTCompiler</key>
@@ -51,10 +51,10 @@
 	<array>
 		<dict>
 			<key>CFBundleURLName</key>
-			<string>ZanoApp</string>
+			<string>LetheanApp</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>zano</string>
+				<string>lethean</string>
 			</array>
 		</dict>
 	</array>

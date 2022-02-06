@@ -71,7 +71,7 @@ void run_plain_wallet_api_test()
 
 //   LOG_PRINT_L0("Generating wallet...");
 //   view::open_wallet_request owr = AUTO_VAL_INIT(owr);
-//   owr.path = "E:\\tmp\\zano_testwallet_745ss65030.zan";
+//   owr.path = "E:\\tmp\\lethean_testwallet_745ss65030.zan";
 //   owr.pass = "";
 //   std::string job_id_str = plain_wallet::async_call("open", 0, epee::serialization::store_t_to_json(owr));
 // 
@@ -96,7 +96,7 @@ void run_plain_wallet_api_test()
 // 
 // 
 
-  //std::string rsp = plain_wallet::open(std::string("E:\\tmp\\zano_testwallet_745ss65030.zan"), "");
+  //std::string rsp = plain_wallet::open(std::string("E:\\tmp\\lethean_testwallet_745ss65030.zan"), "");
   //LOG_PRINT_L0("RESPONSE:" << ENDL << rsp);
   //epee::json_rpc::response<view::open_wallet_response, epee::json_rpc::dummy_error> ok_response = AUTO_VAL_INIT(ok_response);
   //epee::serialization::load_t_from_json(ok_response, rsp);
@@ -144,7 +144,7 @@ void run_plain_wallet_api_test()
 //   LOG_PRINT_L0("Creating instance..." << std::hex << hw);
 // 
 //   LOG_PRINT_L0("Generating wallet...");
-//   std::string rsp = plain_wallet::open(hw, std::string("E:\\tmp\\zano_testwallet_74565030.zan"), "");
+//   std::string rsp = plain_wallet::open(hw, std::string("E:\\tmp\\lethean_testwallet_74565030.zan"), "");
 //   LOG_PRINT_L0("RESPONSE:" << ENDL << rsp);
 //   epee::json_rpc::response<plain_wallet::open_wallet_response, epee::json_rpc::dummy_error> ok_response = AUTO_VAL_INIT(ok_response);
 //   epee::serialization::load_t_from_json(ok_response, rsp);
@@ -217,7 +217,7 @@ void run_plain_wallet_api_test()
 //     LOG_PRINT_L0("Creating instance..." << std::hex << hw);
 // 
 //     LOG_PRINT_L0("Generating wallet...");
-//     std::string rsp = plain_wallet::generate(hw, std::string("E:\\tmp\\zano_testwallet_") + std::to_string(epee::misc_utils::get_tick_count()) + ".zan", "");
+//     std::string rsp = plain_wallet::generate(hw, std::string("E:\\tmp\\lethean_testwallet_") + std::to_string(epee::misc_utils::get_tick_count()) + ".zan", "");
 //     LOG_PRINT_L0("RESPONSE:" << ENDL << rsp);
 //     epee::json_rpc::response<plain_wallet::open_wallet_response, epee::json_rpc::dummy_error> ok_response = AUTO_VAL_INIT(ok_response);
 //     epee::serialization::load_t_from_json(ok_response, rsp);
