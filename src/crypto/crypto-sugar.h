@@ -246,7 +246,7 @@ namespace crypto
       return result;
     }
 
-    // genrate 0 <= x < L
+    // generate 0 <= x < L
     void make_random()
     {
       unsigned char tmp[64];
@@ -431,6 +431,31 @@ namespace crypto
       return result;
     }
 
+    // Little-endian assumed; TODO: consider Big-endian support
+    bool get_bit(uint8_t bit_index) const
+    {
+      return (m_u64[bit_index >> 6] & (1ull << (bit_index & 63))) != 0;
+    }
+
+    // Little-endian assumed; TODO: consider Big-endian support
+    void set_bit(size_t bit_index)
+    {
+      m_u64[bit_index >> 6] |= (1ull << (bit_index & 63));
+    }
+
+    // Little-endian assumed; TODO: consider Big-endian support
+    void clear_bit(size_t bit_index)
+    {
+      m_u64[bit_index >> 6] &= ~(1ull << (bit_index & 63));
+    }
+
+    static scalar_t power_of_2(uint8_t exponent)
+    {
+      scalar_t result = 0;
+      result.set_bit(exponent);
+      return result;
+    }
+
   }; // struct scalar_t
 
   //
@@ -497,7 +522,7 @@ namespace crypto
       zero();
     }
 
-    // as we're using additive notation, zero means identity group element here and after
+    // as we're using additive notation, zero means identity group element (EC point (0, 1)) here and after
     void zero()
     {
       ge_p3_0(&m_p3);
@@ -506,7 +531,11 @@ namespace crypto
     bool is_zero() const
     {
       // (0, 1) ~ (0, z, z, 0)
-      return fe_isnonzero(m_p3.X) * fe_cmp(m_p3.Y, m_p3.Z) == 0;
+      if (fe_isnonzero(m_p3.X) != 0)
+        return false;
+      fe y_minus_z;
+      fe_sub(y_minus_z, m_p3.Y, m_p3.Z);
+      return fe_isnonzero(y_minus_z) == 0;
     }
 
     bool is_in_main_subgroup() const
@@ -667,6 +696,11 @@ namespace crypto
         return false;
 
       return true;
+    };
+
+    friend bool operator!=(const point_t& lhs, const point_t& rhs)
+    {
+      return !(lhs == rhs);
     };
 
     friend std::ostream& operator<<(std::ostream& ss, const point_t &v)
@@ -881,6 +915,7 @@ namespace crypto
   extern const point_g_t c_point_G;
 
   extern const point_t  c_point_H;
+  extern const point_t  c_point_H2;
   extern const point_t  c_point_0;
 
   //
@@ -1054,6 +1089,21 @@ namespace crypto
       ge_bytes_hash_to_ec_32(&result.m_p3, (const unsigned char*)&p);
       return result;
     }
+
+    static point_t hp(const scalar_t& s)
+    {
+      point_t result;
+      ge_bytes_hash_to_ec_32(&result.m_p3, s.data());
+      return result;
+    }
+
+    static point_t hp(const void* data, size_t size)
+    {
+      point_t result;
+      ge_bytes_hash_to_ec(&result.m_p3, data, size);
+      return result;
+    }
+
   }; // hash_helper_t struct
 
 
