@@ -122,26 +122,6 @@ fi
 
 echo "Build success"
 
-if [ -z "$upload_build" ]; then
-    exit 0
-fi
 
-echo "Uploading..."
-
-scp $package_filename lethean_build_server:/var/www/html/builds
-if [ $? -ne 0 ]; then
-    echo "Failed to upload to remote server"
-    exit $?
-fi
-
-read checksum <<< $(sha256sum $package_filename | awk '/^/ { print $1 }' )
-
-mail_msg="New ${build_prefix_label}${testnet_label}${copy_qt_dev_tools_label}build for linux-x64:<br>
-https://build.lethean.org/builds/$package_filename<br>
-sha256: $checksum"
-
-echo "$mail_msg"
-
-echo "$mail_msg" | mail -s "Lethean linux-x64 ${build_prefix_label}${testnet_label}${copy_qt_dev_tools_label}build $version_str" ${emails}
 
 exit 0

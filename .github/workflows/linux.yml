@@ -20,7 +20,7 @@ on:
 
 jobs:
   ubuntu:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v1
         with:
@@ -28,9 +28,15 @@ jobs:
       - name: update apt
         run: sudo apt update & sudo apt-get upgrade -y
       - name: install dependencies
-        run: sudo apt-get install -y build-essential libboost-all-dev g++ python-dev autotools-dev libicu-dev libbz2-dev cmake git screen mesa-common-dev libglu1-mesa-dev
+        run: sudo apt-get install -y build-essential g++ python-dev autotools-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev
+      - run: |
+          curl -OL https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.bz2
+          tar -xjf boost_1_70_0.tar.bz2
+          cd boost_1_70_0
+          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+          ./b2
       - name: build server
-        run: make static -j2
+        run: bash utils/build_srcipt_linux.sh
       - uses: actions/upload-artifact@v2
         with:
           path: ${{ github.workspace }}/build/release
