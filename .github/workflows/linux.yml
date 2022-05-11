@@ -34,7 +34,7 @@ jobs:
           tar -xjf boost_1_70_0.tar.bz2
           cd boost_1_70_0
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-          ./b2
+          ./b2 install
       - name: build server
         run: bash utils/build_script_linux.sh
       - uses: actions/upload-artifact@v2
