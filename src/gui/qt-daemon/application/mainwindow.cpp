@@ -100,6 +100,7 @@ MainWindow::MainWindow()
   , m_system_shutdown(false)
   , m_view(nullptr)
   , m_channel(nullptr)
+  , m_ui_dispatch_id_counter(0)
 {
 #ifndef _MSC_VER
   //workaround for macos broken tolower from std, very dirty hack
@@ -120,6 +121,10 @@ MainWindow::~MainWindow()
     m_channel->deregisterObject(this);
     delete m_channel;
     m_channel = nullptr;
+  }
+  if (m_ipc_worker.joinable())
+  {
+    m_ipc_worker.join();
   }
 }
 
@@ -411,7 +416,7 @@ bool MainWindow::init(const std::string& html_path)
   //QtWebEngine::initialize();
   init_tray_icon(html_path);
   set_html_path(html_path);
-
+  m_threads_pool.init(2);
   m_backend.subscribe_to_core_events(this);
 
   bool r = QSslSocket::supportsSsl();
@@ -740,14 +745,127 @@ void qt_log_message_handler(QtMsgType type, const QMessageLogContext &context, c
     }
 }
 
+bool MainWindow::remove_ipc()
+{
+  try {
+    boost::interprocess::message_queue::remove(GUI_IPC_MESSAGE_CHANNEL_NAME);
+  }
+  catch (...)
+  {
+  }
+  return true;
+}
+ 
+
+bool MainWindow::init_ipc_server()
+{
+
+  //in case previous instance wasn't close graceful, ipc channel will remain open and new creation will fail, so we 
+  //trying to close it anyway before open, to make sure there are no dead channels. If there are another running instance, it wom't 
+  //let channel to close, so it will fail later on creating channel
+  remove_ipc();
+#define GUI_IPC_BUFFER_SIZE  10000
+  try {
+    //Create a message queue.
+    std::shared_ptr<boost::interprocess::message_queue> pmq(new boost::interprocess::message_queue(boost::interprocess::create_only //only create
+      , GUI_IPC_MESSAGE_CHANNEL_NAME           //name
+      , 100                                    //max message number
+      , GUI_IPC_BUFFER_SIZE                    //max message size
+    ));
+
+    m_ipc_worker = std::thread([this, pmq]()
+    {
+      //m_ipc_worker;
+      try
+      {
+        unsigned int priority = 0;
+        boost::interprocess::message_queue::size_type recvd_size = 0;
+
+        while (m_gui_deinitialize_done_1 == false)
+        {
+          std::string buff(GUI_IPC_BUFFER_SIZE, ' ');
+          bool data_received = pmq->timed_receive((void*)buff.data(), GUI_IPC_BUFFER_SIZE, recvd_size, priority, boost::posix_time::ptime(boost::posix_time::microsec_clock::universal_time()) + boost::posix_time::milliseconds(1000));
+          if (data_received && recvd_size != 0)
+          {
+            buff.resize(recvd_size, '*');
+            handle_ipc_event(buff);//todo process token
+          }
+        }        
+        remove_ipc();
+        LOG_PRINT_L0("IPC Handling thread finished");
+      }
+      catch (const std::exception& ex)
+      {
+        remove_ipc();
+        boost::interprocess::message_queue::remove(GUI_IPC_MESSAGE_CHANNEL_NAME);
+        LOG_ERROR("Failed to receive IPC que: " << ex.what());
+      }
+
+      catch (...)
+      {
+        remove_ipc();
+        LOG_ERROR("Failed to receive IPC que: unknown exception");
+      }
+    });
+  }
+  catch(const std::exception& ex)
+  {
+    boost::interprocess::message_queue::remove(GUI_IPC_MESSAGE_CHANNEL_NAME);
+    LOG_ERROR("Failed to initialize IPC que: " << ex.what());
+    return false;
+  }
+
+  catch (...)
+  {
+    boost::interprocess::message_queue::remove(GUI_IPC_MESSAGE_CHANNEL_NAME);
+    LOG_ERROR("Failed to initialize IPC que: unknown exception");
+    return false;
+  }
+  return true;
+}
+
+
+bool MainWindow::handle_ipc_event(const std::string& arguments)
+{
+  std::string zzz = std::string("Received IPC: ") + arguments.c_str();
+  std::cout << zzz;//message_box(zzz.c_str());
+
+  handle_deeplink_click(arguments.c_str());
+
+  return true;
+}
+
+bool MainWindow::handle_deeplink_params_in_commandline()
+{
+  std::string deep_link_params = command_line::get_arg(m_backend.get_arguments(), command_line::arg_deeplink);
+
+  try {
+    boost::interprocess::message_queue mq(boost::interprocess::open_only, GUI_IPC_MESSAGE_CHANNEL_NAME);
+    mq.send(deep_link_params.data(), deep_link_params.size(), 0);
+    return false;
+  }
+  catch (...)
+  {
+    //ui not launched yet
+    return true;
+  }
+}
+
 bool MainWindow::init_backend(int argc, char* argv[])
 {
+
   TRY_ENTRY();
   std::string command_line_fail_details;
   if (!m_backend.init_command_line(argc, argv, command_line_fail_details))
   {
     this->show_msg_box(command_line_fail_details);
     return false;
+  }
+
+  if (command_line::has_arg(m_backend.get_arguments(), command_line::arg_deeplink))
+  {
+    if (!handle_deeplink_params_in_commandline())
+      return false;
   }
 
   if (!init_window())
@@ -768,6 +886,12 @@ bool MainWindow::init_backend(int argc, char* argv[])
   {
     qInstallMessageHandler(qt_log_message_handler);
     QLoggingCategory::setFilterRules("*=true"); // enable all logs
+  }
+
+  if (!init_ipc_server())
+  {
+    this->show_msg_box("Failed to initialize IPC server, check debug logs for more details.");
+    return false;
   }
 
   return true;
@@ -797,6 +921,41 @@ QString MainWindow::start_backend(const QString& params)
   CATCH_ENTRY_FAIL_API_RESPONCE();
 }
 
+QString MainWindow::sync_call(const QString& func_name, const QString& params)
+{
+  if (func_name == "transfer")
+  {
+    return this->transfer(params);
+  }
+  else if (func_name == "test_call")
+  {
+    return params;
+  }
+  else
+  {
+    return QString(QString() + "{ \"status\": \"Method '" + func_name  + "' not found\"}");
+  }
+}
+
+QString MainWindow::async_call(const QString& func_name, const QString& params)
+{
+
+  uint64_t job_id = m_ui_dispatch_id_counter++;
+  QString method_name = func_name;
+  QString argements = params;
+
+  auto async_callback = [this, method_name, argements, job_id]()
+  {
+    QString res_str = this->sync_call(method_name, argements);
+    this->dispatch_async_call_result(std::to_string(job_id).c_str(), res_str);  //general function
+  };
+
+  m_threads_pool.add_job(async_callback);
+  LOG_PRINT_L2("[UI_ASYNC_CALL]: started " << method_name.toStdString() << ", job id: " << job_id);
+  return QString::fromStdString(std::string("{ \"job_id\": ") + std::to_string(job_id) + "}");
+}
+
+
 bool MainWindow::update_wallet_status(const view::wallet_status_info& wsi)
 {
   TRY_ENTRY();
@@ -820,6 +979,17 @@ bool MainWindow::set_options(const view::gui_options& opt)
   epee::serialization::store_t_to_json(opt, json_str, 0, epee::serialization::eol_lf);
   LOG_PRINT_L0("SENDING SIGNAL -> [set_options]:" << std::endl << json_str);
   QMetaObject::invokeMethod(this, "set_options", Qt::QueuedConnection, Q_ARG(QString, json_str.c_str()));
+  return true;
+  CATCH_ENTRY2(false);
+}
+
+bool MainWindow::update_tor_status(const view::current_action_status& opt)
+{
+  TRY_ENTRY();
+  std::string json_str;
+  epee::serialization::store_t_to_json(opt, json_str, 0, epee::serialization::eol_lf);
+  LOG_PRINT_L0("SENDING SIGNAL -> [HANDLE_CURRENT_ACTION_STATE]:" << std::endl << json_str);
+  QMetaObject::invokeMethod(this, "handle_current_action_state", Qt::QueuedConnection, Q_ARG(QString, json_str.c_str()));
   return true;
   CATCH_ENTRY2(false);
 }
@@ -1528,6 +1698,20 @@ QString MainWindow::get_log_level(const QString& param)
   ar.response_data.v = epee::log_space::get_set_log_detalisation_level();
   ar.error_code = API_RETURN_CODE_OK;
   return MAKE_RESPONSE(ar);
+  CATCH_ENTRY_FAIL_API_RESPONCE();
+}
+
+QString MainWindow::set_enable_tor(const QString& param)
+{
+  TRY_ENTRY();
+  LOG_API_TIMING();
+  PREPARE_ARG_FROM_JSON(currency::struct_with_one_t_type<bool>, enabl_tor);
+  m_backend.set_use_tor(enabl_tor.v);
+  //epee::log_space::get_set_log_detalisation_level(true, enabl_tor.v);
+  default_ar.error_code = API_RETURN_CODE_OK;
+  LOG_PRINT("[TOR]: Enable TOR set to " << enabl_tor.v, LOG_LEVEL_MIN);
+
+  return MAKE_RESPONSE(default_ar);
   CATCH_ENTRY_FAIL_API_RESPONCE();
 }
 

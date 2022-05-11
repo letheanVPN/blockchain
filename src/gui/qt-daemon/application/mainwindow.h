@@ -4,16 +4,21 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#pragma once
 #include <QtWidgets>
 #include <QWebChannel>
+#include <boost/interprocess/ipc/message_queue.hpp>
 
 #include "wallet/view_iface.h"
 #include "serialization/keyvalue_helper_structs.h"
+
 
 #ifndef Q_MOC_RUN
 #include "wallet/wallets_manager.h"
 #include "currency_core/offers_services_helpers.h"
 #endif
+
+#include "common/threads_pool.h"
 
 QT_BEGIN_NAMESPACE
 class QWebEngineView;
@@ -58,6 +63,7 @@ public:
   bool init_backend(int argc, char* argv[]);
   bool show_inital();
   void show_notification(const std::string& title, const std::string& message);
+  bool handle_ipc_event(const std::string& arguments);
 
   struct app_config
   {
@@ -133,6 +139,7 @@ public:
   QString stop_pos_mining(const QString& param);
   QString set_log_level(const QString& param);
   QString get_log_level(const QString& param);
+  QString set_enable_tor(const QString& param);
 //  QString dump_all_offers();
   QString webkit_launched_script();
   QString get_smart_wallet_info(const QString& param);
@@ -175,6 +182,9 @@ public:
   QString is_remnotenode_mode_preconfigured();
   QString start_backend(const QString& params);
 
+  QString async_call(const QString& func_name, const QString& params);
+  QString sync_call(const QString& func_name, const QString& params);
+
   //for test purposes onlys
   QString request_dummy();
 
@@ -188,10 +198,11 @@ signals:
   void wallet_sync_progress(const QString str);
   void handle_internal_callback(const QString str, const QString callback_name);
   void update_pos_mining_text(const QString str);
-  void do_dispatch(const QString status, const QString params);  //general function
   void on_core_event(const QString method_name);  //general function
   void set_options(const QString str);  //general function
-  void get_wallet_name();
+  void handle_deeplink_click(const QString str);
+  void handle_current_action_state(const QString str);
+  void dispatch_async_call_result(const QString id, const QString resp);  //general function
 
 private:
   //--------------------  i_core_event_handler --------------------
@@ -211,6 +222,7 @@ private:
   virtual bool init(const std::string& path);
   virtual bool pos_block_found(const currency::block& block_found);
   virtual bool set_options(const view::gui_options& opt);
+  virtual bool update_tor_status(const view::current_action_status& opt);
   //--------- QAbstractNativeEventFilter ---------------------------
   virtual bool nativeEventFilter(const QByteArray &eventType, void *message, long *result);
   //----------------------------------------------
@@ -220,7 +232,7 @@ private:
   void contextMenuEvent(QContextMenuEvent * event);
   void changeEvent(QEvent *e);
   void on_maximized();
-
+  bool handle_deeplink_params_in_commandline();
   //void setOrientation(Qt::ScreenOrientation orientation);
   
   
@@ -234,6 +246,9 @@ private:
   bool store_app_config();
   bool load_app_config();
   bool init_window();
+  bool init_ipc_server();
+  bool remove_ipc();
+  
 
   std::string get_wallet_log_prefix(size_t wallet_id) const { return m_backend.get_wallet_log_prefix(wallet_id); }
 
@@ -249,6 +264,8 @@ private:
   std::atomic<bool> m_gui_deinitialize_done_1;
   std::atomic<bool> m_backend_stopped_2;
   std::atomic<bool> m_system_shutdown;
+  std::atomic<uint64_t> m_ui_dispatch_id_counter;
+  utils::threads_pool m_threads_pool;
 
   std::string m_master_password;
 
@@ -256,6 +273,7 @@ private:
   app_config m_config;
 
   epee::locked_object<std::map<uint64_t, uint64_t>> m_wallet_states;
+  std::thread m_ipc_worker;
   struct events_que_struct
   {
     std::list<currency::core_event> m_que;

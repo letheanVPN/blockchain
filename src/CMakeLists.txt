@@ -121,14 +121,17 @@ add_library(currency_core ${CURRENCY_CORE})
 add_dependencies(currency_core version  ${PCH_LIB_NAME})
 ENABLE_SHARED_PCH(currency_core CURRENCY_CORE)
 
+add_library(wallet  ${WALLET})
 if(CMAKE_SYSTEM_NAME STREQUAL "Android" )
-  add_library(wallet  ${WALLET})
   add_dependencies(wallet version ${PCH_LIB_NAME})
   target_link_libraries(wallet currency_core crypto common zlibstatic ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} android log)
 else()
-  add_library(wallet ${WALLET})
   add_dependencies(wallet version ${PCH_LIB_NAME})
   ENABLE_SHARED_PCH(wallet WALLET)
+endif()
+
+if(NOT DISABLE_TOR)
+  target_link_libraries(wallet tor-connect)
 endif()
 
 
@@ -159,7 +162,7 @@ target_link_libraries(currency_core lmdb mdbx)
 
 add_executable(daemon ${DAEMON} ${P2P} ${CURRENCY_PROTOCOL})
 add_dependencies(daemon version)
-  target_link_libraries(daemon rpc stratum currency_core crypto common libminiupnpc-static zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+target_link_libraries(daemon rpc stratum currency_core crypto common libminiupnpc-static zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
 ENABLE_SHARED_PCH(daemon DAEMON)
 ENABLE_SHARED_PCH_EXECUTABLE(daemon)
                      
@@ -172,6 +175,7 @@ ENABLE_SHARED_PCH_EXECUTABLE(connectivity_tool)
 add_executable(simplewallet ${SIMPLEWALLET})
 add_dependencies(simplewallet version)
 target_link_libraries(simplewallet wallet rpc currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+
 ENABLE_SHARED_PCH(simplewallet SIMPLEWALLET)
 ENABLE_SHARED_PCH_EXECUTABLE(simplewallet)
 
@@ -195,28 +199,31 @@ if(BUILD_GUI)
   QT5_USE_MODULES(Lethean WebEngineWidgets WebChannel)
   find_package(Qt5PrintSupport REQUIRED)
 
-  target_link_libraries(Lethean wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+  target_link_libraries(Zano wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+  if (UNIX AND NOT APPLE)
+	target_link_libraries(Zano rt)
+  endif()
 
   if(APPLE)
-    target_link_libraries(Lethean ${COCOA_LIBRARY})
-    set_property(TARGET Lethean PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
+    target_link_libraries(Zano ${COCOA_LIBRARY})
+    set_property(TARGET Zano PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
   endif()
   if(MSVC)
-    target_link_libraries(Lethean shlwapi.lib)
+    target_link_libraries(Zano shlwapi.lib)
   endif()
 
-  set_property(TARGET Lethean PROPERTY FOLDER "prog")
-  set_target_properties(Lethean PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/Info.plist.in)
+  set_property(TARGET Zano PROPERTY FOLDER "prog")
+  set_target_properties(Zano PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/Info.plist.in)
 
   set(HTML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/layout/html)
-  set_target_properties(Lethean PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--html-path=${HTML_DIR}")
+  set_target_properties(Zano PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--html-path=${HTML_DIR}")
 
   set(CMAKE_AUTOMOC OFF)
 
   # GUI convenience "bundle"
   # set(GUI_DIR ${CMAKE_CURRENT_BINARY_DIR}/gui)
-  # set_target_properties(Lethean PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${GUI_DIR})
-  # add_custom_command(TARGET Lethean POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${HTML_DIR} ${GUI_DIR}/html)
+  # set_target_properties(Zano PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${GUI_DIR})
+  # add_custom_command(TARGET Zano POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${HTML_DIR} ${GUI_DIR}/html)
 endif()
 
 if(APPLE)

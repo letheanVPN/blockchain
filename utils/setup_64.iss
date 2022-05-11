@@ -53,7 +53,7 @@ Root: HKCR; Subkey: "LetheanWalletDataFile\DefaultIcon"; ValueType: string; Valu
 Root: HKCR; Subkey: "LetheanWalletDataKyesFile\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\Lethean.exe,0"
 
 Root: HKCR; Subkey: "Lethean"; ValueType: string; ValueName: "URL Protocol"; ValueData: ""
-Root: HKCR; Subkey: "Lethean\shell\open\command"; ValueType: string; ValueName: ""; ValueData: "{app}\Lethean.exe %1"
+Root: HKCR; Subkey: "Lethean\shell\open\command"; ValueType: string; ValueName: ""; ValueData: "{app}\Lethean.exe --deeplink-params=%1"
 
 
 [Files]
