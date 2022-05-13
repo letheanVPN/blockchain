@@ -8,9 +8,9 @@
 
 
 #ifndef TESTNET
-#define CURRENCY_FORMATION_VERSION                      84
+#define CURRENCY_FORMATION_VERSION                      1
 #else
-#define CURRENCY_FORMATION_VERSION                      88
+#define CURRENCY_FORMATION_VERSION                      1
 #endif
 
 #define CURRENCY_GENESIS_NONCE                          (CURRENCY_FORMATION_VERSION + 101011010121) //bender's nightmare
@@ -25,7 +25,7 @@
 #define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  0x73f7 // integrated addresses start with 'iT' (new format)
 #define CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX 0xdeaf7 // auditable addresses start with 'iTHn'
 #define CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX 0x7eaf7 // auditable integrated addresses start with 'iTHa'
-#define CURRENCY_MINED_MONEY_UNLOCK_WINDOW              60
+#define CURRENCY_MINED_MONEY_UNLOCK_WINDOW              10
 #define CURRENT_TRANSACTION_VERSION                     1
 #define HF1_BLOCK_MAJOR_VERSION                         1
 #define CURRENT_BLOCK_MAJOR_VERSION                     2
@@ -99,16 +99,16 @@
 
 
 #ifndef TESTNET
-#define P2P_DEFAULT_PORT                                11121
-#define RPC_DEFAULT_PORT                                11211
-#define STRATUM_DEFAULT_PORT                            11777
+#define P2P_DEFAULT_PORT                                31121
+#define RPC_DEFAULT_PORT                                31211
+#define STRATUM_DEFAULT_PORT                            31777
 #define P2P_NETWORK_ID_TESTNET_FLAG                     0
 #define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
 #else 
-#define P2P_DEFAULT_PORT                                (11112 + CURRENCY_FORMATION_VERSION)
-#define RPC_DEFAULT_PORT                                12111
-#define STRATUM_DEFAULT_PORT                            11888
-#define STRARUM_DEFAULT_PORT                            51113
+#define P2P_DEFAULT_PORT                                (31112 + CURRENCY_FORMATION_VERSION)
+#define RPC_DEFAULT_PORT                                32111
+#define STRATUM_DEFAULT_PORT                            31888
+#define STRARUM_DEFAULT_PORT                            61113
 #define P2P_NETWORK_ID_TESTNET_FLAG                     1
 #define P2P_MAINTAINERS_PUB_KEY                         "aaa2d7aabc8d383fd53a3ae898697b28f236ceade6bafc1eecff413a6a02272a"
 #endif
@@ -239,13 +239,13 @@
 #define BLOCK_MINOR_VERSION_GENESIS                     0
 #define BLOCK_MAJOR_VERSION_INITIAL                     0
 #ifndef TESTNET
-#define ZANO_HARDFORK_01_AFTER_HEIGHT                   194624
-#define ZANO_HARDFORK_02_AFTER_HEIGHT                   999999
-#define ZANO_HARDFORK_03_AFTER_HEIGHT                   1082577
+#define ZANO_HARDFORK_01_AFTER_HEIGHT                   1
+#define ZANO_HARDFORK_02_AFTER_HEIGHT                   2
+#define ZANO_HARDFORK_03_AFTER_HEIGHT                   3
 #else
-#define ZANO_HARDFORK_01_AFTER_HEIGHT                   1440
-#define ZANO_HARDFORK_02_AFTER_HEIGHT                   1800
-#define ZANO_HARDFORK_03_AFTER_HEIGHT                   1801
+#define ZANO_HARDFORK_01_AFTER_HEIGHT                   1
+#define ZANO_HARDFORK_02_AFTER_HEIGHT                   2
+#define ZANO_HARDFORK_03_AFTER_HEIGHT                   3
 #endif
 
 
