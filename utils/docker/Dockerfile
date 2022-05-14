@@ -32,8 +32,6 @@ COPY . /root/lethean
 
 WORKDIR /root/lethean
 
-RUN git submodule init && git submodule foreach --recursive 'git fetch --tags' && git submodule update --recursive
-
 WORKDIR /root/lethean/build
 
 RUN cmake -D TESTNET=TRUE ..
