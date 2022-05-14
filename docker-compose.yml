@@ -2,7 +2,7 @@ version: "3"
 services:
   lthn-chain:
     container_name: letheand
-    image: lthn/chain:next
+    image: lthn/chain-itw3:testnet
     platform: linux/amd64
     restart: always
     volumes:
