@@ -43,17 +43,17 @@
 #define CURRENCY_COINBASE_BLOB_RESERVED_SIZE            1100
 #define CURRENCY_MAX_TRANSACTION_BLOB_SIZE              (CURRENCY_BLOCK_GRANTED_FULL_REWARD_ZONE - CURRENCY_COINBASE_BLOB_RESERVED_SIZE*2) 
 #define CURRENCY_FREE_TX_MAX_BLOB_SIZE                  1024 // soft txpool-based limit for free-of-charge txs (such as BC_OFFERS_SERVICE_INSTRUCTION_DEL)
-#define CURRENCY_DISPLAY_DECIMAL_POINT                  12
+#define CURRENCY_DISPLAY_DECIMAL_POINT                  8
 
 // COIN - number of smallest units in one coin
 #define COIN                                            ((uint64_t)100000000) // pow(8, CURRENCY_DISPLAY_DECIMAL_POINT)
 #define BASE_REWARD_DUST_THRESHOLD                      ((uint64_t)1000000) // pow(10, 6) - change this will cause hard-fork!
 #define DEFAULT_DUST_THRESHOLD                          ((uint64_t)0)
 
-#define TX_DEFAULT_FEE                                  ((uint64_t)100000000) // .01
-#define TX_MINIMUM_FEE                                  ((uint64_t)100000000) // .01
+#define TX_DEFAULT_FEE                                  ((uint64_t)100000) // .01
+#define TX_MINIMUM_FEE                                  ((uint64_t)100000) // .01
 
-#define CURRENCY_BLOCK_REWARD                           10000000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
+#define CURRENCY_BLOCK_REWARD                           1000000000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
 
 
 #define WALLET_MAX_ALLOWED_OUTPUT_AMOUNT                ((uint64_t)0xffffffffffffffffLL)
@@ -180,7 +180,7 @@
 #endif
 
 //premine
-#define PREMINE_AMOUNT                                  (17517203000000000000U) // 13827203.0 reserved for coinswap, 3690000.0 - premine  
+#define PREMINE_AMOUNT                                  (1000000000U) // 50% of new emission max supply
 
 //alias registration wallet
 #define ALIAS_REWARDS_ACCOUNT_SPEND_PUB_KEY             "0000000000000000000000000000000000000000000000000000000000000000" //burn alias money
