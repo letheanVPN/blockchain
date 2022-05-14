@@ -22,23 +22,25 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - name: Fetch tags
-        run: git submodule foreach --recursive 'git fetch --tags'
-      - uses: docker/setup-buildx-action@v1
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
         id: buildx
+        uses: docker/setup-buildx-action@v2
         with:
           install: true
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+      - name: Available platforms
+        run: echo ${{ steps.buildx.outputs.platforms }}
       - name: Login to DockerHub
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Build and push
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
+          context: {{defaultContext}}
           file: utils/docker/Dockerfile
           push: true
           tags: lthn/chain-itw3:testnet
