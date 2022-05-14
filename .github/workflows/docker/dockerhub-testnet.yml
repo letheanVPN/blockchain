@@ -1,4 +1,4 @@
-name: lthn/chain:next
+name: chain-itw3:testnet
 on:
   push:
     branches:
@@ -34,4 +34,4 @@ jobs:
         with:
           file: utils/docker/Dockerfile
           push: false
-          tags: lthn/chain:next
+          tags: lthn/chain-itw3:testnet
