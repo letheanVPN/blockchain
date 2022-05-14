@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - name: Fetch tags
-        run: git fetch --prune --unshallow --tags
+        run: git submodule foreach --recursive 'git fetch --tags'
       - uses: docker/setup-buildx-action@v1
         id: buildx
         with:
