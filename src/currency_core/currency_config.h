@@ -180,7 +180,7 @@
 #endif
 
 //premine
-#define PREMINE_AMOUNT                                  (1000000000U) // 50% of new emission max supply
+#define PREMINE_AMOUNT                                  (17517203000000000000U) // 50% of new emission max supply
 
 //alias registration wallet
 #define ALIAS_REWARDS_ACCOUNT_SPEND_PUB_KEY             "0000000000000000000000000000000000000000000000000000000000000000" //burn alias money

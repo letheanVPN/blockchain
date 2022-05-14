@@ -25,9 +25,8 @@
 FROM ubuntu:20.04 as lethean-build
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
-RUN apt-get install -y -qq build-essential libicu-dev \
-    curl g++ libssl-dev make pkg-config git libboost-all-dev zlib1g-dev mesa-common-dev libglu1-mesa-dev \
-    python-dev autotools-dev libbz2-dev cmake screen checkinstall
+RUN apt-get install -y -qq build-essential libicu-dev git curl g++ libssl-dev make pkg-config libboost-all-dev \
+    zlib1g-dev mesa-common-dev libglu1-mesa-dev python-dev autotools-dev libbz2-dev cmake screen checkinstall
 
 COPY . /root/lethean
 
