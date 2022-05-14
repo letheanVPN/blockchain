@@ -27,4 +27,6 @@ jobs:
           make -j2 daemon simplewallet
       - uses: actions/upload-artifact@v2
         with:
-          path: ${{ github.workspace }}/build/release
+          path: |
+            ${{ github.workspace }}/build/src/letheand
+            ${{ github.workspace }}/build/src/simplewallet
