@@ -29,8 +29,10 @@ jobs:
           mkdir build && cd build
           cmake -D TESTNET=TRUE ..
           make -j2 daemon simplewallet
-      - uses: actions/upload-artifact@v2
+      - name: Tar files
+        run: tar -cvf server-linux-amd64.tar ${{ github.workspace }}/build/src/letheand ${{ github.workspace }}/build/src/simplewallet
+      - uses: actions/upload-artifact@v3
         with:
-          path: |
-            ${{ github.workspace }}/build/src/letheand
-            ${{ github.workspace }}/build/src/simplewallet
+          name: server-linux-amd64
+          if-no-files-found: error
+          path: server-linux-amd64.tar
