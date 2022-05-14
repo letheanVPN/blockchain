@@ -30,10 +30,6 @@ RUN apt-get install -y build-essential libicu-dev git curl g++ libssl-dev make p
 
 COPY . /root/lethean
 
-WORKDIR /root/lethean
-
-RUN git submodule foreach --recursive 'git fetch --tags' && git submodule update --recursive
-
 WORKDIR /root/lethean/build
 
 RUN cmake -D TESTNET=TRUE ..
@@ -54,8 +50,8 @@ RUN useradd -ms /bin/bash lethean &&\
 USER lethean:lethean
 
 WORKDIR /home/lethean
-COPY --chown=lethean:lethean --from=lethean-build /root/build/letheand .
-COPY --chown=lethean:lethean --from=lethean-build /root/build/simplewallet .
+COPY --chmod=0777 --chown=lethean:lethean --from=lethean-build /root/lethean/build/src/letheand .
+COPY --chmod=0777 --chown=lethean:lethean --from=lethean-build /root/lethean/build/src/simplewallet .
 
 # blockchain loaction
 VOLUME /home/lethean/data/chain
@@ -63,4 +59,4 @@ VOLUME /home/lethean/data/chain
 EXPOSE 31121 31211
 
 ENTRYPOINT ["./letheand"]
-CMD ["--disable-upnp", "--rpc-bind-ip=0.0.0.0", "--log-level=0"]
+CMD ["--disable-upnp", "--rpc-bind-ip=0.0.0.0", "--log-level=0", "--data-dir=/home/lethean/data/chain"]
