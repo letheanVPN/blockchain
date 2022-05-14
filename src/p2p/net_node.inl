@@ -311,7 +311,6 @@ namespace nodetool
   {
 #ifndef TESTNET
     //TODO:
-    ADD_HARDCODED_SEED_NODE(std::string("0.0.0.0:") + std::to_string(P2P_DEFAULT_PORT));
     ADD_HARDCODED_SEED_NODE("staging.chain.lt.hn", P2P_DEFAULT_PORT);
 #else
     //TODO:
