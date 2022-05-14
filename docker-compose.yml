@@ -1,0 +1,12 @@
+version: "3"
+services:
+  lthn-chain:
+    container_name: letheand
+    image: lthn/chain:next
+    platform: linux/amd64
+    restart: always
+    volumes:
+      - ~/Lethean/data:/root/Lethean/data
+    ports:
+      - 31121
+      - 31211
