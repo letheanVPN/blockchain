@@ -1,0 +1,29 @@
+name: Server - Linux
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: update apt
+        run: sudo apt update & sudo apt-get upgrade -y
+      - name: install dependencies
+        run: sudo apt-get install -y build-essential g++ python-dev autotools-dev libboost-all-dev libssl-dev libicu-dev libbz2-dev cmake git screen checkinstall zlib1g-dev
+      - name: build server
+        run: |
+          mkdir build && cd build
+          cmake -D TESTNET=TRUE ..
+          make -j2 daemon simplewallet
+      - uses: actions/upload-artifact@v2
+        with:
+          path: ${{ github.workspace }}/build/release
