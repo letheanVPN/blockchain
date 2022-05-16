@@ -30,7 +30,7 @@ jobs:
           cmake -D TESTNET=TRUE ..
           make -j2 daemon simplewallet
       - name: Tar files
-        run: cd build/src && tar -cvf ../../server-linux-amd64.tar letheand simplewallet
+        run: cd build/src && tar -cvf ../../server-linux-amd64.tar letheand simplewallet *.a
       - uses: actions/upload-artifact@v3
         with:
           name: server-linux-amd64
