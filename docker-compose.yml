@@ -1,6 +1,6 @@
 version: "3"
 services:
-  lthn-chain:
+  server-chain:
     container_name: letheand
     image: lthn/chain-itw3:testnet
     platform: linux/amd64
