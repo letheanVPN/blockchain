@@ -6,7 +6,7 @@
 ## Cloning
 
 Be sure to clone the repository properly:\
-`$ git clone --recursive https://github.com/letheanVPN/lthn.git`
+`$ git clone --recursive https://github.com/letheanVPN/blockchain-iTw3.git`
 
 # Building
 --------
