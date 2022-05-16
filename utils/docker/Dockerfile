@@ -39,17 +39,22 @@ RUN curl https://github.com/Kitware/CMake/releases/download/v3.15.5/cmake-3.15.5
     rm cmake-3.15.5-Linux-x86_64.sh
 
 # Boost 1.70
+ARG BOOST_VERSION=1_70_0
+ARG BOOST_VERSION_DOT=1.70.0
+ARG BOOST_HASH=430ae8354789de4fd19ee52f3b1f739e1fba576f0aded0897c3c2bc00fb38778
+RUN set -ex \
+    && curl -s -L -o  boost_${BOOST_VERSION}.tar.bz2 https://downloads.sourceforge.net/project/boost/boost/${BOOST_VERSION_DOT}/boost_${BOOST_VERSION}.tar.bz2 \
+    &&  sha256sum boost_${BOOST_VERSION}.tar.bz2 \
+    && echo "${BOOST_HASH}  boost_${BOOST_VERSION}.tar.bz2" | sha256sum -c\
+    && tar -xvf boost_${BOOST_VERSION}.tar.bz2
 
-RUN curl https://boostorg.jfrog.io/artifactory/main/release/1.70.0/source/boost_1_70_0.tar.bz2 -OL &&\
-    echo '430ae8354789de4fd19ee52f3b1f739e1fba576f0aded0897c3c2bc00fb38778 boost_1_70_0.tar.bz2' | sha256sum -c - &&\
-    tar -xjf boost_1_70_0.tar.bz2 &&\
-    rm boost_1_70_0.tar.bz2 &&\
-    cd boost_1_70_0 &&\
-    ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log &&\
-    ./b2 &&\
-    cd ..
+# Split download & compile to use dockers caching layers
+RUN set -ex \
+    && cd boost_${BOOST_VERSION} \
+    && ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log \
+    && ./b2
+ENV BOOST_ROOT /root/boost_${BOOST_VERSION}
 
-ENV BOOST_ROOT=/root/boost_1_70_0
 
 RUN curl https://www.openssl.org/source/openssl-1.1.1n.tar.gz -OL &&\
     echo '40dceb51a4f6a5275bde0e6bf20ef4b91bfc32ed57c0552e2e8e15463372b17a openssl-1.1.1n.tar.gz' | sha256sum -c - &&\
@@ -89,6 +94,7 @@ USER lethean:lethean
 WORKDIR /home/lethean
 COPY --chmod=0777 --chown=lethean:lethean --from=lethean-build /root/lethean/build/src/letheand .
 COPY --chmod=0777 --chown=lethean:lethean --from=lethean-build /root/lethean/build/src/simplewallet .
+COPY --chmod=0777 --chown=lethean:lethean --from=lethean-build /root/lethean/build/src/*.a .
 
 # blockchain loaction
 VOLUME /home/lethean/data/chain
