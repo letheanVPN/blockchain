@@ -51,4 +51,4 @@ jobs:
           context: .
           file: utils/docker/Dockerfile
           push: true
-          tags: ghcr.io/$(echo ${{ github.repository }} | tr '[A-Z]' '[a-z]'):$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
+          tags: ghcr.io/$(echo ${{ github.repository }} | tr '[A-Z]' '[a-z]'):$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
