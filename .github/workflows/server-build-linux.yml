@@ -27,7 +27,7 @@ jobs:
       - name: build server
         run: |
           mkdir build && cd build
-          cmake -D TESTNET=TRUE ..
+          cmake -D STATIC=TRUE -D TESTNET=TRUE ..
           make -j2 daemon simplewallet
       - name: Tar files
         run: cd build/src && tar -cvf ../../server-linux-amd64.tar letheand simplewallet *.a
@@ -36,3 +36,17 @@ jobs:
           name: server-linux-amd64
           if-no-files-found: error
           path: server-linux-amd64.tar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ github.workspace }}/server-linux-amd64.tar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, `ref/head/`)
+        with:
+          name: ${{github.ref_name}}-${{github.run_id}}
+          prerelease: true
+          generate_release_notes: true
+          append_body: true
+          files: ${{ github.workspace }}/server-linux-amd64.tar

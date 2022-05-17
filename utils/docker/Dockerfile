@@ -99,7 +99,7 @@ COPY . /root/lethean
 
 WORKDIR /root/lethean/build
 
-RUN cmake -D STATIC=TRUE -D TESTNET=TRUE ..
+RUN cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
 
 RUN make -j2 daemon simplewallet
 

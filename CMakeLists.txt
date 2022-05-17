@@ -185,7 +185,7 @@ endif()
 
 if(STATIC)  
   set(Boost_USE_STATIC_LIBS ON)  
-  set(Boost_USE_STATIC_RUNTIME ON)
+#  set(Boost_USE_STATIC_RUNTIME ON)
 endif()
 
 message("CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")    
