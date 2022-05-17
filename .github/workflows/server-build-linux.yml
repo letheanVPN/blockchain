@@ -27,10 +27,10 @@ jobs:
       - name: build server
         run: |
           mkdir build && cd build
-          cmake -D STATIC=TRUE -D TESTNET=TRUE ..
+          cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
           make -j2 daemon simplewallet
       - name: Tar files
-        run: cd build/src && tar -cvf ../../server-linux-amd64.tar letheand simplewallet *.a
+        run: cd build/src && tar -cvf ../../server-linux-amd64.tar letheand simplewallet
       - uses: actions/upload-artifact@v3
         with:
           name: server-linux-amd64

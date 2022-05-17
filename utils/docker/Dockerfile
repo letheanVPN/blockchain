@@ -119,12 +119,11 @@ USER lethean:lethean
 WORKDIR /home/lethean
 COPY --chmod=0777 --chown=lethean:lethean --from=build /root/lethean/build/src/letheand .
 COPY --chmod=0777 --chown=lethean:lethean --from=build /root/lethean/build/src/simplewallet .
-COPY --chmod=0777 --chown=lethean:lethean --from=build /root/lethean/build/src/*.a .
 
 # blockchain loaction
-VOLUME /home/lethean/data/chain
+VOLUME /home/lethean/data
 
 EXPOSE 31121 31211
 
 ENTRYPOINT ["./letheand"]
-CMD ["--disable-upnp", "--rpc-bind-ip=0.0.0.0", "--log-level=0", "--data-dir=/home/lethean/data/chain"]
+CMD ["--disable-upnp", "--rpc-bind-ip=0.0.0.0", "--log-level=0", "--data-dir=/home/lethean/data"]
