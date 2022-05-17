@@ -40,13 +40,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ github.workspace }}/server-linux-amd64.tar
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/heads/')
-        with:
-          name: ${{github.ref_name}}-${{github.run_id}}
           prerelease: true
           generate_release_notes: true
-          append_body: true
           files: ${{ github.workspace }}/server-linux-amd64.tar
