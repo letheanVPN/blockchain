@@ -51,4 +51,4 @@ jobs:
           context: .
           file: utils/docker/Dockerfile
           push: true
-          tags: ghcr.io/$(echo ${{ github.repository }} | tr '[A-Z]' '[a-z]'):testnet
+          tags: ghcr.io/letheanvpn/blockchain-itw3:testnet
