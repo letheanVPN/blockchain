@@ -28,7 +28,7 @@ jobs:
         with:
           install: true
       - name: Log in to registry
-        if: startsWith(github.ref, 'refs/head/')
+        if: startsWith(github.ref, 'refs/heads/')
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
       - name: Login to DockerHub
         if: startsWith(github.ref, 'refs/tags/')
@@ -45,7 +45,7 @@ jobs:
           push: true
           tags: lthn/chain-itw3:testnet
       - name: Build and push
-        if: startsWith(github.ref, 'refs/head/')
+        if: startsWith(github.ref, 'refs/heads/')
         uses: docker/build-push-action@v3
         with:
           context: .
