@@ -27,7 +27,7 @@ jobs:
         uses: docker/setup-buildx-action@v2
         with:
           install: true
-      - name: Log in to registry
+      - name: Log in to GitHub
         if: startsWith(github.ref, 'refs/heads/')
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
       - name: Login to DockerHub
@@ -36,7 +36,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
+      - name: DockerHub Build
         if: startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v3
         with:
@@ -44,11 +44,11 @@ jobs:
           file: utils/docker/Dockerfile
           push: true
           tags: lthn/chain-itw3:testnet
-      - name: Build and push
+      - name: GitHub Build
         if: startsWith(github.ref, 'refs/heads/')
         uses: docker/build-push-action@v3
         with:
           context: .
           file: utils/docker/Dockerfile
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/chain-itw3:testnet
+          tags: ghcr.io/$(echo ${{ github.repository }} | tr '[A-Z]' '[a-z]'):$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,' | sed -e 's/^v//')
