@@ -2,6 +2,7 @@ version: "3"
 services:
   server-chain:
     container_name: letheand
+    tty: true
     build:
       context: ../../
       dockerfile: utils/docker/Dockerfile

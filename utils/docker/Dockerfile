@@ -28,6 +28,13 @@
 #   - CMake Version:    CMAKE_VERSION_DOT, CMAKE_HASH
 #   - Boost Version:    BOOST_VERSION, BOOST_VERSION_DOT, BOOST_HASH
 #   - OpenSSL Version:  OPENSSL_VERSION_DOT, OPENSSL_HASH
+#
+# Exporting built binaries can be done targeting the scratch layer and setting the output option
+#   docker build -t chain/testnet --target export -o artifacts
+#
+# Developer builds, to make a build container run the first command, once built, use only the second command
+#   1) docker build --target build -t local/chain:developer -f utils/docker/Dockerfile .
+#   2) docker run -v $(pwd):/project local/chain:developer
 
 FROM lthn/build:server as build
 
@@ -41,12 +48,6 @@ RUN cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Rele
 
 RUN make -j${THREADS} daemon simplewallet
 
-# Export stage; scratch is a empty fs you can use this image to build the assets with
-#   docker build -t chain/testnet --target export -o artifacts
-#
-# Developer builds
-#   docker run -v $(pwd):/project --target export -o artifacts lthn/chain:developer
-
 FROM scratch as export
 COPY --chmod=0777 --from=build /project/build/src/letheand /
 COPY --chmod=0777 --from=build /project/build/src/simplewallet /
@@ -57,16 +58,35 @@ RUN useradd -ms /bin/bash lethean &&\
     mkdir -p /home/lethean/data &&\
     chown -R lethean:lethean /home/lethean/data
 
+
+RUN set -xe \
+    && echo '#!/bin/sh' > /usr/sbin/policy-rc.d\
+    && echo 'exit 101' >> /usr/sbin/policy-rc.d\
+    && chmod +x /usr/sbin/policy-rc.d\
+    && dpkg-divert --local --rename --add /sbin/initctl\
+    && cp -a /usr/sbin/policy-rc.d /sbin/initctl\
+    && sed -i 's/^exit.*/exit 0/' /sbin/initctl\
+    && echo 'force-unsafe-io' > /etc/dpkg/dpkg.cfg.d/docker-apt-speedup\
+    && echo 'DPkg::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' > /etc/apt/apt.conf.d/docker-clean\
+    && echo 'APT::Update::Post-Invoke { "rm -f /var/cache/apt/archives/*.deb /var/cache/apt/archives/partial/*.deb /var/cache/apt/*.bin || true"; };' >> /etc/apt/apt.conf.d/docker-clean\
+    && echo 'Dir::Cache::pkgcache ""; Dir::Cache::srcpkgcache "";' >> /etc/apt/apt.conf.d/docker-clean\
+    && echo 'Acquire::Languages "none";' > /etc/apt/apt.conf.d/docker-no-languages\
+    && echo 'Acquire::GzipIndexes "true"; Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/docker-gzip-indexes\
+    && echo 'Apt::AutoRemove::SuggestsImportant "false";' > /etc/apt/apt.conf.d/docker-autoremove-suggests
+
+RUN mkdir -p /run/systemd && echo 'docker' > /run/systemd/container
+
 USER lethean:lethean
 
 WORKDIR /home/lethean
 
-COPY --chmod=0777 --chown=lethean:lethean --from=export / .
+COPY --chmod=0777 --chown=root:root --from=export / /usr/bin
 
 # blockchain loaction
 VOLUME /home/lethean/data
 
 EXPOSE 31121 31211
 
-ENTRYPOINT ["./letheand"]
-CMD ["--disable-upnp", "--non-interactive", "--rpc-bind-ip=0.0.0.0", "--log-level=0", "--data-dir=/home/lethean/data"]
+
+ENTRYPOINT ["letheand"]
+CMD ["--disable-upnp", "--rpc-bind-ip=0.0.0.0", "--log-level=0", "--data-dir=/home/lethean/data"]
