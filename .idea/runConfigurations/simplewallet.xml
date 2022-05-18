@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="simplewallet" type="CMakeRunConfiguration" factoryName="Application" singleton="false" PROGRAM_PARAMS="--wallet-file test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" WORKING_DIR="file://$CMakeCurrentLocalGenerationDir$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Lethean" TARGET_NAME="simplewallet" CONFIG_NAME="Debug-gcc" RUN_TARGET_PROJECT_NAME="Lethean" RUN_TARGET_NAME="simplewallet">
+  <configuration default="false" name="simplewallet" type="CMakeRunConfiguration" factoryName="Application" singleton="false" PROGRAM_PARAMS="--wallet-file test" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" WORKING_DIR="file://$CMakeCurrentLocalGenerationDir$" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Lethean" TARGET_NAME="simplewallet" CONFIG_NAME="Release" RUN_TARGET_PROJECT_NAME="Lethean" RUN_TARGET_NAME="simplewallet">
     <method v="2">
       <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
     </method>
