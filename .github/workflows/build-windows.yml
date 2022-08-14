@@ -39,16 +39,16 @@ jobs:
           cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
           make -j2 daemon simplewallet
       - name: Tar files
-        run: cd build/src && tar -cvf ../../server-linux-amd64.tar letheand simplewallet
+        run: cd build/src && tar -cvf ../../server-windows-amd64.tar letheand simplewallet
       - uses: actions/upload-artifact@v3
         with:
-          name: server-linux-amd64
+          name: server-windows-amd64
           if-no-files-found: error
-          path: server-linux-amd64.tar
+          path: server-windows-amd64.tar
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true
           generate_release_notes: true
-          files: ${{ github.workspace }}/server-linux-amd64.tar
+          files: ${{ github.workspace }}/server-windows-amd64.tar
