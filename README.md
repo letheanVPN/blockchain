@@ -117,12 +117,25 @@ For instance, by adding the following lines to `~/.bashrc`
 <br />
 
 ### Windows
-Recommended OS version: Windows 7 x64.
-1. Install required prerequisites (Boost, Qt, CMake, OpenSSL).
-2. Edit paths in `utils/configure_local_paths.cmd`.
-3. Run one of `utils/configure_win64_msvsNNNN_gui.cmd` according to your MSVC version.
-4. Go to the build folder and open generated Zano.sln in MSVC.
-5. Build.
+Recommended OS versions: Windows 7+ x64.
+
+1. Install [Chocolatey](https://chocolatey.org/install)
+2. Install required prerequisites (Boost, Qt, CMake, OpenSSL).
+
+   _NOTE: At time of writing the following versions were available on Chocolatey_
+   ```
+   choco install boost-msvc-14.2 --version 1.74.0 -y
+   choco install qt5-default --version 5.15.2.20211228 -y
+   choco install cmake --version 3.23.1 -y 
+   choco install openssl --version 1.1.1.1500 -y
+   ```
+
+3. Clone repository, then complete the following:
+   1. Edit paths in file `utils/configure_local_paths.cmd.example`.
+   2. Rename `configure_local_paths.cmd.example` to `configure_local_paths.cmd` (do not commit).
+4. Run one of `utils/configure_win64_msvsNNNN_gui.cmd` according to your MSVC version.
+5. Go to the build folder and open generated Zano.sln in MSVC.
+6. Build.
 
 In order to correctly deploy Qt GUI application, you also need to do the following:
 
