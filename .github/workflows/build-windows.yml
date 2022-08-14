@@ -20,6 +20,13 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+      - name: Cache Chocolatey Dependencies
+        uses: actions/cache@v1
+        with:
+          path: C:\ProgramData\chocolatey\lib
+          key: choco-cache-${{ hashFiles('**/dependencies.config') }}
+          restore-keys: |
+            choco-cache-
       - name: Eat the Choco
         run: |
           choco install boost-msvc-14.2 --version 1.74.0 -y

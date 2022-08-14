@@ -9,7 +9,7 @@ on:
       - '**.md'
 
 jobs:
-  ubuntu:
+  macos:
     runs-on: macos-latest
     steps:
       - name: Cancel Previous Runs
