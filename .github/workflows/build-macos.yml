@@ -1,0 +1,45 @@
+name: Server - Linux
+
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  ubuntu:
+    runs-on: macos-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - name: update apt
+        run: brew update
+      - name: install dependencies
+        run: brew install openssl boost cmake
+      - name: build server
+        run: |
+          mkdir build && cd build
+          cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
+          make -j2 daemon simplewallet
+      - name: Tar files
+        run: cd build/src && tar -cvf ../../server-macos-amd64.tar letheand simplewallet
+      - uses: actions/upload-artifact@v3
+        with:
+          name: server-macos-amd64
+          if-no-files-found: error
+          path: server-macos-amd64.tar
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          prerelease: true
+          generate_release_notes: true
+          files: ${{ github.workspace }}/server-macos-amd64.tar
