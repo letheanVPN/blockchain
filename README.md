@@ -1,7 +1,9 @@
-0x73f7 - 'iT'
-0x6af7 - integrated 'iTH'
-0xdeaf7 - auditable addresses 'iTHn'
-0x7eaf7 -  auditable integrated 'iTHa'
+# Addresses 
+
+- `iT`/`0x73f7` - Main prefix 
+- `iTH`/`0x6af7` - integrated paymennt_id address prefix
+- `iTHn`/`0xdeaf7` - auditable wallet address
+- `iTHa`/`0x7eaf7` -  auditable integrated paymennt_id address prefix
 
 ## Cloning
 
