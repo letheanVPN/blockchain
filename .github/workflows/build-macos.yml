@@ -1,4 +1,4 @@
-name: Server - Linux
+name: Build - MacOS
 
 on:
   push:
