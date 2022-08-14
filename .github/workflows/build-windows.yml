@@ -36,7 +36,6 @@ jobs:
           BUILDS_PATH: C:\dev\deploy\zano
           LOCAL_BOOST_PATH: C:\dev\_sdk\boost_1_70_0
           OPENSSL_ROOT_DIR: C:\dev\_sdk\OpenSSL-Win64
-          BOOST_ROOT: %LOCAL_BOOST_PATH%
         run: |
           mkdir build && cd build
           cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
