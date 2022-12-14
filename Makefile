@@ -35,7 +35,7 @@ release:
 
 debug:
 	$(eval command += $(cmake_debug))
-	$(call CMAKE,$(dir_debug),$(command)) && $(MAKE)
+	$(call CMAKE,$(dir_debug),$(command) -D MUTE_ERRORS=FALSE) && $(MAKE)
 
 static: static-release
 static-release:
@@ -71,7 +71,7 @@ test-release:
 
 test-debug:
 	$(eval command += $(cmake_debug) $(cmake_tests))
-	$(call CMAKE,$(dir_debug),$(command)) && $(MAKE) && $(MAKE) test
+	$(call CMAKE,$(dir_debug),$(command) -D MUTE_ERRORS=FALSE) && $(MAKE) && $(MAKE) test
 
 clean:
 	rm -rf build
