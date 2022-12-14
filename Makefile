@@ -33,14 +33,26 @@ release:
 	$(eval command += $(cmake_release))
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
 
+release-testnet:
+	$(eval command += $(cmake_release))
+	$(call CMAKE,$(dir_release),$(command) -D TESTNET=TRUE) && $(MAKE)
+
 debug:
 	$(eval command += $(cmake_debug))
 	$(call CMAKE,$(dir_debug),$(command) -D MUTE_ERRORS=FALSE) && $(MAKE)
+
+debug-testnet:
+	$(eval command += $(cmake_debug))
+	$(call CMAKE,$(dir_debug),$(command) -D MUTE_ERRORS=FALSE -D TESTNET=TRUE) && $(MAKE)
 
 static: static-release
 static-release:
 	$(eval command += $(cmake_release) $(cmake_static))
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+
+static-release-testnet:
+	$(eval command += $(cmake_release) $(cmake_static))
+	$(call CMAKE,$(dir_release),$(command) -D TESTNET=TRUE) && $(MAKE)
 
 #
 # GUI

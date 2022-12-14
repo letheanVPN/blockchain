@@ -68,6 +68,10 @@ add_definitions(-DSTATICLIB)
 if(TESTNET)
   message("!!!!!! NOTICE: Project is building for TESTNET !!!!!!")
   add_definitions(-DTESTNET)
+  if(MUTE_ERRORS)
+    # shhhhh sleepy time errors, we know...
+    add_definitions(-w)
+  endif()
 else()
   if(MUTE_ERRORS)
     # shhhhh sleepy time errors, we know...
