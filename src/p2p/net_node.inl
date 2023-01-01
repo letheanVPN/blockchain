@@ -22,7 +22,7 @@
 namespace nodetool
 {
   //zero network before launch
-  const static boost::uuids::uuid P2P_NETWORK_ID = { { 0x11, 0x10, 0x01, 0x11, 0x01, 0x01, 0x11, 0x01, 0x10, 0x11, P2P_NETWORK_ID_TESTNET_FLAG, 0x11, 0x01, 0x11, 0x21, P2P_NETWORK_ID_VER} };
+  const static boost::uuids::uuid P2P_NETWORK_ID = { { 0x03, 0x06, 0x09, 0x11, 0x03, 0x06, 0x09, 0x11, 0x10, 0x11, P2P_NETWORK_ID_TESTNET_FLAG, 0x11, 0x01, 0x11, 0x21, P2P_NETWORK_ID_VER} };
 
   namespace
   {
@@ -34,7 +34,7 @@ namespace nodetool
     const command_line::arg_descriptor<std::vector<std::string> > arg_p2p_add_priority_node          ("add-priority-node", "Specify list of peers to connect to and attempt to keep the connection open");
     const command_line::arg_descriptor<bool>                      arg_p2p_use_only_priority_nodes    ("use-only-priority-nodes", "Try to connect only to priority nodes");
     const command_line::arg_descriptor<std::vector<std::string> > arg_p2p_seed_node                  ("seed-node", "Connect to a node to retrieve peer addresses, and disconnect");
-    const command_line::arg_descriptor<bool>                      arg_p2p_hide_my_port               ("hide-my-port", "Do not announce yourself as peerlist candidate"); 
+    const command_line::arg_descriptor<bool>                      arg_p2p_hide_my_port               ("hide-my-port", "Do not announce yourself as peerlist candidate");
     const command_line::arg_descriptor<bool>                      arg_p2p_offline_mode               ( "offline-mode", "Don't connect to any node and reject any connections");
     const command_line::arg_descriptor<bool>                      arg_p2p_disable_debug_reqs         ( "disable-debug-p2p-requests", "Disable p2p debug requests");
     const command_line::arg_descriptor<uint32_t>                  arg_p2p_ip_auto_blocking           ( "p2p-ip-auto-blocking", "Enable (1) or disable (0) peers auto-blocking by IP <0|1>. Default: 0", 1);
@@ -50,8 +50,8 @@ namespace nodetool
     command_line::add_arg(desc, arg_p2p_allow_local_ip);
     command_line::add_arg(desc, arg_p2p_add_peer);
     command_line::add_arg(desc, arg_p2p_add_priority_node);
-    command_line::add_arg(desc, arg_p2p_seed_node);    
-    command_line::add_arg(desc, arg_p2p_hide_my_port);   
+    command_line::add_arg(desc, arg_p2p_seed_node);
+    command_line::add_arg(desc, arg_p2p_hide_my_port);
     command_line::add_arg(desc, arg_p2p_offline_mode);
     command_line::add_arg(desc, arg_p2p_disable_debug_reqs);
     command_line::add_arg(desc, arg_p2p_use_only_priority_nodes);
@@ -69,10 +69,10 @@ namespace nodetool
     std::string state_file_path = m_config_folder + "/" + P2P_NET_DATA_FILENAME;
     boost::system::error_code ec = AUTO_VAL_INIT(ec);
     std::time_t last_update_time  = boost::filesystem::last_write_time(state_file_path, ec);
-    //let's assume that if p2p peer list file stored more then 2 weeks ago, 
-    //then it outdated and we need to fetch peerlist from seed nodes 
+    //let's assume that if p2p peer list file stored more then 2 weeks ago,
+    //then it outdated and we need to fetch peerlist from seed nodes
     if (!ec &&  time(nullptr) - last_update_time < 86400 * 14)
-    {      
+    {
       tools::unserialize_obj_from_file(*this, state_file_path);
     }
 
@@ -80,7 +80,7 @@ namespace nodetool
     m_config.m_peer_id  = crypto::rand<uint64_t>();
 
     handle_alert_conditions();
-    
+
     //at this moment we have hardcoded config
     m_config.m_net_config.handshake_interval = P2P_DEFAULT_HANDSHAKE_INTERVAL;
     m_config.m_net_config.connections_count = P2P_DEFAULT_CONNECTIONS_COUNT;
@@ -111,7 +111,7 @@ namespace nodetool
 
     if (!m_ip_auto_blocking_enabled)
       return true;
-    
+
     return !is_ip_in_blacklist(addr);
   }
   //-----------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ namespace nodetool
     }
 
     if (command_line::has_arg(vm, arg_p2p_add_peer))
-    {       
+    {
       std::vector<std::string> perrs = command_line::get_arg(vm, arg_p2p_add_peer);
       for(const std::string& pr_str: perrs)
       {
@@ -217,7 +217,7 @@ namespace nodetool
     }
 
     if (command_line::has_arg(vm, arg_p2p_add_priority_node))
-    {       
+    {
       std::vector<std::string> perrs = command_line::get_arg(vm, arg_p2p_add_priority_node);
       for(const std::string& pr_str: perrs)
       {
@@ -243,8 +243,8 @@ namespace nodetool
       }
     }
     if(command_line::has_arg(vm, arg_p2p_hide_my_port))
-      m_hide_my_port = true;  
-    
+      m_hide_my_port = true;
+
     return true;
   }
   //-----------------------------------------------------------------------------------
@@ -330,7 +330,7 @@ namespace nodetool
 
     for(auto& p: m_command_line_peers)
       m_peerlist.append_with_peer_white(p);
-    
+
     //only in case if we really sure that we have external visible ip
     m_have_address = true;
     m_ip_address = 0;
@@ -408,7 +408,7 @@ namespace nodetool
     }
 
     std::string state_file_path = m_config_folder + "/" + P2P_NET_DATA_FILENAME;
-    tools::serialize_obj_to_file(*this, state_file_path);    
+    tools::serialize_obj_to_file(*this, state_file_path);
     CATCH_ENTRY_L0("node_server<t_payload_net_handler>::save", false);
     return true;
   }
@@ -487,11 +487,11 @@ namespace nodetool
     get_local_node_data(arg.node_data);
     m_payload_handler.get_payload_sync_data(arg.payload_data);
     fill_maintainers_entry(arg.maintrs_entry);
-    
+
     simple_event ev;
     std::atomic<bool> hsh_result(false);
-    
-    bool r = net_utils::async_invoke_remote_command2<typename COMMAND_HANDSHAKE::response>(context_.m_connection_id, COMMAND_HANDSHAKE::ID, arg, m_net_server.get_config_object(), 
+
+    bool r = net_utils::async_invoke_remote_command2<typename COMMAND_HANDSHAKE::response>(context_.m_connection_id, COMMAND_HANDSHAKE::ID, arg, m_net_server.get_config_object(),
       [this, &pi, &ev, &hsh_result, &just_take_peerlist](int code, const typename COMMAND_HANDSHAKE::response& rsp, p2p_connection_context& context)
     {
       misc_utils::auto_scope_leave_caller scope_exit_handler = misc_utils::create_scope_leave_handler([&](){ev.raise();});
@@ -581,7 +581,7 @@ namespace nodetool
     m_payload_handler.get_payload_sync_data(arg.payload_data);
     fill_maintainers_entry(arg.maintrs_entry);
 
-    bool r = net_utils::async_invoke_remote_command2<typename COMMAND_TIMED_SYNC::response>(context_.m_connection_id, COMMAND_TIMED_SYNC::ID, arg, m_net_server.get_config_object(), 
+    bool r = net_utils::async_invoke_remote_command2<typename COMMAND_TIMED_SYNC::response>(context_.m_connection_id, COMMAND_TIMED_SYNC::ID, arg, m_net_server.get_config_object(),
       [this](int code, const typename COMMAND_TIMED_SYNC::response& rsp, p2p_connection_context& context)
     {
       if(code < 0)
@@ -737,7 +737,7 @@ namespace nodetool
     LOG_PRINT_CC_GREEN(con, "CONNECTION HANDSHAKED OK with peer " << string_tools::get_ip_string_from_int32(na.ip) << ":" << string_tools::num_to_string_fast(na.port), LOG_LEVEL_2);
     return true;
   }
-  //-----------------------------------------------------------------------------------  
+  //-----------------------------------------------------------------------------------
   template<class t_payload_net_handler>
   void node_server<t_payload_net_handler>::cache_connect_fail_info(const net_address& addr)
   {
@@ -816,7 +816,7 @@ namespace nodetool
       }
 
       LOG_PRINT_L1("Selected peer: " << pe.id << " " << string_tools::get_ip_string_from_int32(pe.adr.ip) << ":" << boost::lexical_cast<std::string>(pe.adr.port) << "[white=" << use_white_list << "] last_seen: " << (pe.last_seen ? misc_utils::get_time_interval_string(time(NULL) - pe.last_seen) : "never"));
-      
+
       if(!try_to_connect_and_handshake_with_new_peer(pe.adr, false, pe.last_seen, use_white_list))
       {
         cache_connect_fail_info(pe.adr);
@@ -840,7 +840,7 @@ namespace nodetool
       size_t try_count = 0;
       size_t current_index = crypto::rand<size_t>()%m_seed_nodes.size();
       while(true)
-      {        
+      {
         if(m_net_server.is_stop_signal_sent())
           return false;
 
@@ -938,7 +938,7 @@ namespace nodetool
       if(curr_time - cntx.m_last_recv > P2P_IDLE_CONNECTION_KILL_INTERVAL && curr_time - cntx.m_last_send > P2P_IDLE_CONNECTION_KILL_INTERVAL)
       {
         LOG_PRINT_CC_L1(cntx, "Connection dropped due to idle");
-        m_net_server.get_config_object().close(cntx.m_connection_id);        
+        m_net_server.get_config_object().close(cntx.m_connection_id);
         return true;
       }
       return true;
@@ -1061,7 +1061,7 @@ namespace nodetool
     node_data.peer_id = m_config.m_peer_id;
     if(!m_hide_my_port)
       node_data.my_port = m_external_port ? m_external_port : m_listenning_port;
-    else 
+    else
       node_data.my_port = 0;
     node_data.network_id = P2P_NETWORK_ID;
     return true;
