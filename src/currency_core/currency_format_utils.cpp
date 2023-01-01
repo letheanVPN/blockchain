@@ -93,7 +93,7 @@ namespace currency
       return false;
     }
     block_reward += fee;
-      
+
     std::vector<size_t> out_amounts;
     decompose_amount_into_digits(block_reward, DEFAULT_DUST_THRESHOLD,
       [&out_amounts](uint64_t a_chunk) { out_amounts.push_back(a_chunk); },
@@ -128,7 +128,7 @@ namespace currency
         stake_lock_time = pe.stake_unlock_time;
       destinations.push_back(tx_destination_entry(pe.amount, stakeholder_address, stake_lock_time));
     }
-      
+
 
     return construct_miner_tx(height, median_size, already_generated_coins, current_block_size, fee, destinations, tx, extra_nonce, max_outs, pos, pe);
   }
@@ -176,7 +176,7 @@ namespace currency
       if (!add_tx_extra_userdata(tx, extra_nonce))
         return false;
 
-    //at this moment we do apply_unlock_time only for coin_base transactions 
+    //at this moment we do apply_unlock_time only for coin_base transactions
     apply_unlock_time(destinations, tx);
     //we always add extra_padding with 2 bytes length to make possible for get_block_template to adjust cumulative size
     tx.extra.push_back(extra_padding());
@@ -206,15 +206,15 @@ namespace currency
       CHECK_AND_ASSERT_MES(r, false, "Failed to contruct miner tx out");
       no++;
     }
-    
+
 
     tx.version = CURRENT_TRANSACTION_VERSION;
     if (!have_type_in_variant_container<etc_tx_details_unlock_time2>(tx.extra))
     {
-      //if stake unlock time was not set, then we can use simple "whole transaction" lock scheme 
+      //if stake unlock time was not set, then we can use simple "whole transaction" lock scheme
       set_tx_unlock_time(tx, height + CURRENCY_MINED_MONEY_UNLOCK_WINDOW);
     }
-    
+
     return true;
   }
   //---------------------------------------------------------------
@@ -343,7 +343,7 @@ namespace currency
 
       if (ts < WALLET_BRAIN_DATE_OFFSET)
         return false;
-      
+
       creation_timestamp = ts;
     }
 
@@ -368,7 +368,7 @@ namespace currency
       return true;
     uint64_t amount_in = 0;
     uint64_t amount_out = get_outs_money_amount(tx);
-   
+
     BOOST_FOREACH(auto& in, tx.vin)
     {
       amount_in += get_amount_from_variant(in);
@@ -544,7 +544,7 @@ namespace currency
   }
   //---------------------------------------------------------------
   bool derive_public_key_from_target_address(const account_public_address& destination_addr, const crypto::secret_key& tx_sec_key, size_t index, crypto::public_key& out_eph_public_key, crypto::key_derivation& derivation)
-  {    
+  {
     bool r = crypto::generate_key_derivation(destination_addr.view_public_key, tx_sec_key, derivation);
     CHECK_AND_ASSERT_MES(r, false, "at creation outs: failed to generate_key_derivation(" << destination_addr.view_public_key << ", " << tx_sec_key << ")");
 
@@ -585,7 +585,7 @@ namespace currency
 //       return false;
 //     hint = *((uint16_t*)dh.msg.data());
 //     return true;
-//   }  
+//   }
   //---------------------------------------------------------------
   std::string generate_origin_for_htlc(const txout_htlc& htlc, const account_keys& acc_keys)
   {
@@ -627,7 +627,7 @@ namespace currency
 
         uint16_t hint = get_derivation_hint(derivation);
         if (deriv_cache.count(hint) == 0)
-        {          
+        {
           tx.extra.push_back(make_tx_derivation_hint_from_uint16(hint));
           deriv_cache.insert(hint);
         }
@@ -665,7 +665,7 @@ namespace currency
       if (htlc_dest.htlc_hash == null_hash)
       {
         //we use deterministic origin, to make possible access origin on different wallets copies
-        
+
         result.htlc_origin = generate_origin_for_htlc(htlc, self);
 
         //calculate hash
@@ -695,7 +695,7 @@ namespace currency
         tk.mix_attr = CURRENCY_TO_KEY_OUT_FORCED_NO_MIX; // override mix_attr to 1 for auditable target addresses
       else
         tk.mix_attr = tx_outs_attr;
-      
+
       out.target = tk;
     }
     else
@@ -835,12 +835,12 @@ namespace currency
     const crypto::key_derivation& rkey;
     std::vector<payload_items_v>& rdecrypted_att;
     decrypt_attach_visitor(const crypto::key_derivation& key,
-      std::vector<payload_items_v>& decrypted_att, 
+      std::vector<payload_items_v>& decrypted_att,
       const account_keys& acc_keys = null_acc_keys,
       const crypto::public_key& tx_onetime_pubkey = null_pkey) :
       rkey(key),
-      rdecrypted_att(decrypted_att), 
-      m_acc_keys(acc_keys), 
+      rdecrypted_att(decrypted_att),
+      m_acc_keys(acc_keys),
       m_tx_onetime_pubkey(tx_onetime_pubkey)
     {}
     void operator()(const tx_comment& comment)
@@ -872,7 +872,7 @@ namespace currency
         else
         {
           crypto::chacha_crypt(local_sa.body, derivation_local);
-        }  
+        }
       }
 
       if (sa.flags&TX_SERVICE_ATTACHMENT_DEFLATE_BODY)
@@ -1009,10 +1009,10 @@ namespace currency
 
       for (auto& a : tx.attachment)
         boost::apply_visitor(v, a);
-      
+
       return true;
     }
-    
+
     decrypt_payload_items(derivation, tx.extra, decrypted_items, is_income ? acc_keys: account_keys(), get_tx_pub_key_from_extra(tx));
     decrypt_payload_items(derivation, tx.attachment, decrypted_items, is_income ? acc_keys : account_keys(), get_tx_pub_key_from_extra(tx));
     return true;
@@ -1182,7 +1182,7 @@ namespace currency
   {
     //
     //find target account to encrypt attachment.
-    //for now we use just firs target account that is not sender, 
+    //for now we use just firs target account that is not sender,
     //in case if there is no real targets we use sender credentials to encrypt attachments
     account_public_address crypt_destination_addr = get_crypt_address_from_destinations(sender_account_keys, destinations);
 
@@ -1241,7 +1241,7 @@ namespace currency
     const uint8_t& tx_outs_attr = ftp.tx_outs_attr;
     const bool& shuffle = ftp.shuffle;
     const uint64_t& flags = ftp.flags;
-                
+
     transaction& tx = result.tx;
     crypto::secret_key& one_time_secret_key = result.one_time_key;
 
@@ -1270,7 +1270,7 @@ namespace currency
 
       if (flags != 0)
         set_tx_flags(tx, flags);
-      //generate key pair  
+      //generate key pair
       if (expiration_time != 0)
         set_tx_expiration_time(tx, expiration_time);
 
@@ -1420,7 +1420,7 @@ namespace currency
         }
         txin_to_key& input_to_key = *ptokey;
 
-        
+
         input_to_key.amount = src_entr.amount;
         input_to_key.k_image = img;
 
@@ -1497,7 +1497,7 @@ namespace currency
         so.n_outs = tx.vout.size();
         so.n_extras = tx.extra.size();
         get_txin_etc_options(tx.vin[in_index]).push_back(so);
-        
+
         // put attachment extra info to each input's details (in case there are attachments)
         add_attachments_info_to_extra(get_txin_etc_options(tx.vin[in_index]), tx.attachment);
       }
@@ -1537,7 +1537,7 @@ namespace currency
 
         if (!watch_only_mode)
           crypto::generate_ring_signature(tx_hash_for_signature, get_to_key_input_from_txin_v(tx.vin[input_index]).k_image, keys_ptrs, in_contexts[in_context_index].in_ephemeral.sec, src_entr.real_output, sigs.data());
-        
+
         ss_ring_s << "signatures:" << ENDL;
         std::for_each(sigs.begin(), sigs.end(), [&ss_ring_s](const crypto::signature& s) { ss_ring_s << s << ENDL; });
         ss_ring_s << "prefix_hash: " << tx_prefix_hash << ENDL << "in_ephemeral_key: " << in_contexts[in_context_index].in_ephemeral.sec << ENDL << "real_output: " << src_entr.real_output << ENDL;
@@ -1611,7 +1611,7 @@ namespace currency
       password_used = false;
     }
     uint64_t timestamp = count_of_weeks * WALLET_BRAIN_DATE_QUANTUM + WALLET_BRAIN_DATE_OFFSET;
-    
+
     return timestamp;
   }
   //---------------------------------------------------------------
@@ -1654,7 +1654,7 @@ namespace currency
     bool extra_signature_expected = (get_tx_flags(tx) & TX_FLAG_SIGNATURE_MODE_SEPARATE) && ms_input_index == tx.vin.size() - 1;
     size_t allocated_sigs_for_participants = extra_signature_expected ? sigs.size() - 1 : sigs.size();
     LOC_CHK(participant_index < allocated_sigs_for_participants, "participant index (" << participant_index << ") is out of bound: " << allocated_sigs_for_participants); // NOTE: this may fail if the input has already been fully signed and 'sigs' was compacted
-  
+
     crypto::hash tx_hash_for_signature = prepare_prefix_hash_for_sign(tx, ms_input_index, get_transaction_hash(tx));
     LOC_CHK(tx_hash_for_signature != null_hash, "failed to  prepare_prefix_hash_for_sign");
 
@@ -1718,7 +1718,7 @@ namespace currency
     for(const auto& in : tx.vin)
     {
       CHECK_AND_ASSERT_MES(in.type() == typeid(txin_to_key) || in.type() == typeid(txin_multisig) || in.type() == typeid(txin_htlc), false, "wrong variant type: "
-        << in.type().name() 
+        << in.type().name()
         << ", in transaction id=" << get_transaction_hash(tx));
     }
     return true;
@@ -1727,7 +1727,7 @@ namespace currency
   /*
   bool add_padding_to_tx(transaction& tx, size_t count)
   {
-    
+
     WARNING: potantially unsafe implementation!
     1) requires extra_padding being previously added to tx's extra;
     2) transaction size may increase by more than 'count' bytes due to varint encoding (thus, if 'count' is 128 it will add 129 bytes)
@@ -2110,7 +2110,7 @@ namespace currency
   }
   //---------------------------------------------------------------
   // NOTE: this function is obsolete and depricated
-  // PoS block real timestamp is set using a service attachment in mining tx extra since 2021-10 
+  // PoS block real timestamp is set using a service attachment in mining tx extra since 2021-10
   uint64_t get_actual_timestamp(const block& b)
   {
     uint64_t tes_ts = b.timestamp;
@@ -2138,7 +2138,7 @@ namespace currency
           return ts;
       }
     }
-    
+
     // next try etc_tx_time
     etc_tx_time t = AUTO_VAL_INIT(t);
     if (get_type_in_variant_container(b.miner_tx.extra, t))
@@ -2187,7 +2187,7 @@ namespace currency
 
   //------------------------------------------------------------------
 #define ANTI_OVERFLOW_AMOUNT       1000000
-#define GET_PERECENTS_BIG_NUMBERS(per, total) (per/ANTI_OVERFLOW_AMOUNT)*100 / (total/ANTI_OVERFLOW_AMOUNT) 
+#define GET_PERECENTS_BIG_NUMBERS(per, total) (per/ANTI_OVERFLOW_AMOUNT)*100 / (total/ANTI_OVERFLOW_AMOUNT)
 
   void print_reward_change()
   {
@@ -2210,7 +2210,7 @@ namespace currency
         std::cout << std::left
           << std::setw(10) << day
           << std::setw(19) << print_money(emission_reward)
-          << std::setw(4) << print_money(already_generated_coins) 
+          << std::setw(4) << print_money(already_generated_coins)
           << "(POS: " << boost::lexical_cast<std::string>(GET_PERECENTS_BIG_NUMBERS(total_generated_in_year_by_pos, money_was_at_begining_of_year)) << "%"
           << ", POW: " << boost::lexical_cast<std::string>(GET_PERECENTS_BIG_NUMBERS(total_generated_in_year_by_pow, money_was_at_begining_of_year)) << "%)"
 
@@ -2245,7 +2245,7 @@ namespace currency
   {
 //     std::cout << std::endl << "Reward change for 20 days:" << std::endl;
 //     std::cout << std::setw(10) << std::left << "day" << std::setw(19) << "block reward" << std::setw(19) << "generated coins" << std::endl;
-// 
+//
 //     const boost::multiprecision::uint128_t& already_generated_coins = PREMINE_AMOUNT;
 //     //uint64_t total_money_supply = TOTAL_MONEY_SUPPLY;
 //     uint64_t h = 0;
@@ -2253,15 +2253,15 @@ namespace currency
 //     {
 //       uint64_t emission_reward = 0;
 //       get_block_reward(h % 2, 0, 0, already_generated_coins, emission_reward, h, (already_generated_coins - PREMINE_AMOUNT) * 140);
-// 
+//
 //       std::cout << std::left
 //         << std::setw(10) << day
 //         << std::setw(19) << print_money(emission_reward)
 //         << std::setw(4) << print_money(already_generated_coins)//std::string(std::to_string(GET_PERECENTS_BIG_NUMBERS((already_generated_coins), total_money_supply)) + "%")
 //         << std::endl;
-// 
-// 
-// 
+//
+//
+//
 //       for (size_t i = 0; i != 720; i++)
 //       {
 //         h++;
@@ -2272,7 +2272,7 @@ namespace currency
 //       }
 //     }
   }
-  
+
   std::string print_reward_change_first_blocks(size_t n_of_first_blocks)
   {
     std::stringstream ss;
@@ -2314,7 +2314,7 @@ namespace currency
   //------------------------------------------------------------------
   void print_currency_details()
   {
-    //for future forks 
+    //for future forks
 
     std::cout << "Currency name: \t\t" << CURRENCY_NAME << "(" << CURRENCY_NAME_SHORT << ")" << std::endl;
     std::cout << "Money supply: \t\t " << CURRENCY_BLOCK_REWARD * CURRENCY_BLOCKS_PER_DAY * 365 << " coins per year" << std::endl;
@@ -2348,9 +2348,11 @@ namespace currency
 #ifndef TESTNET
 //    std::string genesis_coinbase_tx_hex((const char*)&ggenesis_tx_raw, sizeof(ggenesis_tx_raw));
 
-#else 
+#else
     std::string genesis_coinbase_tx_hex = "";
 #endif
+
+    // Testnet proof phrase: "It takes advantage of the nature of information being easy to spread but hard to stifle. - Satoshi Nakamoto"
 
     //genesis proof phrase: "Liverpool beat Barcelona: Greatest Champions League comebacks of all time"
     //taken from: https://www.bbc.com/sport/football/48163330
@@ -2785,7 +2787,7 @@ namespace currency
           }
           else// if (ao.type() == typeid(ref_by_id))
           {
-            //disable for the reset at the moment 
+            //disable for the reset at the moment
             tei.ins.back().global_indexes.back() = std::numeric_limits<uint64_t>::max();
           }
         }
@@ -2900,7 +2902,7 @@ namespace currency
   {
     if (!height)
       return PREMINE_AMOUNT;
-  
+
     return CURRENCY_BLOCK_REWARD;
   }
   //-----------------------------------------------------------------------------------------------
@@ -2979,7 +2981,7 @@ namespace currency
 
     if (addr.flags & ACCOUNT_PUBLIC_ADDRESS_FLAG_AUDITABLE)
       return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Lethean address (auditable)
-    
+
     return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Lethean address (normal)
   }
   //-----------------------------------------------------------------------
@@ -2997,7 +2999,7 @@ namespace currency
 
     if (addr.flags & ACCOUNT_PUBLIC_ADDRESS_FLAG_AUDITABLE)
       return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Lethean address (auditable)
-    
+
     return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Lethean address (normal)
   }
   //-----------------------------------------------------------------------
@@ -3192,12 +3194,12 @@ namespace currency
     size_t i = 0;
     for (auto& p_out_k : output_keys_ptrs)
       s << "    " << std::setw(2) << i++ << " " << *p_out_k << ENDL;
-  
+
     s << "  signatures (" << sig.size() << ")" << ENDL;
     i = 0;
     for (auto& sig_el : sig)
       s << "    " << std::setw(2) << i++ << " " << sig_el << ENDL;
-  
+
     return s.str();
   }
 
@@ -3241,7 +3243,7 @@ namespace currency
   {
     if (a.cnt == b.cnt && a.hsh == b.hsh && a.sz == b.sz)
       return true;
-    else 
+    else
       return false;
   }
 
@@ -3269,7 +3271,7 @@ namespace currency
 //         << ", a_pos_cumulative_difficulty:" << a_pos_cumulative_difficulty << ENDL
 //         << ", b_pos_cumulative_difficulty:" << b_pos_cumulative_difficulty << ENDL
 //         << ", a_pow_cumulative_difficulty:" << a_pow_cumulative_difficulty << ENDL
-//         << ", b_pow_cumulative_difficulty:" << b_pow_cumulative_difficulty << ENDL       
+//         << ", b_pow_cumulative_difficulty:" << b_pow_cumulative_difficulty << ENDL
 //       );
 //     }
     TRY_ENTRY();
