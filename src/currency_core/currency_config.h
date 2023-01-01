@@ -105,12 +105,12 @@
 #define P2P_NETWORK_ID_TESTNET_FLAG                     0
 #define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
 #else
-#define P2P_DEFAULT_PORT                                (31112 + CURRENCY_FORMATION_VERSION)
-#define RPC_DEFAULT_PORT                                32111
-#define STRATUM_DEFAULT_PORT                            31888
-#define STRARUM_DEFAULT_PORT                            61113
+#define P2P_DEFAULT_PORT                                (36942 + CURRENCY_FORMATION_VERSION)
+#define RPC_DEFAULT_PORT                                36942
+#define STRATUM_DEFAULT_PORT                            36941
+#define STRARUM_DEFAULT_PORT                            36941
 #define P2P_NETWORK_ID_TESTNET_FLAG                     1
-#define P2P_MAINTAINERS_PUB_KEY                         "aaa2d7aabc8d383fd53a3ae898697b28f236ceade6bafc1eecff413a6a02272a"
+#define P2P_MAINTAINERS_PUB_KEY                         "1081e86ba23c7b74e7e93b78582e7a4724b034944a7a2bc3b41502737e0eaf8d"
 #endif
 
 #define P2P_NETWORK_ID_VER                              (CURRENCY_FORMATION_VERSION+0)
@@ -188,7 +188,7 @@
 #define ALIAS_REWARDS_ACCOUNT_VIEW_SEC_KEY              "0000000000000000000000000000000000000000000000000000000000000000" //burn alias money
 
 #define ALIAS_MINIMUM_PUBLIC_SHORT_NAME_ALLOWED         6
-#define ALIAS_SHORT_NAMES_VALIDATION_PUB_KEY            "37947f7b6a5268c5d0a48bde73d7a426f0b5f24648f74024279540207dc70031"
+#define ALIAS_SHORT_NAMES_VALIDATION_PUB_KEY            "1081e86ba23c7b74e7e93b78582e7a4724b034944a7a2bc3b41502737e0eaf8d"
 
 
 #define ALIAS_NAME_MAX_LEN                              255

@@ -5,6 +5,11 @@
 - `iTHn`/`0xdeaf7` - auditable wallet address
 - `iTHa`/`0x7eaf7` -  auditable integrated paymennt_id address prefix
 
+## Ports
+
+- STRATUM: `36941`
+- RPC: `36942`
+- P2P: `36943`
 ## Cloning
 
 Be sure to clone the repository properly:\
