@@ -235,6 +235,12 @@ endif()
 
 if(BUILD_GUI)
   cmake_minimum_required(VERSION 2.8.11)
+
+  if(APPLE AND NOT CMAKE_PREFIX_PATH)
+    execute_process(COMMAND brew --prefix qt5 OUTPUT_VARIABLE QT5_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    list(APPEND CMAKE_PREFIX_PATH ${QT5_DIR})
+  endif()
+
   find_package(Qt5Widgets REQUIRED)
 endif()
 
