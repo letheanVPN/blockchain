@@ -74,7 +74,7 @@ if(BUILD_GUI)
   elseif(APPLE)
     file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h gui/qt-daemon/*.mm)
   else()
-    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h)    
+    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h)
   endif()
   list(FILTER QTDAEMON EXCLUDE REGEX "node_modules")
 endif()
@@ -165,7 +165,7 @@ add_dependencies(daemon version)
 target_link_libraries(daemon rpc stratum currency_core crypto common libminiupnpc-static zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
 ENABLE_SHARED_PCH(daemon DAEMON)
 ENABLE_SHARED_PCH_EXECUTABLE(daemon)
-                     
+
 add_executable(connectivity_tool ${CONN_TOOL})
 add_dependencies(connectivity_tool version)
 target_link_libraries(connectivity_tool currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
@@ -195,35 +195,35 @@ if(BUILD_GUI)
   add_executable(Lethean WIN32 MACOSX_BUNDLE ${QTDAEMON} )
   ENABLE_SHARED_PCH(Lethean QTDAEMON)
   ENABLE_SHARED_PCH_EXECUTABLE(Lethean)
-	  
+
   QT5_USE_MODULES(Lethean WebEngineWidgets WebChannel)
   find_package(Qt5PrintSupport REQUIRED)
 
-  target_link_libraries(Zano wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+  target_link_libraries(Lethean wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
   if (UNIX AND NOT APPLE)
 	target_link_libraries(Zano rt)
   endif()
 
   if(APPLE)
-    target_link_libraries(Zano ${COCOA_LIBRARY})
-    set_property(TARGET Zano PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
+    target_link_libraries(Lethean ${COCOA_LIBRARY})
+    set_property(TARGET Lethean PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
   endif()
   if(MSVC)
-    target_link_libraries(Zano shlwapi.lib)
+    target_link_libraries(Lethean shlwapi.lib)
   endif()
 
-  set_property(TARGET Zano PROPERTY FOLDER "prog")
-  set_target_properties(Zano PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/Info.plist.in)
+  set_property(TARGET Lethean PROPERTY FOLDER "prog")
+  set_target_properties(Lethean PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/Info.plist.in)
 
   set(HTML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/layout/html)
-  set_target_properties(Zano PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--html-path=${HTML_DIR}")
+  set_target_properties(Lethean PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--html-path=${HTML_DIR}")
 
   set(CMAKE_AUTOMOC OFF)
 
   # GUI convenience "bundle"
   # set(GUI_DIR ${CMAKE_CURRENT_BINARY_DIR}/gui)
-  # set_target_properties(Zano PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${GUI_DIR})
-  # add_custom_command(TARGET Zano POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${HTML_DIR} ${GUI_DIR}/html)
+  # set_target_properties(Lethean PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${GUI_DIR})
+  # add_custom_command(TARGET Lethean POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${HTML_DIR} ${GUI_DIR}/html)
 endif()
 
 if(APPLE)
