@@ -25,7 +25,7 @@ jobs:
       - name: update apt
         run: brew update
       - name: install dependencies
-        run: brew install openssl boost cmake icu4c
+        run: brew install openssl boost cmake icu4c python-tk@3.11
       - name: build server
         env:
           PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
