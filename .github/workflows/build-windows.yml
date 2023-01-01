@@ -31,7 +31,7 @@ jobs:
             choco-cache-
       - name: Eat the Choco
         run: |
-          choco install boost-msvc-14.2 -y
+          choco install boost-msvc-14.3 -y
           choco install qt5-default --version 5.15.2.20211228 -y
           choco install cmake --version 3.23.1 -y 
           choco install openssl --version 1.1.1.1500 -y
