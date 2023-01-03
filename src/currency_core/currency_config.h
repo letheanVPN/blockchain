@@ -99,18 +99,20 @@
 
 
 #ifndef TESTNET
+#define SEED_NODE_HOST                                  "testnet.lethean.io"
 #define P2P_DEFAULT_PORT                                31121
 #define RPC_DEFAULT_PORT                                31211
 #define STRATUM_DEFAULT_PORT                            31777
 #define P2P_NETWORK_ID_TESTNET_FLAG                     0
 #define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
 #else
+#define SEED_NODE_HOST                                  "mainnet.lethean.io"
 #define P2P_DEFAULT_PORT                                (36942 + CURRENCY_FORMATION_VERSION)
 #define RPC_DEFAULT_PORT                                36942
 #define STRATUM_DEFAULT_PORT                            36941
 #define STRARUM_DEFAULT_PORT                            36941
 #define P2P_NETWORK_ID_TESTNET_FLAG                     1
-#define P2P_MAINTAINERS_PUB_KEY                         "1081e86ba23c7b74e7e93b78582e7a4724b034944a7a2bc3b41502737e0eaf8d"
+#define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
 #endif
 
 #define P2P_NETWORK_ID_VER                              (CURRENCY_FORMATION_VERSION+0)

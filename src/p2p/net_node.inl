@@ -311,10 +311,10 @@ namespace nodetool
   {
 #ifndef TESTNET
     //TODO:
-    ADD_HARDCODED_SEED_NODE("staging.chain.lt.hn", P2P_DEFAULT_PORT);
+    ADD_HARDCODED_SEED_NODE(SEED_NODE_HOST, P2P_DEFAULT_PORT);
 #else
     //TODO:
-    ADD_HARDCODED_SEED_NODE("mainnet.chain.lt.hn", P2P_DEFAULT_PORT);
+    ADD_HARDCODED_SEED_NODE(SEED_NODE_HOST, P2P_DEFAULT_PORT);
 #endif
 
     bool res = handle_command_line(vm);
