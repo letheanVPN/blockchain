@@ -55,8 +55,8 @@ jobs:
           refreshenv
           mkdir build && cd build
           cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release \
-          -DBoost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include \
-          -DBoost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib ..
+          -DBoost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}\include \
+          -DBoost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}\lib ..
           make -j2 daemon simplewallet
       - name: Tar files
         run: cd build/src && tar -cvf ../../testnet-server-windows-amd64.tar letheand simplewallet
