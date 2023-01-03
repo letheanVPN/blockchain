@@ -15,7 +15,7 @@ using namespace epee;
 #include "common/util.h"
 #include "warnings.h"
 #include "crypto/crypto.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #include "currency_format_utils.h"
 #include "misc_language.h"
 #include "string_coding.h"
@@ -24,7 +24,7 @@ using namespace epee;
 #define MINIMUM_REQUIRED_FREE_SPACE_BYTES (1024 * 1024 * 100)
 
 DISABLE_VS_WARNINGS(4355)
-#undef LOG_DEFAULT_CHANNEL 
+#undef LOG_DEFAULT_CHANNEL
 #define LOG_DEFAULT_CHANNEL "core"
 ENABLE_CHANNEL_BY_DEFAULT("core");
 namespace currency
@@ -245,7 +245,7 @@ namespace currency
       return false;
     }
     TIME_MEASURE_FINISH_MS(parse_tx_time);
-    
+
     TIME_MEASURE_START_MS(check_tx_semantic_time);
     if(!validate_tx_semantic(tx, tx_blob.size()))
     {
@@ -269,7 +269,7 @@ namespace currency
     st_inf.blockchain_height = m_blockchain_storage.get_current_blockchain_size();
     st_inf.tx_pool_size = m_mempool.get_transactions_count();
     st_inf.top_block_id_str = epee::string_tools::pod_to_hex(m_blockchain_storage.get_top_block_id());
-    
+
     std::list<block> blocks;
     m_blockchain_storage.get_blocks(m_blockchain_storage.get_current_blockchain_size() - pr.chain_len, static_cast<size_t>(pr.chain_len), blocks);
     for (auto& b : blocks)
@@ -358,12 +358,12 @@ namespace currency
     return m_blockchain_storage.create_block_template(params, resp);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const 
+  bool core::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, NOTIFY_RESPONSE_CHAIN_ENTRY::request& resp) const
   {
     return m_blockchain_storage.find_blockchain_supplement(qblock_ids, resp);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, std::list<std::pair<block, std::list<transaction> > >& blocks, uint64_t& total_height, uint64_t& start_height, size_t max_count) const 
+  bool core::find_blockchain_supplement(const std::list<crypto::hash>& qblock_ids, std::list<std::pair<block, std::list<transaction> > >& blocks, uint64_t& total_height, uint64_t& start_height, size_t max_count) const
   {
     return m_blockchain_storage.find_blockchain_supplement(qblock_ids, blocks, total_height, start_height, max_count);
   }
@@ -594,12 +594,12 @@ namespace currency
     return m_blockchain_storage.get_short_chain_history(ids);
   }
   //-----------------------------------------------------------------------------------------------
-  bool core::handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NOTIFY_RESPONSE_GET_OBJECTS::request& rsp, currency_connection_context& context)const 
+  bool core::handle_get_objects(NOTIFY_REQUEST_GET_OBJECTS::request& arg, NOTIFY_RESPONSE_GET_OBJECTS::request& rsp, currency_connection_context& context)const
   {
     return m_blockchain_storage.handle_get_objects(arg, rsp);
   }
   //-----------------------------------------------------------------------------------------------
-  crypto::hash core::get_block_id_by_height(uint64_t height)const 
+  crypto::hash core::get_block_id_by_height(uint64_t height)const
   {
     return m_blockchain_storage.get_block_id_by_height(height);
   }
@@ -629,14 +629,14 @@ namespace currency
     if(!m_starter_message_showed)
     {
       LOG_PRINT_L0(ENDL
-        << "**********************************************************************" << ENDL 
-        << "The daemon will start synchronizing with the network. It may take up to several hours." << ENDL 
+        << "**********************************************************************" << ENDL
+        << "The daemon will start synchronizing with the network. It may take up to several hours." << ENDL
         << ENDL
         << "You can adjust verbosity by using command: \"set_log <level>\", where 0 is the least verbose and 3 is the most." << ENDL
         << ENDL
         << "Use \"help\" command to list all available commands." << ENDL
         << ENDL
-        << "Note: in case you need to interrupt the process, use \"exit\" command. Otherwise, the current progress might not be saved." << ENDL 
+        << "Note: in case you need to interrupt the process, use \"exit\" command. Otherwise, the current progress might not be saved." << ENDL
         << "**********************************************************************");
       m_starter_message_showed = true;
     }

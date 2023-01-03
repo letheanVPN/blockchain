@@ -27,11 +27,11 @@
 #include "math_helper.h"
 #include "net_node_common.h"
 #include "maintainers_info_boost_serialization.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 using namespace epee;
 
-#undef LOG_DEFAULT_CHANNEL 
-#define LOG_DEFAULT_CHANNEL "p2p" 
+#undef LOG_DEFAULT_CHANNEL
+#define LOG_DEFAULT_CHANNEL "p2p"
 ENABLE_CHANNEL_BY_DEFAULT(LOG_DEFAULT_CHANNEL);
 
 #define CURRENT_P2P_STORAGE_ARCHIVE_VER    (CURRENCY_FORMATION_VERSION+13)
@@ -64,13 +64,13 @@ namespace nodetool
   public:
     typedef t_payload_net_handler payload_net_handler;
     // Some code
-    node_server(t_payload_net_handler& payload_handler):m_payload_handler(payload_handler), 
-                                                        m_allow_local_ip(false), 
-                                                        m_hide_my_port(false), 
+    node_server(t_payload_net_handler& payload_handler):m_payload_handler(payload_handler),
+                                                        m_allow_local_ip(false),
+                                                        m_hide_my_port(false),
                                                         m_offline_mode(false),
-                                                        m_alert_mode(0), 
+                                                        m_alert_mode(0),
                                                         m_maintainers_entry_local(AUTO_VAL_INIT(m_maintainers_entry_local)),
-                                                        m_maintainers_info_local(AUTO_VAL_INIT(m_maintainers_info_local)), 
+                                                        m_maintainers_info_local(AUTO_VAL_INIT(m_maintainers_info_local)),
                                                         m_startup_time(time(nullptr)),
                                                         m_config{},
                                                         m_have_address(false),
@@ -99,7 +99,7 @@ namespace nodetool
     template <class Archive, class t_version_type>
     void serialize(Archive &a,  const t_version_type ver)
     {
-      if(ver < CURRENT_P2P_STORAGE_ARCHIVE_VER) 
+      if(ver < CURRENT_P2P_STORAGE_ARCHIVE_VER)
         return;
       time_t local_time = time(nullptr);
       a & local_time;
@@ -202,7 +202,7 @@ namespace nodetool
     size_t get_random_index_with_fixed_probability(size_t max_index);
     bool is_peer_id_used(const peerid_type id);
     bool is_peer_used(const peerlist_entry& peer);
-    bool is_addr_connected(const net_address& peer);  
+    bool is_addr_connected(const net_address& peer);
     template<class t_callback>
     bool try_ping(basic_node_data& node_data, p2p_connection_context& context, const t_callback& cb);
     bool make_expected_connections_count(bool white_list, size_t expected_connections);
@@ -222,7 +222,7 @@ namespace nodetool
 
     //debug functions
     std::string print_connections_container();
-    
+
     typedef net_utils::boosted_tcp_server<levin::async_protocol_handler<p2p_connection_context> > net_server;
 
     struct config
@@ -262,7 +262,7 @@ namespace nodetool
     math_helper::once_a_time_seconds<1> m_connections_maker_interval;
     math_helper::once_a_time_seconds<60*30, false> m_peerlist_store_interval;
     math_helper::once_a_time_seconds<60> m_remove_dead_conn_interval;
-    
+
     /*this code is temporary here(to show regular message if need), until we get normal GUI*/
     math_helper::once_a_time_seconds<60, false>  m_calm_alert_interval;
     math_helper::once_a_time_seconds<10, false>  m_urgent_alert_interval;
@@ -289,7 +289,7 @@ namespace nodetool
     maintainers_entry m_maintainers_entry_local;
     uint8_t m_alert_mode;
     critical_section m_maintainers_local_lock;
-    
+
     critical_section m_blocked_ips_lock;
     std::map<uint32_t, time_t> m_blocked_ips;
 

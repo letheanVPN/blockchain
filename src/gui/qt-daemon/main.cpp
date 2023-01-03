@@ -11,7 +11,7 @@
 #include <math.h>
 //#include "qtlogger.h"
 #include "include_base_utils.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #ifdef Q_OS_DARWIN
 #include "application/urleventfilter.h"
 #endif
@@ -28,11 +28,11 @@ int main(int argc, char *argv[])
        // See http://crbug.com/436603.
 //       _set_FMA3_enable(0);
 //#endif  // ARCH_CPU_X86_64 && _MSC_VER <= 1800
-  
+
   if(argc > 1)
     std::cout << argv[1] << std::endl;
 
-#ifdef _MSC_VER 
+#ifdef _MSC_VER
   #ifdef _WIN64
   _set_FMA3_enable(0);
   #endif

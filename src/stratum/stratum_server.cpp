@@ -6,14 +6,14 @@
 #include "stratum_server.h"
 #include "stratum_helpers.h"
 #include "net/abstract_tcp_server2.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #include "currency_core/currency_core.h"
 #include "common/command_line.h"
 #include "common/int-util.h"
 #include "version.h"
 #include "currency_protocol/currency_protocol_handler.h"
 
-#undef LOG_DEFAULT_CHANNEL 
+#undef LOG_DEFAULT_CHANNEL
 #define LOG_DEFAULT_CHANNEL "stratum"
 ENABLE_CHANNEL_BY_DEFAULT("stratum");
 
@@ -46,11 +46,11 @@ namespace
   const command_line::arg_descriptor<std::string> arg_stratum_miner_address = {"stratum-miner-address",     "Stratum server: miner address. All workers"
     " will mine to this address. If not set here, ALL workers should use the very same wallet address as username."
     " If set here - they're allowed to log in with username '" WORKER_ALLOWED_USERNAME "' instead of address."};
-  
+
   const command_line::arg_descriptor<size_t>      arg_stratum_block_template_update_period = {"stratum-template-update-period",
     "Stratum server: if there are no new blocks, update block template this often (sec.)",  STRATUM_BLOCK_TEMPLATE_UPD_PERIOD_DEFAULT };
   const command_line::arg_descriptor<uint64_t>    arg_stratum_hr_print_interval  ("stratum-hr-print-interval", "Stratum server: how often to print hashrate stats (sec.)", STRATUM_TOTAL_HR_PRINT_INTERVAL_S_DEFAULT );
-  
+
   const command_line::arg_descriptor<uint64_t>    arg_stratum_vdiff_target_min  ("stratum-vdiff-target-min",  "Stratum server: minimum worker difficulty",  VDIFF_TARGET_MIN_DEFAULT );
   const command_line::arg_descriptor<uint64_t>    arg_stratum_vdiff_target_max  ("stratum-vdiff-target-max",  "Stratum server: maximum worker difficulty",  VDIFF_TARGET_MAX_DEFAULT );
   const command_line::arg_descriptor<uint64_t>    arg_stratum_vdiff_target_time  ("stratum-vdiff-target-time",  "Stratum server: target time per share (i.e. try to get one share per this many seconds)",  VDIFF_TARGET_TIME_DEFAULT );
@@ -98,7 +98,7 @@ namespace
       , variance_percent(0)
     {}
 
-    vdiff_params_t(uint64_t target_min, uint64_t target_max, uint64_t target_time_s, uint64_t retarget_time_s, uint64_t retarget_shares_count, uint64_t variance_percent) 
+    vdiff_params_t(uint64_t target_min, uint64_t target_max, uint64_t target_time_s, uint64_t retarget_time_s, uint64_t retarget_shares_count, uint64_t variance_percent)
       : target_min(target_min)
       , target_max(target_max)
       , target_time_ms(target_time_s * 1000)
@@ -140,7 +140,7 @@ namespace
       CRITICAL_REGION_LOCAL(m_lock);
       return (epee::misc_utils::get_tick_count() - m_ts_started) / 1000;
     }
-    
+
     uint64_t estimate_worker_hashrate()
     {
       CRITICAL_REGION_LOCAL(m_lock);
@@ -225,7 +225,7 @@ namespace
             new_d = m_vd_params.target_min;
           if (new_d > m_vd_params.target_max)
             new_d = m_vd_params.target_max;
-          
+
           if (new_d != m_worker_difficulty)
           {
             LP_CC_WORKER_YELLOW((*this), "difficulty update: " << m_worker_difficulty << " -> " << new_d <<
@@ -388,7 +388,7 @@ namespace
       m_p_core->get_blockchain_top(stub, top_block_id);
       if (!enforce_update && top_block_id == m_blockchain_last_block_id && epee::misc_utils::get_tick_count() - m_block_template_update_ts < m_block_template_update_pediod_ms)
         return false;// no new blocks since last update, keep the same work
-      
+
       LOG_PRINT("stratum_protocol_handler_config::update_block_template(" << (enforce_update ? "true" : "false") << ")", LOG_LEVEL_4);
       m_block_template = AUTO_VAL_INIT(m_block_template);
       wide_difficulty_type block_template_difficulty;
@@ -457,7 +457,7 @@ namespace
       {
         LP_CC_WORKER_YELLOW(p_ph->get_context(), "core is NOT synchronized, respond with empty job package", LOG_LEVEL_2);
       }
-      
+
       if (!updated)
         p_ph->set_work(get_work_json(p_ph->get_context().get_worker_difficulty()));
     }
@@ -474,7 +474,7 @@ namespace
         p_ph->send_response_default(id);
         return true;
       }
-  
+
       const uint64_t height = get_block_height(m_block_template);
 
       // make sure worker sent work with correct block ethash
@@ -606,7 +606,7 @@ namespace
 
       LP_CC_WORKER_GREEN(p_ph->get_context(), "logged in with username " << user_str << ", start difficulty: " << (start_difficulty != 0 ? std::to_string(start_difficulty) : "default"), LOG_LEVEL_0);
       p_ph->send_response_default(id);
-      
+
       // send initial work
       update_work(p_ph);
 
@@ -615,7 +615,7 @@ namespace
 
     bool handle_submit_hashrate(protocol_handler_t* p_ph, uint64_t rate, const crypto::hash& rate_submit_id)
     {
-      LP_CC_WORKER_CYAN(p_ph->get_context(), "reported hashrate: " << HR_TO_STREAM_IN_MHS_3P(rate) << " Mh/s" << 
+      LP_CC_WORKER_CYAN(p_ph->get_context(), "reported hashrate: " << HR_TO_STREAM_IN_MHS_3P(rate) << " Mh/s" <<
         ", estimated hashrate: " << HR_TO_STREAM_IN_MHS_3P(p_ph->get_context().estimate_worker_hashrate()) << " Mh/s, run time: " <<
         epee::misc_utils::get_time_interval_string(p_ph->get_context().get_hr_estimate_duration()), LOG_LEVEL_3);
       return true;
@@ -992,7 +992,7 @@ namespace
       // JSON-RPC 2.0 spec: "A Notification is a Request object without an "id" member."
       send(R"({"jsonrpc":"2.0",)" + json + "}" "\n"); // LF character is not specified by JSON-RPC standard, but it is REQUIRED by ethminer 0.12 to work
     }
-    
+
     void send_response_method(const jsonrpc_id_t& id, const std::string& method, const std::string& response)
     {
       send_response(id, std::string(R"("method":")") + method + R"(",)" + response);
@@ -1073,7 +1073,7 @@ namespace
 
     typedef bool (this_t::*method_handler_func_t)(const jsonrpc_id_t& id, epee::serialization::portable_storage& ps, epee::serialization::portable_storage::hsection params_section);
     static std::unordered_map<std::string, method_handler_func_t> m_methods_handlers;
-    
+
     std::atomic<bool> m_connection_initialized;
   }; // class stratum_protocol_handler
 //==============================================================================================================================
@@ -1143,7 +1143,7 @@ bool stratum_server::init(const boost::program_options::variables_map& vm)
 
   auto& config = m_impl->server.get_config_object();
   config.set_core(m_p_core);
-  
+
   if (command_line::has_arg(vm, arg_stratum_always_online))
   {
      config.set_is_core_always_online(command_line::get_arg(vm, arg_stratum_always_online));

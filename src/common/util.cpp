@@ -9,7 +9,7 @@
 using namespace epee;
 
 #include "util.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #include "version.h"
 
 #ifdef WIN32
@@ -18,7 +18,7 @@ using namespace epee;
 #include <strsafe.h>
 #include <lm.h>
 #pragma comment(lib, "netapi32.lib")
-#else 
+#else
 #include <sys/utsname.h>
 #endif
 
@@ -98,7 +98,7 @@ namespace tools
     else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 0 && osver.wProductType != VER_NT_WORKSTATION)  winver = "Windows Server 2008";
     else if (osver.dwMajorVersion == 6 && osver.dwMinorVersion == 0 && osver.wProductType == VER_NT_WORKSTATION)  winver = "Windows Vista";
     else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion == 2 && osver.wProductType == VER_NT_WORKSTATION
-		  &&  sysInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64) 
+		  &&  sysInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
       winver = "Windows XP x64";
 	  else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion == 2)   winver = "Windows Server 2003";
     else if (osver.dwMajorVersion == 5 && osver.dwMinorVersion == 1)   winver = "Windows XP";
@@ -166,13 +166,13 @@ namespace tools
     // Call GetNativeSystemInfo if supported or GetSystemInfo otherwise.
 
     pGNSI = (PGNSI) GetProcAddress(
-      GetModuleHandle(TEXT("kernel32.dll")), 
+      GetModuleHandle(TEXT("kernel32.dll")),
       "GetNativeSystemInfo");
     if(NULL != pGNSI)
       pGNSI(&si);
     else GetSystemInfo(&si);
 
-    if ( VER_PLATFORM_WIN32_NT==osvi.dwPlatformId && 
+    if ( VER_PLATFORM_WIN32_NT==osvi.dwPlatformId &&
       osvi.dwMajorVersion > 4 )
     {
       StringCchCopy(pszOS, BUFSIZE, TEXT("Microsoft "));
@@ -196,7 +196,7 @@ namespace tools
         }
 
         pGPI = (PGPI) GetProcAddress(
-          GetModuleHandle(TEXT("kernel32.dll")), 
+          GetModuleHandle(TEXT("kernel32.dll")),
           "GetProductInfo");
 
         pGPI( osvi.dwMajorVersion, osvi.dwMinorVersion, 0, 0, &dwType);
@@ -326,7 +326,7 @@ namespace tools
         {
           StringCchCat(pszOS, BUFSIZE, TEXT( "Professional" ));
         }
-        else 
+        else
         {
           if( osvi.wSuiteMask & VER_SUITE_DATACENTER )
             StringCchCat(pszOS, BUFSIZE, TEXT( "Datacenter Server" ));
@@ -357,10 +357,10 @@ namespace tools
           StringCchCat(pszOS, BUFSIZE, TEXT(", 32-bit"));
       }
 
-      return pszOS; 
+      return pszOS;
     }
     else
-    {  
+    {
       printf( "This sample does not support this version of Windows.\n");
       return pszOS;
     }
@@ -386,7 +386,7 @@ namespace tools
 
     if ((hFile != NULL) && (hFile != INVALID_HANDLE_VALUE))
     {
-      // Create the minidump 
+      // Create the minidump
       MINIDUMP_EXCEPTION_INFORMATION mdei;
 
       mdei.ThreadId = GetCurrentThreadId();
@@ -416,7 +416,7 @@ namespace tools
       {
         LOG_PRINT_L0("Minidump file created on path: " << path);
       }
-      // Close the file 
+      // Close the file
       CloseHandle(hFile);
     }
     else
@@ -483,9 +483,9 @@ std::string get_nix_version_display_string()
     // Windows
 #ifdef _M_X64
     config_folder = get_special_folder_path_utf8(CSIDL_APPDATA, true) + "/" + CURRENCY_NAME_SHORT;
-#else 
+#else
     config_folder = get_special_folder_path_utf8(CSIDL_APPDATA, true) + "/" + CURRENCY_NAME_SHORT + "-x86";
-#endif 
+#endif
 #else
     std::string pathRet;
     char* pszHome = getenv("HOME");
@@ -517,7 +517,7 @@ std::string get_nix_version_display_string()
   std::string get_default_user_dir()
   {
     //namespace fs = boost::filesystem;
-    // Windows < Vista: C:\Documents and Settings\Username 
+    // Windows < Vista: C:\Documents and Settings\Username
     // Windows >= Vista: C:\Users\Username\AppData\Roaming\CURRENCY_NAME_SHORT
     // Mac: ~/Library/Application Support/CURRENCY_NAME_SHORT
     // Unix: ~/.CURRENCY_NAME_SHORT
@@ -685,7 +685,7 @@ std::string get_nix_version_display_string()
     // got v_major, v_minor, v_revision
 
     // allow 1.1.x and greater
-  
+
     if (v_major < 1)
       return false;
 
@@ -695,8 +695,8 @@ std::string get_nix_version_display_string()
     return true;
   }
 
-  //this code was taken from https://stackoverflow.com/a/8594696/5566653 
-  //credits goes to @nijansen: https://stackoverflow.com/users/1056003/nijansen 
+  //this code was taken from https://stackoverflow.com/a/8594696/5566653
+  //credits goes to @nijansen: https://stackoverflow.com/users/1056003/nijansen
   bool copy_dir( boost::filesystem::path const & source, boost::filesystem::path const & destination)
   {
     namespace fs = boost::filesystem;

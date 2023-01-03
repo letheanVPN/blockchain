@@ -28,7 +28,7 @@
 // #endif
 #include <stdint.h>
 #include <math.h>
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #define GUI_LINK_NAME "Lethean"
 
 #ifdef WIN32
@@ -245,24 +245,24 @@ namespace gui_tools
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     // based on: https://github.com/Mozketo/LaunchAtLoginController/blob/master/LaunchAtLoginController.m
-    
+
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
-    
+
   LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl);
   LSSharedFileListItemRef findStartupItemInList(LSSharedFileListRef list, CFURLRef findUrl)
   {
     SInt32 macos_ver_maj, macos_ver_min;
     Gestalt(gestaltSystemVersionMajor, &macos_ver_maj); // very old and deprecated, consider change
     Gestalt(gestaltSystemVersionMinor, &macos_ver_min); // very old and deprecated, consider change
-    
+
     // loop through the list of startup items and try to find the bitcoin app
     CFArrayRef listSnapshot = LSSharedFileListCopySnapshot(list, NULL);
     for(int i = 0; i < CFArrayGetCount(listSnapshot); i++) {
       LSSharedFileListItemRef item = (LSSharedFileListItemRef)CFArrayGetValueAtIndex(listSnapshot, i);
       UInt32 resolutionFlags = kLSSharedFileListNoUserInteraction | kLSSharedFileListDoNotMountVolumes;
       CFURLRef currentItemURL = NULL;
-      
+
 #if defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= 10100
       if (&LSSharedFileListItemCopyResolvedURL != NULL && (macos_ver_maj > 10 || (macos_ver_maj == 10 && macos_ver_min >= 10)))
         currentItemURL = LSSharedFileListItemCopyResolvedURL(item, resolutionFlags, NULL); // this is available only on macOS 10.10-10.11 (then deprecated)
@@ -273,7 +273,7 @@ namespace gui_tools
 #else
       LSSharedFileListItemResolve(item, resolutionFlags, &currentItemURL, NULL);
 #endif
-      
+
       if(currentItemURL && CFEqual(currentItemURL, findUrl)) {
         // found
         CFRelease(currentItemURL);
@@ -285,7 +285,7 @@ namespace gui_tools
     }
     return NULL;
   }
-  
+
     bool GetStartOnSystemStartup()
     {
         CFURLRef bitcoinAppUrl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
@@ -293,13 +293,13 @@ namespace gui_tools
         LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcoinAppUrl);
         return !!foundItem; // return boolified object
     }
-    
+
     bool SetStartOnSystemStartup(bool fAutoStart)
     {
         CFURLRef bitcoinAppUrl = CFBundleCopyBundleURL(CFBundleGetMainBundle());
         LSSharedFileListRef loginItems = LSSharedFileListCreate(NULL, kLSSharedFileListSessionLoginItems, NULL);
         LSSharedFileListItemRef foundItem = findStartupItemInList(loginItems, bitcoinAppUrl);
-        
+
         if(fAutoStart && !foundItem) {
             // add bitcoin app to startup item list
             LSSharedFileListInsertItemURL(loginItems, kLSSharedFileListItemBeforeFirst, NULL, NULL, bitcoinAppUrl, NULL, NULL);

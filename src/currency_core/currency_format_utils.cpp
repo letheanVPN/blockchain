@@ -16,7 +16,7 @@ using namespace epee;
 #include "currency_format_utils.h"
 #include "serialization/binary_utils.h"
 #include "serialization/stl_containers.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #include "miner.h"
 #include "crypto/crypto.h"
 #include "crypto/hash.h"
