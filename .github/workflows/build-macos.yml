@@ -20,10 +20,7 @@ jobs:
           access_token: ${{ github.token }}
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0
           submodules: recursive
-      - name: update apt
-        run: brew update
       - name: install dependencies
         run: brew install openssl boost
       - name: build server

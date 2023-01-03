@@ -31,19 +31,27 @@ jobs:
             choco-cache-
       - name: Eat the Choco
         run: |
-          choco install boost-msvc-14.3 -y
           choco install qt5-default --version 5.15.2.20211228 -y
-          choco install cmake --version 3.23.1 -y 
           choco install openssl --version 1.1.1.1500 -y
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2.4.1
+        id: install-boost
+        with:
+          # REQUIRED: Specify the required boost version
+          # A list of supported versions can be found here:
+          # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
+          boost_version: 1.80.0
+          platform_version: 2022
+          toolset: msvc
       - name: build server
         env:
           QT_PREFIX_PATH: C:\dev\_sdk\Qt5.11.2\5.11.2
           INNOSETUP_PATH: C:\Program Files (x86)\Inno Setup 5\ISCC.exe
           ETC_BINARIES_PATH: C:\dev\deploy\etc-binaries
           BUILDS_PATH: C:\dev\deploy\zano
-          LOCAL_BOOST_PATH: C:\dev\_sdk\boost_1_80_0
           OPENSSL_ROOT_DIR: C:\dev\_sdk\OpenSSL-Win64
         run: |
+          refreshenv
           mkdir build && cd build
           cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
           make -j2 daemon simplewallet
