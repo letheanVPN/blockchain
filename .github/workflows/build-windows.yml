@@ -41,7 +41,7 @@ jobs:
           INNOSETUP_PATH: C:\Program Files (x86)\Inno Setup 5\ISCC.exe
           ETC_BINARIES_PATH: C:\dev\deploy\etc-binaries
           BUILDS_PATH: C:\dev\deploy\zano
-          LOCAL_BOOST_PATH: C:\dev\_sdk\boost_1_70_0
+          LOCAL_BOOST_PATH: C:\dev\_sdk\boost_1_80_0
           OPENSSL_ROOT_DIR: C:\dev\_sdk\OpenSSL-Win64
         run: |
           mkdir build && cd build
