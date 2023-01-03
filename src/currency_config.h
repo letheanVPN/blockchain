@@ -31,8 +31,8 @@
 #define CURRENT_BLOCK_MAJOR_VERSION                     2
 
 #define CURRENT_BLOCK_MINOR_VERSION                     0
-#define CURRENCY_BLOCK_FUTURE_TIME_LIMIT                60*60*2
-#define CURRENCY_POS_BLOCK_FUTURE_TIME_LIMIT            60*20
+#define CURRENCY_BLOCK_FUTURE_TIME_LIMIT                (60*60*2)
+#define CURRENCY_POS_BLOCK_FUTURE_TIME_LIMIT            (60*20)
 
 #define BLOCKCHAIN_TIMESTAMP_CHECK_WINDOW               60
 
@@ -72,7 +72,7 @@
 
 
 #define TX_EXPIRATION_TIMESTAMP_CHECK_WINDOW            20
-#define TX_EXPIRATION_MEDIAN_SHIFT                      ((TX_EXPIRATION_TIMESTAMP_CHECK_WINDOW)/2)*DIFFICULTY_TOTAL_TARGET
+#define TX_EXPIRATION_MEDIAN_SHIFT                      ((TX_EXPIRATION_TIMESTAMP_CHECK_WINDOW/2)*DIFFICULTY_TOTAL_TARGET)
 
 #define CURRENCY_LOCKED_TX_ALLOWED_DELTA_SECONDS        (DIFFICULTY_TOTAL_TARGET * CURRENCY_LOCKED_TX_ALLOWED_DELTA_BLOCKS)
 #define CURRENCY_LOCKED_TX_ALLOWED_DELTA_BLOCKS         1
@@ -80,8 +80,8 @@
 #define DIFFICULTY_BLOCKS_ESTIMATE_TIMESPAN             DIFFICULTY_TOTAL_TARGET //just alias
 
 #define MAX_ALIAS_PER_BLOCK                             1000
-#define ALIAS_COAST_PERIOD                              CURRENCY_BLOCKS_PER_DAY*7 //week
-#define ALIAS_COAST_RECENT_PERIOD                       CURRENCY_BLOCKS_PER_DAY*8 //week + 1 day (we guarantee split depth at least 1 day)
+#define ALIAS_COAST_PERIOD                              (CURRENCY_BLOCKS_PER_DAY*7) //week
+#define ALIAS_COAST_RECENT_PERIOD                       (CURRENCY_BLOCKS_PER_DAY*8) //week + 1 day (we guarantee split depth at least 1 day)
 #define ALIAS_VERY_INITAL_COAST                         ((uint64_t)10000) // to avoid split when default fee changed
 #define ALIAS_MEDIAN_RECALC_INTERWAL                    CURRENCY_BLOCKS_PER_DAY
 
@@ -128,7 +128,7 @@
 #define P2P_DEFAULT_PEERS_IN_HANDSHAKE                  250
 #define P2P_DEFAULT_CONNECTION_TIMEOUT                  5000       //5 seconds
 #define P2P_DEFAULT_PING_CONNECTION_TIMEOUT             2000       //2 seconds
-#define P2P_DEFAULT_INVOKE_TIMEOUT                      60*2*1000  //2 minutes
+#define P2P_DEFAULT_INVOKE_TIMEOUT                      (60*2*1000)//2 minutes
 #define P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT            10000      //10 seconds
 #define P2P_DEFAULT_WHITELIST_CONNECTIONS_PERCENT       70
 #define P2P_FAILED_ADDR_FORGET_SECONDS                  (60*5)     //5 minutes
@@ -138,7 +138,7 @@
 #define P2P_IDLE_CONNECTION_KILL_INTERVAL               (5*60) //5 minutes
 
 //PoS definitions
-#define POS_SCAN_WINDOW                                 60*10 //seconds // 10 minutes
+#define POS_SCAN_WINDOW                                 (60*10) //seconds // 10 minutes
 #define POS_SCAN_STEP                                   15    //seconds
 #define POS_MAX_ACTUAL_TIMESTAMP_TO_MINED               (POS_SCAN_WINDOW+100)
 
@@ -221,11 +221,11 @@
 #define CURRENT_TRANSACTION_CHAIN_ENTRY_ARCHIVE_VER     3
 #define CURRENT_BLOCK_EXTENDED_INFO_ARCHIVE_VER         1
 
-#define BLOCKCHAIN_STORAGE_MAJOR_COMPATIBILITY_VERSION  CURRENCY_FORMATION_VERSION + 11
+#define BLOCKCHAIN_STORAGE_MAJOR_COMPATIBILITY_VERSION  (CURRENCY_FORMATION_VERSION + 11)
 #define BLOCKCHAIN_STORAGE_MINOR_COMPATIBILITY_VERSION  1
 
 
-#define BC_OFFERS_CURRENT_OFFERS_SERVICE_ARCHIVE_VER    CURRENCY_FORMATION_VERSION + BLOCKCHAIN_STORAGE_MAJOR_COMPATIBILITY_VERSION + 9
+#define BC_OFFERS_CURRENT_OFFERS_SERVICE_ARCHIVE_VER    (CURRENCY_FORMATION_VERSION + BLOCKCHAIN_STORAGE_MAJOR_COMPATIBILITY_VERSION + 9)
 #define BC_OFFERS_CURRENCY_MARKET_FILENAME              "market.bin"
 
 #ifndef TESTNET
