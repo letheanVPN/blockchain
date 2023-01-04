@@ -57,8 +57,12 @@ jobs:
         run: |
           refreshenv
           mkdir build && cd build
-          cmake -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release -G "NMake Makefiles" -DBoost_INCLUDE_DIR="${{steps.install-boost.outputs.BOOST_ROOT}}\include" -DBoost_LIBRARY_DIRS="${{steps.install-boost.outputs.BOOST_ROOT}}\lib" ..
-          nmake daemon simplewallet
+          cmake -D TESTNET=TRUE -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BUILD_GUI=TRUE -D STATIC=FALSE -G "Visual Studio 15 2017 Win64" -T host=x64 -DBoost_INCLUDE_DIR="${{steps.install-boost.outputs.BOOST_ROOT}}\include" -DBoost_LIBRARY_DIRS="${{steps.install-boost.outputs.BOOST_ROOT}}\lib" ..
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat" x86_amd64
+          msbuild version.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
+          msbuild src/daemon.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
+          msbuild src/simplewallet.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
+          msbuild src/Lethean.vcxproj /p:SubSystem="WINDOWS,5.02" /p:Configuration=Release /t:Build
       - name: Tar files
         run: cd build/src && tar -cvf ../../testnet-server-windows-amd64.tar letheand simplewallet
       - uses: actions/upload-artifact@v3
