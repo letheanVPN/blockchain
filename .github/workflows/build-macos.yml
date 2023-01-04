@@ -28,7 +28,7 @@ jobs:
         env:
           PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
         run: |
-          export LIBRARY_PATH=${LIBRARY_PATH}:/opt/homebrew/opt/icu4c/lib
+          export LIBRARY_PATH=${LIBRARY_PATH}:/usr/local/opt/icu4c/lib
           mkdir build && cd build
           cmake -D BOOST_ROOT="/opt/homebrew/opt/boost" -D BOOST_LIBRARYDIR="/opt/homebrew/opt/boost/lib" -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
           make -j2 daemon simplewallet

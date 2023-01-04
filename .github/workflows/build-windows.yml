@@ -45,6 +45,7 @@ jobs:
           boost_version: 1.80.0
           platform_version: 2022
           toolset: msvc
+          link: static
       - name: build server
         env:
           QT_PREFIX_PATH: C:\dev\_sdk\Qt5.11.2\5.11.2
