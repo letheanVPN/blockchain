@@ -54,6 +54,7 @@ jobs:
           BUILDS_PATH: C:\dev\deploy\zano
           OPENSSL_ROOT_DIR: C:\dev\_sdk\OpenSSL-Win64
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+        shell: cmd
         run: |
           refreshenv
           mkdir build && cd build
