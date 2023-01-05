@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
       - name: Cache Chocolatey Dependencies
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: C:\ProgramData\chocolatey\lib
           key: choco-cache-${{ hashFiles('**/dependencies.config') }}
@@ -46,6 +46,10 @@ jobs:
           platform_version: 2022
           toolset: msvc
           link: static
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
       - name: build server
         env:
           QT_PREFIX_PATH: C:\dev\_sdk\Qt5.11.2\5.11.2
@@ -54,27 +58,26 @@ jobs:
           BUILDS_PATH: C:\dev\deploy\zano
           OPENSSL_ROOT_DIR: C:\dev\_sdk\OpenSSL-Win64
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-        shell: cmd
         run: |
           refreshenv
           mkdir build && cd build
           cmake -D TESTNET=TRUE -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BUILD_GUI=false -D STATIC=FALSE -G "Visual Studio 17 2022" -T host=x64 -DBoost_INCLUDE_DIR="${{steps.install-boost.outputs.BOOST_ROOT}}\include" -DBoost_LIBRARY_DIRS="${{steps.install-boost.outputs.BOOST_ROOT}}\lib" ..
-          C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat x86_amd64
-          msbuild version.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
-          msbuild src/daemon.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
-          msbuild src/simplewallet.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
-          msbuild src/Lethean.vcxproj /p:SubSystem="WINDOWS,5.02" /p:Configuration=Release /t:Build
-      - name: Tar files
-        run: cd build/src && tar -cvf ../../testnet-server-windows-amd64.tar letheand simplewallet
+          msbuild version.vcxproj /p:Configuration=Release /t:Build
+          msbuild src/daemon.vcxproj /p:Configuration=Release /t:Build
+          msbuild src/simplewallet.vcxproj /p:Configuration=Release /t:Build
+      - uses: vimtor/action-zip@v1
+        with:
+          files: build\src\Release\letheand.exe build\src\Release\simplewallet.exe
+          dest: testnet-server-windows-amd64.zip
       - uses: actions/upload-artifact@v3
         with:
           name: testnet-server-windows-amd64
           if-no-files-found: error
-          path: testnet-server-windows-amd64.tar
+          path: ${{ github.workspace }}\testnet-server-windows-amd64.zip
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           prerelease: true
           generate_release_notes: true
-          files: ${{ github.workspace }}/testnet-server-windows-amd64.tar
+          files: ${{ github.workspace }}\testnet-server-windows-amd64.zip
