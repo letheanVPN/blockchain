@@ -1,7 +1,37 @@
 cmake_minimum_required(VERSION 2.8.6)
 
+list(INSERT CMAKE_MODULE_PATH 0
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 PROJECT(Lethean)
 
+option (USE_CCACHE "Use ccache if a usable instance is found" ON)
+if (USE_CCACHE)
+  include(FindCcache) # Has to be included after the project() macro, to be able to read the CXX variable.
+else()
+  message(STATUS "ccache deselected")
+endif()
+option (USE_COMPILATION_TIME_PROFILER "Use compilation time profiler (for CLang >= 9 only)" OFF)
+if (USE_COMPILATION_TIME_PROFILER)
+  if (NOT "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+    message(FATAL_ERROR "The flag USE_COMPILATION_TIME_PROFILER is meant to be set only for CLang compiler!")
+  endif()
+  add_compile_options("-ftime-trace")
+endif()
+
+if (${CMAKE_VERSION} VERSION_GREATER "3.0.0" AND CMAKE_MAKE_PROGRAM MATCHES "ninja")
+  set(CCACHE_PARALLEL_COMPILE_JOBS "" CACHE STRING "The maximum number of concurrent compilation jobs.")
+  if (CCACHE_PARALLEL_COMPILE_JOBS)
+    set_property(GLOBAL APPEND PROPERTY JOB_POOLS compile_job_pool=${CCACHE_PARALLEL_COMPILE_JOBS})
+    set(CMAKE_JOB_POOL_COMPILE compile_job_pool)
+  endif ()
+
+  set(CCACHE_PARALLEL_LINK_JOBS "" CACHE STRING "The maximum number of concurrent link jobs.")
+  if (CCACHE_PARALLEL_LINK_JOBS)
+    set_property(GLOBAL APPEND PROPERTY JOB_POOLS link_job_pool=${CCACHE_PARALLEL_LINK_JOBS})
+    set(CMAKE_JOB_POOL_LINK link_job_pool)
+  endif ()
+endif ()
 
 set(VERSION "1.0")
 
@@ -13,6 +43,9 @@ set(VERSION "1.0")
 #    cmake_policy(SET CMP0020 OLD)
 #  endif()
 
+if(NOT MSVC)
+include(ConfigOpenSSL)
+endif()
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR CMAKE_SYSTEM_NAME STREQUAL "Android")
   add_definitions(-DMOBILE_WALLET_BUILD)
   if(CMAKE_SYSTEM_NAME STREQUAL "iOS" )
@@ -181,7 +214,7 @@ else()
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${RELEASE_FLAGS}")
   if(STATIC)
     if(APPLE)
-      message(SEND_ERROR "Static build is not supported on MacOS X")
+#      message(SEND_ERROR "Static build is not supported on MacOS X")
     else()
       set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -static-libgcc -static-libstdc++")
     endif()

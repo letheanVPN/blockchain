@@ -1,0 +1,155 @@
+name: cli-testnet
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+env:
+  CCACHE_SETTINGS: |
+    ccache --max-size=150M
+    ccache --set-config=compression=true
+
+jobs:
+  linux-amd64:
+    runs-on: ubuntu-20.04
+    env:
+      CCACHE_TEMPDIR: /tmp/.ccache-temp
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - uses: actions/cache@v2
+        with:
+          path: ~/.ccache
+          key: ccache-${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: ccache-${{ runner.os }}-build-
+      - name: update apt
+        run: sudo apt update & sudo apt-get upgrade -y
+      - name: install dependencies
+        run: sudo apt-get install -y python-dev autotools-dev libboost-all-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+      - name: build server
+        run: |
+          ${{env.CCACHE_SETTINGS}}
+          make static-release-testnet -j3
+      - name: Tar files
+        run: cd build/release/src && tar -cvf ../../../testnet-server-linux-amd64.tar letheand simplewallet
+      - uses: actions/upload-artifact@v3
+        with:
+          name: testnet-server-linux-amd64
+          if-no-files-found: error
+          path: testnet-server-linux-amd64.tar
+  macos-amd64:
+    runs-on: macos-latest
+    env:
+      CCACHE_TEMPDIR: /tmp/.ccache-temp
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - uses: actions/cache@v2
+        with:
+          path: /Users/runner/Library/Caches/ccache
+          key: ccache-${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: ccache-${{ runner.os }}-build-
+      - name: install dependencies
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl boost icu4c ccache miniupnpc
+      - name: build server
+        env:
+          PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
+        run: |
+          ${{env.CCACHE_SETTINGS}}
+          export LIBRARY_PATH=${LIBRARY_PATH}:/usr/local/opt/icu4c/lib
+          make release-testnet -j3
+      - name: Tar files
+        run: cd build/release/src && tar -cvf ../../../testnet-server-macos-amd64.tar letheand simplewallet
+      - uses: actions/upload-artifact@v3
+        with:
+          name: testnet-server-macos-amd64
+          if-no-files-found: error
+          path: testnet-server-macos-amd64.tar
+  windows-amd64:
+    runs-on: windows-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{ github.token }}
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+      - uses: actions/cache@v2
+        with:
+          path: C:\Users\runneradmin\.ccache
+          key: ccache-${{ runner.os }}-build-${{ github.sha }}
+          restore-keys: ccache-${{ runner.os }}-build-
+      - name: Cache Chocolatey Dependencies
+        uses: actions/cache@v3
+        with:
+          path: C:\ProgramData\chocolatey\lib
+          key: choco-cache-${{ hashFiles('**/dependencies.config') }}
+          restore-keys: |
+            choco-cache-
+      - name: Eat the Choco
+        run: |
+          choco install qt5-default --version 5.15.2.20211228 -y
+          choco install openssl --version 1.1.1.1500 -y
+          choco install ccache -y
+      - name: install msvc toolset
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2.4.1
+        id: install-boost
+        with:
+          # REQUIRED: Specify the required boost version
+          # A list of supported versions can be found here:
+          # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
+          boost_version: 1.80.0
+          platform_version: 2022
+          toolset: msvc
+          link: static
+      - name: Set up Visual Studio shell
+        uses: egor-tensin/vs-shell@v2
+        with:
+          arch: x64
+      - name: build server
+        env:
+          QT_PREFIX_PATH: C:\ProgramData\chocolatey\lib\Qt5.11.2\5.11.2
+          INNOSETUP_PATH: C:\Program Files (x86)\Inno Setup 5\ISCC.exe
+          ETC_BINARIES_PATH: C:\dev\deploy\etc-binaries
+          BUILDS_PATH: C:\dev\deploy\zano
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          OPENSSL_ROOT_DIR: C:\ProgramData\chocolatey\lib\OpenSSL-Win64
+        run: |
+          refreshenv
+          ${{env.CCACHE_SETTINGS}}
+          mkdir build && cd build
+          cmake -D TESTNET=TRUE -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BUILD_GUI=false -D STATIC=FALSE -G "Visual Studio 17 2022" -T host=x64 -DBoost_INCLUDE_DIR="${{steps.install-boost.outputs.BOOST_ROOT}}\include" -DBoost_LIBRARY_DIRS="${{steps.install-boost.outputs.BOOST_ROOT}}\lib" ..
+          msbuild version.vcxproj /p:Configuration=Release /t:Build
+          msbuild src/daemon.vcxproj /p:Configuration=Release /t:Build
+          msbuild src/simplewallet.vcxproj /p:Configuration=Release /t:Build
+      - uses: vimtor/action-zip@v1
+        with:
+          files: build\src\Release\letheand.exe build\src\Release\simplewallet.exe
+          dest: testnet-server-windows-amd64.zip
+      - uses: actions/upload-artifact@v3
+        with:
+          name: testnet-server-windows-amd64
+          if-no-files-found: error
+          path: ${{ github.workspace }}\testnet-server-windows-amd64.zip

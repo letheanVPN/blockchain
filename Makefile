@@ -62,6 +62,9 @@ gui: gui-release
 gui-release:
 	$(eval command += $(cmake_release) $(cmake_gui))
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+gui-release-testnet:
+	$(eval command += $(cmake_release) $(cmake_gui))
+	$(call CMAKE,$(dir_release),$(command) -D TESTNET=TRUE) && $(MAKE)
 
 gui-debug:
 	$(eval command += $(cmake_debug) $(cmake_gui))
