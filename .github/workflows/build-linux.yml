@@ -38,10 +38,3 @@ jobs:
           name: testnet-server-linux-amd64
           if-no-files-found: error
           path: testnet-server-linux-amd64.tar
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          prerelease: true
-          generate_release_notes: true
-          files: ${{ github.workspace }}/testnet-server-linux-amd64.tar
