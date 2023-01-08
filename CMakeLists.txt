@@ -94,10 +94,6 @@ set(TESTNET FALSE CACHE BOOL "Compile for testnet")
 set(MUTE_ERRORS TRUE CACHE BOOL "Disable Error Suppression")
 set(BUILD_GUI FALSE CACHE BOOL "Build qt-daemon")
 
-include_directories(src contrib/eos_portable_archive contrib contrib/epee/include "${CMAKE_BINARY_DIR}/version" "${CMAKE_BINARY_DIR}/contrib/zlib")
-
-add_definitions(-DSTATICLIB)
-
 if(TESTNET)
   message("!!!!!! NOTICE: Project is building for TESTNET !!!!!!")
   add_definitions(-DTESTNET)
@@ -117,6 +113,10 @@ if(DISABLE_TOR)
   add_definitions(-DDISABLE_TOR)
 endif()
 
+
+include_directories(src contrib/eos_portable_archive contrib contrib/epee/include "${CMAKE_BINARY_DIR}/version" "${CMAKE_BINARY_DIR}/contrib/zlib")
+
+add_definitions(-DSTATICLIB)
 
 set(STATIC ${MSVC} CACHE BOOL "Link libraries statically")
 if (UNIX AND NOT APPLE)

@@ -10,19 +10,17 @@ namespace currency
 {
 #pragma pack(push, 1)
 #ifndef TESTNET
-
-  struct genesis_tx_raw_data
-  {
-    uint64_t const v[24];
-    uint8_t const r[7];
-  };
-
+    struct genesis_tx_raw_data
+    {
+      uint64_t const v[42];
+      uint8_t const r[2];
+    };
 #else
-  struct genesis_tx_raw_data
-  {
-    uint64_t const v[42];
-    uint8_t const r[2];
-  };
+    struct genesis_tx_raw_data
+    {
+      uint64_t const v[24];
+      uint8_t const r[7];
+    };
 #endif
 #pragma pack(pop)
   extern const genesis_tx_raw_data ggenesis_tx_raw;

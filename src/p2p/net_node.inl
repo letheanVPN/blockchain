@@ -309,13 +309,9 @@ namespace nodetool
   template<class t_payload_net_handler>
   bool node_server<t_payload_net_handler>::init(const boost::program_options::variables_map& vm)
   {
-#ifndef TESTNET
+
     //TODO:
     ADD_HARDCODED_SEED_NODE(SEED_NODE_HOST, P2P_DEFAULT_PORT);
-#else
-    //TODO:
-    ADD_HARDCODED_SEED_NODE(SEED_NODE_HOST, P2P_DEFAULT_PORT);
-#endif
 
     bool res = handle_command_line(vm);
     CHECK_AND_ASSERT_MES(res, false, "Failed to handle command line");

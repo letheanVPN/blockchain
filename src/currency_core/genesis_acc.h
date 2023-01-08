@@ -25,7 +25,7 @@ struct genesis_tx_dictionary_entry {
 #ifndef TESTNET
 extern const genesis_tx_dictionary_entry ggenesis_dict[1];
 #else
-extern const genesis_tx_dictionary_entry ggenesis_dict[5];
+extern const genesis_tx_dictionary_entry ggenesis_dict[1];
 #endif
 
 extern const crypto::public_key ggenesis_tx_pub_key;
