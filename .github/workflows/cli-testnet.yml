@@ -32,8 +32,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ~/.ccache
-          key: ccache-${{ runner.os }}-build-${{ github.sha }}
-          restore-keys: ccache-${{ runner.os }}-build-
+          key: ccache-${{ runner.os }}-build-testnet-cli-${{ github.sha }}
+          restore-keys: ccache-${{ runner.os }}-build-testnet-cli-
       - name: update apt
         run: sudo apt update & sudo apt-get upgrade -y
       - name: install dependencies
@@ -41,7 +41,9 @@ jobs:
       - name: build server
         run: |
           ${{env.CCACHE_SETTINGS}}
-          make static-release-testnet -j3
+          mkdir build && cd build
+          cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
+          make -j2 daemon simplewallet -j3
       - name: Tar files
         run: cd build/release/src && tar -cvf ../../../testnet-server-linux-amd64.tar letheand simplewallet
       - uses: actions/upload-artifact@v3
@@ -65,8 +67,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: /Users/runner/Library/Caches/ccache
-          key: ccache-${{ runner.os }}-build-${{ github.sha }}
-          restore-keys: ccache-${{ runner.os }}-build-
+          key: ccache-${{ runner.os }}-build-testnet-cli-${{ github.sha }}
+          restore-keys: ccache-${{ runner.os }}-build-testnet-cli-
       - name: install dependencies
         run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl boost icu4c ccache miniupnpc
       - name: build server
@@ -75,7 +77,9 @@ jobs:
         run: |
           ${{env.CCACHE_SETTINGS}}
           export LIBRARY_PATH=${LIBRARY_PATH}:/usr/local/opt/icu4c/lib
-          make release-testnet -j3
+          mkdir build && cd build
+          cmake -D BOOST_ROOT="/opt/homebrew/opt/boost" -D BOOST_LIBRARYDIR="/opt/homebrew/opt/boost/lib" -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
+          make -j2 daemon simplewallet
       - name: Tar files
         run: cd build/release/src && tar -cvf ../../../testnet-server-macos-amd64.tar letheand simplewallet
       - uses: actions/upload-artifact@v3
@@ -97,8 +101,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: C:\Users\runneradmin\.ccache
-          key: ccache-${{ runner.os }}-build-${{ github.sha }}
-          restore-keys: ccache-${{ runner.os }}-build-
+          key: ccache-${{ runner.os }}-build-testnet-cli-${{ github.sha }}
+          restore-keys: ccache-${{ runner.os }}-build-testnet-cli-
       - name: Cache Chocolatey Dependencies
         uses: actions/cache@v3
         with:
