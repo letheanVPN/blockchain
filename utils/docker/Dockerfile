@@ -120,27 +120,25 @@ RUN set -ex \
 
 FROM build-prep as build
 
-#FROM lthn/build:server as build
+ARG THREADS=2
 
-#ARG THREADS=2
+COPY . /project
 
-#COPY . /project
+WORKDIR /project/build
 
-#WORKDIR /project/build
+RUN cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
 
-#RUN cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
+RUN make -j${THREADS} daemon simplewallet
 
-#RUN make -j${THREADS} daemon simplewallet
+FROM scratch as export
+COPY --chmod=0777 --from=build /project/build/src/letheand /
+COPY --chmod=0777 --from=build /project/build/src/simplewallet /
 
-#FROM scratch as export
-#COPY --chmod=0777 --from=build /project/build/src/letheand /
-#COPY --chmod=0777 --from=build /project/build/src/simplewallet /
+FROM ubuntu:20.04 as final
 
-#FROM ubuntu:20.04 as final
-
-#RUN useradd -ms /bin/bash lethean &&\
-#    mkdir -p /home/lethean/data &&\
-#    chown -R lethean:lethean /home/lethean/data
+RUN useradd -ms /bin/bash lethean &&\
+    mkdir -p /home/lethean/data &&\
+    chown -R lethean:lethean /home/lethean/data
 
 
 
