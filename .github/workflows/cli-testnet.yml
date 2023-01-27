@@ -71,6 +71,7 @@ jobs:
       - name: build server
         env:
           PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
+          OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
           ZANO_BOOST_ROOT: "/opt/homebrew/opt/boost"
           ZANO_BOOST_LIBS_PATH: "/opt/homebrew/opt/boost/lib"
           CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk"
