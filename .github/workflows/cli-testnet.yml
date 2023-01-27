@@ -42,8 +42,8 @@ jobs:
         run: |
           ${{env.CCACHE_SETTINGS}}
           ./utils/build/testnet_linux_cli.sh
-      - name: Tar files
-        run: mv lethean-linux-cli-*.tar.bz ../../
+      - name: Move Tarball
+        run: cd build/release && mv lethean-linux-cli-*.tar.bz ../../
       - uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error
