@@ -137,7 +137,7 @@ jobs:
           ETC_BINARIES_PATH: C:\dev\deploy\etc-binaries
           BUILDS_PATH: C:\dev\deploy\zano
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          OPENSSL_ROOT_DIR: C:\ProgramData\chocolatey\lib\OpenSSL-Win64
+          OPENSSL_ROOT_DIR: "C:/Program Files/OpenSSL-Win64"
         run: |
           refreshenv
           ${{env.CCACHE_SETTINGS}}
