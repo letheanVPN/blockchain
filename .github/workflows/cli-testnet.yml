@@ -41,16 +41,13 @@ jobs:
       - name: build server
         run: |
           ${{env.CCACHE_SETTINGS}}
-          mkdir build && cd build
-          cmake -D STATIC=true -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
-          make -j2 daemon simplewallet -j3
+          ./utils/build/testnet_linux_cli.sh
       - name: Tar files
-        run: cd build/release/src && tar -cvf ../../../testnet-server-linux-amd64.tar letheand simplewallet
+        run: mv lethean-linux-cli-*.tar.bz ../../
       - uses: actions/upload-artifact@v3
         with:
-          name: testnet-server-linux-amd64
           if-no-files-found: error
-          path: testnet-server-linux-amd64.tar
+          path: lethean-linux-cli-*.tar.bz
   macos-amd64:
     runs-on: macos-latest
     env:
