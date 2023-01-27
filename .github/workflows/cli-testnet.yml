@@ -142,7 +142,7 @@ jobs:
           refreshenv
           ${{env.CCACHE_SETTINGS}}
           mkdir build && cd build
-          cmake -D TESTNET=TRUE -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BUILD_GUI=false -D STATIC=FALSE -G "Visual Studio 17 2022" -T host=x64 -DBoost_INCLUDE_DIR="${{steps.install-boost.outputs.BOOST_ROOT}}\include" -DBoost_LIBRARY_DIRS="${{steps.install-boost.outputs.BOOST_ROOT}}\lib" ..
+          cmake -D TESTNET=TRUE -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%" -D OPENSSL_LIBRARIES="%OPENSSL_ROOT_DIR%/libs" -D OPENSSL_INCLUDE_DIR="%OPENSSL_ROOT_DIR%/include" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BUILD_GUI=false -D STATIC=FALSE -G "Visual Studio 17 2022" -T host=x64 -DBoost_INCLUDE_DIR="${{steps.install-boost.outputs.BOOST_ROOT}}\include" -DBoost_LIBRARY_DIRS="${{steps.install-boost.outputs.BOOST_ROOT}}\lib" ..
           msbuild version.vcxproj /p:Configuration=Release /t:Build
           msbuild src/daemon.vcxproj /p:Configuration=Release /t:Build
           msbuild src/simplewallet.vcxproj /p:Configuration=Release /t:Build
