@@ -11,7 +11,7 @@
 # export QT_PREFIX_PATH=/home/user/Qt5.10.1/5.10.1/gcc_64
 # export OPENSSL_ROOT_DIR=/home/user/openssl
 
-ARCHIVE_NAME_PREFIX=lthn-linux-x64-
+ARCHIVE_NAME_PREFIX=lethean-linux-x64-
 
 : "${BOOST_ROOT:?BOOST_ROOT should be set to the root of Boost, ex.: /home/user/boost_1_66_0}"
 : "${QT_PREFIX_PATH:?QT_PREFIX_PATH should be set to Qt libs folder, ex.: /home/user/Qt5.10.1/5.10.1/gcc_64}"
@@ -49,13 +49,13 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make -j2 daemon simplewallet connectivity_tool
+make -j daemon simplewallet connectivity_tool
 if [ $? -ne 0 ]; then
     echo "Failed to make!"
     exit 1
 fi
 
-make -j1 Lethean
+make -j Lethean
 if [ $? -ne 0 ]; then
     echo "Failed to make!"
     exit 1
@@ -109,7 +109,7 @@ cp $QT_PREFIX_PATH/plugins/platforms/libqxcb.so ./Lethean/lib/platforms
 mkdir ./Lethean/xcbglintegrations
 cp $QT_PREFIX_PATH/plugins/xcbglintegrations/libqxcb-glx-integration.so ./Lethean/xcbglintegrations
 
-cp -Rv src/lthnd src/Lethean src/simplewallet  src/connectivity_tool ./Lethean
+cp -Rv src/letheand src/Lethean src/simplewallet  src/connectivity_tool ./Lethean
 
 package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.tar.bz2
 
