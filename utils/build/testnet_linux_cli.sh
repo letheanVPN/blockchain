@@ -1,0 +1,76 @@
+#!/bin/bash -x
+
+# Environment prerequisites:
+# 1) QT_PREFIX_PATH should be set to Qt libs folder
+# 2) BOOST_ROOT should be set to the root of Boost
+# 3) OPENSSL_ROOT_DIR should be set to the root of OpenSSL
+#
+# for example, place these lines to the end of your ~/.bashrc :
+#
+# export BOOST_ROOT=/home/user/boost_1_66_0
+# export QT_PREFIX_PATH=/home/user/Qt5.10.1/5.10.1/gcc_64
+# export OPENSSL_ROOT_DIR=/home/user/openssl
+
+ARCHIVE_NAME_PREFIX=lethean-linux-cli-x64-
+
+: "${BOOST_ROOT:?BOOST_ROOT should be set to the root of Boost, ex.: /home/user/boost_1_66_0}"
+: "${QT_PREFIX_PATH:?QT_PREFIX_PATH should be set to Qt libs folder, ex.: /home/user/Qt5.10.1/5.10.1/gcc_64}"
+: "${OPENSSL_ROOT_DIR:?OPENSSL_ROOT_DIR should be set to OpenSSL root folder, ex.: /home/user/openssl}"
+
+if [ -n "$build_prefix" ]; then
+  ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}${build_prefix}-
+  build_prefix_label="$build_prefix "
+fi
+
+
+testnet_def="-D TESTNET=TRUE"
+testnet_label="testnet "
+ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}testnet-
+
+prj_root=$(pwd)
+
+echo "---------------- BUILDING PROJECT ----------------"
+echo "--------------------------------------------------"
+
+echo "Building...." 
+
+rm -rf build; mkdir -p build/release; cd build/release; 
+cmake $testnet_def -D STATIC=true -D ARCH=x86-64 -D BUILD_GUI=TRUE -D OPENSSL_ROOT_DIR="$OPENSSL_ROOT_DIR" -D CMAKE_PREFIX_PATH="$QT_PREFIX_PATH" -D CMAKE_BUILD_TYPE=Release ../..
+if [ $? -ne 0 ]; then
+    echo "Failed to run cmake"
+    exit 1
+fi
+
+make -j daemon simplewallet connectivity_tool
+if [ $? -ne 0 ]; then
+    echo "Failed to make!"
+    exit 1
+fi
+
+
+read version_str <<< $(./src/letheand --version | awk '/^Lethean/ { print $2 }')
+version_str=${version_str}
+echo $version_str
+
+
+rm -rf Lethean;
+mkdir -p Lethean;
+
+
+cp -Rv src/letheand src/simplewallet  src/connectivity_tool ./Lethean
+chmod 0777 ./src/letheand src/simplewallet  src/connectivity_tool
+
+package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.tar.bz2
+
+rm -f ./$package_filename
+tar -cjvf $package_filename Lethean
+if [ $? -ne 0 ]; then
+    echo "Failed to pack"
+    exit 1
+fi
+
+echo "Build success"
+
+
+
+exit 0
