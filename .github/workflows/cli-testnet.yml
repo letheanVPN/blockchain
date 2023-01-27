@@ -71,19 +71,19 @@ jobs:
       - name: build server
         env:
           PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
+          ZANO_BOOST_ROOT: "/opt/homebrew/opt/boost"
+          BOOST_LIBRARYDIR: "/opt/homebrew/opt/boost/lib"
+          CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk"
         run: |
           ${{env.CCACHE_SETTINGS}}
           export LIBRARY_PATH=${LIBRARY_PATH}:/usr/local/opt/icu4c/lib
-          mkdir build && cd build
-          cmake -D BOOST_ROOT="/opt/homebrew/opt/boost" -D BOOST_LIBRARYDIR="/opt/homebrew/opt/boost/lib" -D ARCH=x86-64 -D TESTNET=TRUE -D CMAKE_BUILD_TYPE=Release ..
-          make -j2 daemon simplewallet
-      - name: Tar files
-        run: cd build/release/src && tar -cvf ../../../testnet-server-macos-amd64.tar letheand simplewallet
+          ./utils/build/testnet_mac_osx_cli.sh
+      - name: Move Tarball
+        run: cd build/release && mv lethean-macos-cli-*.tar.bz2 ../../
       - uses: actions/upload-artifact@v3
         with:
-          name: testnet-server-macos-amd64
           if-no-files-found: error
-          path: testnet-server-macos-amd64.tar
+          path: lethean-macos-cli-*.tar.bz2
   windows-amd64:
     runs-on: windows-latest
     steps:
