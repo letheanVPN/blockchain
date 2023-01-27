@@ -37,7 +37,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make -j daemon simplewallet connectivity_tool
+make -j2 daemon simplewallet connectivity_tool
 if [ $? -ne 0 ]; then
     echo "Failed to make!"
     exit 1
