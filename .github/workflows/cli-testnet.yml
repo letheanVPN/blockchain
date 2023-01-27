@@ -43,11 +43,11 @@ jobs:
           ${{env.CCACHE_SETTINGS}}
           ./utils/build/testnet_linux_cli.sh
       - name: Move Tarball
-        run: cd build/release && mv lethean-linux-cli-*.tar.bz ../../
+        run: cd build/release && mv lethean-linux-cli-*.tar.bz2 ../../
       - uses: actions/upload-artifact@v3
         with:
           if-no-files-found: error
-          path: lethean-linux-cli-*.tar.bz
+          path: lethean-linux-cli-*.tar.bz2
   macos-amd64:
     runs-on: macos-latest
     env:
