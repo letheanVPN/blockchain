@@ -201,7 +201,7 @@ if(BUILD_GUI)
 
   target_link_libraries(Lethean wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
   if (UNIX AND NOT APPLE)
-	target_link_libraries(Zano rt)
+	target_link_libraries(Lethean rt)
   endif()
 
   if(APPLE)
