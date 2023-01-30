@@ -49,6 +49,11 @@ jobs:
           name: lethean-linux-cli
           if-no-files-found: error
           path: lethean-linux-cli-*.tar.bz2
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ github.workspace }}/lethean-linux-cli-*.tar.bz2
   macos-amd64:
     runs-on: macos-latest
     env:
@@ -87,6 +92,11 @@ jobs:
           name: lethean-macos-cli
           if-no-files-found: error
           path: lethean-macos-cli-*.tar.bz2
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ github.workspace }}/lethean-macos-cli-*.tar.bz2
   windows-amd64:
     runs-on: windows-latest
     steps:
@@ -140,3 +150,8 @@ jobs:
           name: lethean-windows-cli
           if-no-files-found: error
           path: ${{ github.workspace }}\lethean-win-cli-*.zip
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ github.workspace }}/lethean-linux-cli-*.zip
