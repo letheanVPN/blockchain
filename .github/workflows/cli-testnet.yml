@@ -135,7 +135,7 @@ jobs:
           QT_PREFIX_PATH: C:\ProgramData\chocolatey\lib\Qt5.11.2\5.11.2
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
           LOCAL_BOOST_PATH: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          OPENSSL_ROOT_DIR: "C:\Program Files\OpenSSL-Win64"
+          OPENSSL_ROOT_DIR: "C:\\Program Files\\OpenSSL-Win64"
         run: |
           refreshenv
           ${{env.CCACHE_SETTINGS}}
