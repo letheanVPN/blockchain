@@ -29,7 +29,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/.ccache
           key: ccache-${{ runner.os }}-build-testnet-cli-${{ github.sha }}
@@ -61,7 +61,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: /Users/runner/Library/Caches/ccache
           key: ccache-${{ runner.os }}-build-testnet-cli-${{ github.sha }}
@@ -96,7 +96,7 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: C:\Users\runneradmin\.ccache
           key: ccache-${{ runner.os }}-build-testnet-cli-${{ github.sha }}
@@ -105,6 +105,7 @@ jobs:
         run: |
           choco install openssl --version 1.1.1.1500 -y
           choco install ccache -y
+          choco install zip -y
       - name: install msvc toolset
         uses: ilammy/msvc-dev-cmd@v1
       - name: Install boost
