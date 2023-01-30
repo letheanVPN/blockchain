@@ -101,13 +101,6 @@ jobs:
           path: C:\Users\runneradmin\.ccache
           key: ccache-${{ runner.os }}-build-testnet-cli-${{ github.sha }}
           restore-keys: ccache-${{ runner.os }}-build-testnet-cli-
-      - name: Cache Chocolatey Dependencies
-        uses: actions/cache@v3
-        with:
-          path: C:\ProgramData\chocolatey\lib
-          key: choco-cache-cli${{ hashFiles('**/dependencies.config') }}
-          restore-keys: |
-            choco-cache-
       - name: Eat the Choco
         run: |
           choco install qt5-default --version 5.15.2.20211228 -y
