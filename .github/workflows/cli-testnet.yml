@@ -133,25 +133,14 @@ jobs:
       - name: build server
         env:
           QT_PREFIX_PATH: C:\ProgramData\chocolatey\lib\Qt5.11.2\5.11.2
-          INNOSETUP_PATH: C:\Program Files (x86)\Inno Setup 5\ISCC.exe
-          ETC_BINARIES_PATH: C:\dev\deploy\etc-binaries
-          BUILDS_PATH: C:\dev\deploy\zano
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          OPENSSL_ROOT_DIR: "C:/Program Files/OpenSSL-Win64"
+          LOCAL_BOOST_PATH: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          OPENSSL_ROOT_DIR: "C:\Program Files\OpenSSL-Win64"
         run: |
           refreshenv
           ${{env.CCACHE_SETTINGS}}
-          mkdir build && cd build
-          cmake -D TESTNET=TRUE -D OPENSSL_ROOT_DIR="C:/Program Files/OpenSSL-Win64" -D OPENSSL_LIBRARIES="C:/Program Files/OpenSSL-Win64/libs" -D OPENSSL_INCLUDE_DIR="C:/Program Files/OpenSSL-Win64/include" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BUILD_GUI=false -D STATIC=FALSE -G "Visual Studio 17 2022" -T host=x64 -DBoost_INCLUDE_DIR="${{steps.install-boost.outputs.BOOST_ROOT}}\include" -DBoost_LIBRARY_DIRS="${{steps.install-boost.outputs.BOOST_ROOT}}\lib" ..
-          msbuild version.vcxproj /p:Configuration=Release /t:Build
-          msbuild src/daemon.vcxproj /p:Configuration=Release /t:Build
-          msbuild src/simplewallet.vcxproj /p:Configuration=Release /t:Build
-      - uses: vimtor/action-zip@v1
-        with:
-          files: build\src\Release\letheand.exe build\src\Release\simplewallet.exe
-          dest: testnet-server-windows-amd64.zip
+          .\utils\build\testnet_windows_cli.bat
       - uses: actions/upload-artifact@v3
         with:
-          name: testnet-server-windows-amd64
           if-no-files-found: error
-          path: ${{ github.workspace }}\testnet-server-windows-amd64.zip
+          path: ${{ github.workspace }}\lethean-win-cli-*.zip
