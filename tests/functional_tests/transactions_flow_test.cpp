@@ -18,7 +18,7 @@ using namespace epee;
 #include "string_coding.h"
 #include "math_helper.h"
 using namespace currency;
-
+namespace ph = boost::placeholders;
 #define TESTS_DEFAULT_FEE                   TX_DEFAULT_FEE 
 
 std::string get_random_hex_text(size_t len)
@@ -309,17 +309,17 @@ void wait_receive_and_unlock_money(tools::wallet2& w, uint64_t amount_to_wait)
 
 class flow_test_console_cmmands_handler
 {
-  
+
   epee::console_handlers_binder m_cmd_binder;
   flow_test_context& m_context;
 public:
   flow_test_console_cmmands_handler(flow_test_context& contxt):m_context(contxt)
   {
-    m_cmd_binder.set_handler("help", boost::bind(&console_handlers_binder::help, &m_cmd_binder, _1), "Show this help");
-    m_cmd_binder.set_handler("exit", boost::bind(&flow_test_console_cmmands_handler::exit, this, _1), "Exit");
-    m_cmd_binder.set_handler("pause", boost::bind(&flow_test_console_cmmands_handler::pause, this, _1), "Pause");
-    m_cmd_binder.set_handler("continue", boost::bind(&flow_test_console_cmmands_handler::do_continue, this, _1), "Continue");
-    m_cmd_binder.set_handler("refresh", boost::bind(&flow_test_console_cmmands_handler::refresh, this, _1), "Refresh");
+    m_cmd_binder.set_handler("help", boost::bind(&console_handlers_binder::help, &m_cmd_binder, ph::_1), "Show this help");
+    m_cmd_binder.set_handler("exit", boost::bind(&flow_test_console_cmmands_handler::exit, this, ph::_1), "Exit");
+    m_cmd_binder.set_handler("pause", boost::bind(&flow_test_console_cmmands_handler::pause, this, ph::_1), "Pause");
+    m_cmd_binder.set_handler("continue", boost::bind(&flow_test_console_cmmands_handler::do_continue, this, ph::_1), "Continue");
+    m_cmd_binder.set_handler("refresh", boost::bind(&flow_test_console_cmmands_handler::refresh, this, ph::_1), "Refresh");
   }
 
   bool start_handling()
