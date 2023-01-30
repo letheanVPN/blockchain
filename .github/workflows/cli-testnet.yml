@@ -103,7 +103,6 @@ jobs:
           restore-keys: ccache-${{ runner.os }}-build-testnet-cli-
       - name: Eat the Choco
         run: |
-          choco install qt5-default --version 5.15.2.20211228 -y
           choco install openssl --version 1.1.1.1500 -y
           choco install ccache -y
       - name: install msvc toolset
