@@ -50,8 +50,8 @@
 #define BASE_REWARD_DUST_THRESHOLD                      ((uint64_t)1000000) // pow(10, 6) - change this will cause hard-fork!
 #define DEFAULT_DUST_THRESHOLD                          ((uint64_t)0)
 
-#define TX_DEFAULT_FEE                                  ((uint64_t)100000) // .01
-#define TX_MINIMUM_FEE                                  ((uint64_t)100000) // .01
+#define TX_DEFAULT_FEE                                  ((uint64_t)1000000) // .01
+#define TX_MINIMUM_FEE                                  ((uint64_t)1000000) // .01
 
 #define CURRENCY_BLOCK_REWARD                           1000000000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
 
@@ -82,7 +82,7 @@
 #define MAX_ALIAS_PER_BLOCK                             1000
 #define ALIAS_COAST_PERIOD                              (CURRENCY_BLOCKS_PER_DAY*7) //week
 #define ALIAS_COAST_RECENT_PERIOD                       (CURRENCY_BLOCKS_PER_DAY*8) //week + 1 day (we guarantee split depth at least 1 day)
-#define ALIAS_VERY_INITAL_COAST                         ((uint64_t)10000) // to avoid split when default fee changed
+#define ALIAS_VERY_INITAL_COAST                         ((uint64_t)1000000000) // to avoid split when default fee changed
 #define ALIAS_MEDIAN_RECALC_INTERWAL                    CURRENCY_BLOCKS_PER_DAY
 
 
