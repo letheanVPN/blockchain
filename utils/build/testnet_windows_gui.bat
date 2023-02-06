@@ -1,22 +1,21 @@
-call configure_local_paths.cmd
+call utils\build\extras\win\configure_local_paths.cmd
 
 ;; MSVC version-specific paths
-SET LOCAL_BOOST_LIB_PATH=%LOCAL_BOOST_PATH%\lib64-msvc-14.1
-SET QT_MSVC_PATH=%QT_PREFIX_PATH%\msvc2017_64
+SET LOCAL_BOOST_LIB_PATH=%LOCAL_BOOST_PATH%\lib64-msvc-14.2
+SET QT_MSVC_PATH=%QT_PREFIX_PATH%\msvc2019_64
 
-SET ACHIVE_NAME_PREFIX=zano-win-x64-
+SET ACHIVE_NAME_PREFIX=lethean-win-gui-x64-
 SET MY_PATH=%~dp0
-SET SOURCES_PATH=%MY_PATH:~0,-7%
+SET SOURCES_PATH=%MY_PATH:~0,-13%
 
 IF NOT [%build_prefix%] == [] (
   SET ACHIVE_NAME_PREFIX=%ACHIVE_NAME_PREFIX%%build_prefix%-
 )
 
-IF "%testnet%" == "true" (
-  SET TESTNET_DEF=-D TESTNET=TRUE
-  SET TESTNET_LABEL=testnet 
-  SET ACHIVE_NAME_PREFIX=%ACHIVE_NAME_PREFIX%testnet-
-)
+SET TESTNET_DEF=-D TESTNET=TRUE
+SET TESTNET_LABEL=testnet
+SET ACHIVE_NAME_PREFIX=%ACHIVE_NAME_PREFIX%testnet-
+
 
 SET PARAM=%~1
 IF "%PARAM%"=="--skip-build" ( GOTO skip_build )
@@ -26,15 +25,11 @@ IF "%PARAM%"=="--skip-build" ( GOTO skip_build )
 set BOOST_ROOT=%LOCAL_BOOST_PATH%
 set BOOST_LIBRARYDIR=%LOCAL_BOOST_LIB_PATH%
 
-
-
 @echo "---------------- PREPARING BINARIES ---------------------------"
 @echo "---------------------------------------------------------------"
 
-
-
 cd %SOURCES_PATH%
-
+set HUNTER_ROOT=%HOMEPATH%\.hunter
 @echo "---------------- BUILDING APPLICATIONS ------------------------"
 @echo "---------------------------------------------------------------"
 
@@ -44,12 +39,14 @@ cd %SOURCES_PATH%
 rmdir build /s /q
 mkdir build
 cd build
-cmake %TESTNET_DEF% -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BUILD_GUI=TRUE -D STATIC=FALSE -G "Visual Studio 15 2017 Win64" -T host=x64 ..
+cmake %TESTNET_DEF% -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%"  -DCMAKE_CONFIGURATION_TYPES:STRING="Release" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BUILD_GUI=TRUE -D STATIC=FALSE -G "Visual Studio 17 2022" -T host=x64 ..
 IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat" x86_amd64
+if not defined DevEnvDir (
+    call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" x86_amd64
+)
 echo on
 cd %SOURCES_PATH%\build
 
@@ -85,12 +82,11 @@ echo "sources are built successfully"
 cd %SOURCES_PATH%/build
 
 set cmd=src\Release\simplewallet.exe --version
-FOR /F "tokens=3" %%a IN ('%cmd%') DO set version=%%a  
-set version=%version:~0,-2%
+FOR /F "tokens=3" %%a IN ('%cmd%') DO set version=%%a
 echo '%version%'
 
 set build_zip_filename=%ACHIVE_NAME_PREFIX%%version%.zip
-set build_zip_path=%BUILDS_PATH%\builds\%build_zip_filename%
+set build_zip_path=%SOURCES_PATH%\%build_zip_filename%
 
 del /F /Q %build_zip_path%
 
@@ -156,7 +152,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 
-"%INNOSETUP_PATH%"  /dBinariesPath=../build/installer_src /DMyAppVersion=%version% /o%BUILDS_PATH%\builds\ /f%ACHIVE_NAME_PREFIX%%version%-installer ..\utils\setup_64.iss 
+"%INNOSETUP_PATH%"  /dBinariesPath=../../../../build/installer_src /DMyAppVersion=%version% /o%SOURCES_PATH% /f%ACHIVE_NAME_PREFIX%%version%-installer ..\utils\build\extras\win\setup_64.iss
 IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
@@ -166,38 +162,11 @@ IF %ERRORLEVEL% NEQ 0 (
 @echo "---------------------------------------------------------------"
 
 set installer_file=%ACHIVE_NAME_PREFIX%%version%-installer.exe
-set installer_path=%BUILDS_PATH%\builds\%installer_file%
+set installer_path=%SOURCES_PATH%\%installer_file%
 
-@echo "   SIGNING ...."
-
-%ZANO_SIGN_CMD% %installer_path%
-IF %ERRORLEVEL% NEQ 0 (
-  @echo "failed to sign installer"
-  goto error
-)
-
-@echo "   UPLOADING TO SERVER ...."
-
-pscp -load lethean_build_server %installer_path% build.lethean.org:/var/www/html/builds
-IF %ERRORLEVEL% NEQ 0 (
-  @echo "FAILED TO UPLOAD EXE TO SERVER"
-  goto error
-)
 call :sha256 %installer_path% installer_checksum
 
-pscp -load lethean_build_server %build_zip_path% build.lethean.org:/var/www/html/builds
-IF %ERRORLEVEL% NEQ 0 (
-  @echo "FAILED TO UPLOAD ZIP TO SERVER"
-  goto error
-)
 call :sha256 %build_zip_path% build_zip_checksum
-
-set mail_msg="New %build_prefix% %TESTNET_LABEL%build for win-x64:<br>INST: https://build.lethean.org/builds/%installer_file% <br>sha256: %installer_checksum%<br><br>ZIP:  https://build.lethean.org/builds/%build_zip_filename% <br>sha256: %build_zip_checksum%<br>"
-
-echo %mail_msg%
-
-senditquiet.exe  -t %emails% -subject "Lethean win-x64 %build_prefix% %TESTNET_LABEL%build %version%" -body %mail_msg%
-
 
 goto success
 
@@ -217,7 +186,7 @@ EXIT /B %ERRORLEVEL%
 
 :sha256
 @setlocal enabledelayedexpansion
-@set /a count=1 
+@set /a count=1
 @for /f "skip=1 delims=:" %%a in ('CertUtil -hashfile %1 SHA256') do @(
   @if !count! equ 1 set "hash=%%a"
   @set /a count+=1

@@ -41,8 +41,9 @@ cd %SOURCES_PATH%\build
 IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
-
-call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" x86_amd64
+if not defined DevEnvDir (
+    call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat" x86_amd64
+)
 @echo on
 cd %SOURCES_PATH%\build
 

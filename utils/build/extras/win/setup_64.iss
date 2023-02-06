@@ -4,14 +4,14 @@
 #define MyAppName "Lethean"
 ;#define MyAppVersion "0.2.0.31"
 #define MyAppPublisher "Lethean Team"
-#define MyAppURL "http://lethean.org"
+#define MyAppURL "http://lethean.io"
 #define MyAppExeName "Lethean.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{65FD6D06-3A1D-47FF-AA45-2B302C1C9D8E}
+AppId={{9763BC74-CBAD-44BB-8655-18B331C572D5}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -59,7 +59,7 @@ Root: HKCR; Subkey: "Lethean\shell\open\command"; ValueType: string; ValueName: 
 [Files]
 
 Source: "{#BinariesPath}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs ignoreversion overwritereadonly replacesameversion
-Source: "..\src\gui\qt-daemon\layout\html\*"; DestDir: "{app}\html"; Flags: ignoreversion recursesubdirs ignoreversion overwritereadonly replacesameversion
+Source: "..\..\..\..\src\gui\qt-daemon\layout\html\*"; DestDir: "{app}\html"; Flags: ignoreversion recursesubdirs ignoreversion overwritereadonly replacesameversion
 Source: "{#BinariesPath}\vc_redist.x64.exe"; DestDir: {tmp}; Flags: deleteafterinstall
 Source: "../resources/installer_bg_*.bmp"; Excludes: "*313.bmp"; Flags: dontcopy
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
@@ -80,7 +80,7 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 ;This works only if it is installed in default location
 Type: filesandordirs; Name: "{pf64}\{#MyAppName}"
 ;This works if it is installed in custom location
-Type: files; Name: "{app}\*"; 
+Type: files; Name: "{app}\*";
 Type: filesandordirs; Name: "{app}"
 
 ; Choose the right wizard background image based on current windows font scale
