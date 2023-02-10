@@ -97,7 +97,7 @@ clean:
 	rm -rf build
 
 macos-gui:
-	bash ./utils/build_script_mac_osx.sh
+	bash ./utils/build/testnet_mac_osx_gui.sh
 
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest

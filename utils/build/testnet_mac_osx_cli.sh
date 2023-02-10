@@ -48,15 +48,6 @@ read version_str <<< $(./src/letheand --version | awk '/^Lethean/ { print $2 }')
 version_str=${version_str}
 echo $version_str
 
-
-echo "############### Prepearing archive... ################"
-mkdir package_folder
-if [ $? -ne 0 ]; then
-    echo "Failed to zip app"
-    exit 1
-fi
-
-
 package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.tar.bz2
 
 rm -f ./$package_filename

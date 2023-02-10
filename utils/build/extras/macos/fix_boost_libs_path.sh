@@ -34,6 +34,8 @@ function fix_boost_libs_in_binary() # $1 - path to boost libs, $2 - binary to fi
 
 function fix_boost_libs_in_libs() # $1 - path to boost libs, $2 - path to libs folder
 {
+  cp $2/libboost_thread-mt.dylib $2/libboost_thread.dylib
+  cp $2/libboost_locale-mt.dylib $2/libboost_locale.dylib
   install_name_tool -change libboost_system.dylib          $1/libboost_system.dylib          $2/libboost_filesystem.dylib
   install_name_tool -change libboost_system.dylib          $1/libboost_system.dylib          $2/libboost_thread.dylib
   install_name_tool -change libboost_system.dylib          $1/libboost_system.dylib          $2/libboost_chrono.dylib

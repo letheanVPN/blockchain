@@ -23,7 +23,7 @@ ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}testnet-
 
 rm -rf build; mkdir -p build/release; cd build/release;
 
-cmake $testnet_def -D OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR -D CMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT -D BUILD_GUI=TRUE -D CMAKE_PREFIX_PATH="$ZANO_QT_PATH/clang_64" -D CMAKE_BUILD_TYPE=Release -D BOOST_ROOT="$ZANO_BOOST_ROOT" -D BOOST_LIBRARYDIR="$ZANO_BOOST_LIBS_PATH" ../..
+cmake $testnet_def -D OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR -D CMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT -D BUILD_GUI=TRUE -D CMAKE_PREFIX_PATH="$ZANO_QT_PATH" -D CMAKE_BUILD_TYPE=Release -D BOOST_ROOT="$ZANO_BOOST_ROOT" -D BOOST_LIBRARYDIR="$ZANO_BOOST_LIBS_PATH" ../..
 if [ $? -ne 0 ]; then
     echo "Failed to cmake"
     exit 1
@@ -72,7 +72,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # fix boost libs paths in main executable and libs to workaround El Capitan's SIP restrictions
-source ../../../utils/macosx_fix_boost_libs_path.sh
+
+source $(pwd)/../../../utils/build/extras/macos/fix_boost_libs_path.sh
+
 fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Lethean.app/Contents/MacOS/Lethean
 fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Lethean.app/Contents/MacOS/simplewallet
 fix_boost_libs_in_binary @executable_path/../Frameworks/boost_libs Lethean.app/Contents/MacOS/letheand
@@ -80,7 +82,7 @@ fix_boost_libs_in_libs @executable_path/../Frameworks/boost_libs Lethean.app/Con
 
 
 
-"$ZANO_QT_PATH/clang_64/bin/macdeployqt" Lethean.app
+"$ZANO_QT_PATH/bin/macdeployqt" Lethean.app
 if [ $? -ne 0 ]; then
     echo "Failed to macdeployqt Lethean.app"
     exit 1
@@ -100,7 +102,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-codesign -s "Developer ID Application: Lethean Limited" --timestamp --options runtime -f --entitlements ../../../utils/macos_entitlements.plist --deep ./Lethean.app
+codesign -s "Developer ID Application: Lethean LTD (W2DNA5L5DY)" --timestamp --options runtime -f --entitlements ../../../utils/build/extras/macos/entitlements.plist --deep ./Lethean.app
 if [ $? -ne 0 ]; then
     echo "Failed to sign Lethean.app"
     exit 1
