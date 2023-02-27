@@ -6,8 +6,7 @@
 
 #include <QtWidgets>
 #include <QtWebEngineWidgets>
-#include <QPrinter>
-#include <QPrintDialog>
+#include <QMenu>
 
 #include "string_coding.h"
 #include "gui_utils.h"
@@ -39,7 +38,7 @@ QString make_response_dbg(const T& r, const std::string& location)
   return str.c_str();
 }
 
-#define PREPARE_RESPONSE(rsp_type, var_name)   view::api_response_t<rsp_type> var_name = AUTO_VAL_INIT(var_name) 
+#define PREPARE_RESPONSE(rsp_type, var_name)   view::api_response_t<rsp_type> var_name = AUTO_VAL_INIT(var_name)
 #define MAKE_RESPONSE(r) (r.error_code == API_RETURN_CODE_OK || r.error_code == API_RETURN_CODE_TRUE) ? make_response(r) : make_response_dbg(r, LOCATION_STR)
 
 #define LOG_API_TIMING() const char* pfunc_call_name = LOCAL_FUNCTION_DEF__; LOG_PRINT_BLUE("[API:" << pfunc_call_name << "]-->>", LOG_LEVEL_0); uint64_t ticks_before_start = epee::misc_utils::get_tick_count(); \
@@ -65,27 +64,6 @@ QString make_response_dbg(const T& r, const std::string& location)
   }
 
 #include "mainwindow.h"
-// 
-// void MediatorObject::from_html_to_c(const QString &text)
-// {
-//   from_c_to_html(text);
-// }
-// 
-// template<typename Arg, typename R, typename C>
-// struct InvokeWrapper {
-//   R *receiver;
-//   void (C::*memberFun)(Arg);
-//   void operator()(Arg result) {
-//     (receiver->*memberFun)(result);
-//   }
-// };
-// 
-// template<typename Arg, typename R, typename C>
-// InvokeWrapper<Arg, R, C> invoke(R *receiver, void (C::*memberFun)(Arg))
-// {
-//   InvokeWrapper<Arg, R, C> wrapper = { receiver, memberFun };
-//   return wrapper;
-// }
 
 
 std::wstring convert_to_lower_via_qt(const std::wstring& w)
@@ -98,8 +76,6 @@ MainWindow::MainWindow()
   : m_gui_deinitialize_done_1(false)
   , m_backend_stopped_2(false)
   , m_system_shutdown(false)
-  , m_view(nullptr)
-  , m_channel(nullptr)
   , m_ui_dispatch_id_counter(0)
 {
 #ifndef _MSC_VER
@@ -111,17 +87,7 @@ MainWindow::MainWindow()
 MainWindow::~MainWindow()
 {
   m_backend.subscribe_to_core_events(nullptr);
-  if (m_view)
-  {
-    m_view->page()->setWebChannel(nullptr);
-    m_view = nullptr;
-  }
-  if (m_channel)
-  {
-    m_channel->deregisterObject(this);
-    delete m_channel;
-    m_channel = nullptr;
-  }
+
   if (m_ipc_worker.joinable())
   {
     m_ipc_worker.join();
@@ -133,82 +99,6 @@ void MainWindow::on_load_finished(bool ok)
   TRY_ENTRY();
   LOG_PRINT("MainWindow::on_load_finished(ok = " << (ok ? "true" : "false") << ")", LOG_LEVEL_0);
   CATCH_ENTRY2(void());
-}
-
-bool MainWindow::init_window()
-{
-  m_view = new QWebEngineView(this);
-  m_channel = new QWebChannel(m_view->page());
-  m_view->page()->setWebChannel(m_channel);
-
-  QWidget* central_widget_to_be_set = m_view;
-
-  std::string qt_dev_tools_option = m_backend.get_qt_dev_tools_option();
-  if (!qt_dev_tools_option.empty())
-  {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
-    std::vector<std::string> qt_dev_tools_option_parts;
-    boost::split(qt_dev_tools_option_parts, qt_dev_tools_option, [](char c) { return c == ','; });
-    
-    Qt::Orientation orientation = Qt::Vertical;
-    if (qt_dev_tools_option_parts.size() >= 1 && qt_dev_tools_option_parts[0] == "horizontal")
-      orientation = Qt::Horizontal;
-
-    double zoom_factor = 1.3;
-    if (qt_dev_tools_option_parts.size() >= 2)
-      epee::string_tools::get_xtype_from_string(zoom_factor, qt_dev_tools_option_parts[1]);
-
-    QSplitter* spliter = new QSplitter(orientation);
-    spliter->addWidget(m_view);
-    QWebEngineView* inspector = new QWebEngineView();
-    spliter->addWidget(inspector);
-    m_view->page()->setDevToolsPage(inspector->page());
-    inspector->setZoomFactor(zoom_factor);
-
-    spliter->setCollapsible(0, false);
-    spliter->setCollapsible(1, false);
-
-    QList<int> Sizes;
-    Sizes.append(0.5 * m_view->sizeHint().height());
-    Sizes.append(0.5 * m_view->sizeHint().height());
-    spliter->setSizes(Sizes);
-
-    central_widget_to_be_set = spliter;
-#else
-    LOG_ERROR("Qt Dev Tool is not available for this Qt version, try building with Qt 5.11.0 or higher");
-#endif
-  }
-
-  // register QObjects to be exposed to JavaScript
-  m_channel->registerObject(QStringLiteral("mediator_object"), this);
-
-  connect(m_view, SIGNAL(loadFinished(bool)), SLOT(on_load_finished(bool)));
-
-  setCentralWidget(central_widget_to_be_set);
-  //this->setMouseTracking(true);
-
-  m_view->page()->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
-  m_view->page()->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
-  m_view->page()->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
-
-  m_view->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
-  m_view->settings()->setAttribute(QWebEngineSettings::LocalContentCanAccessRemoteUrls, true);
-  m_view->settings()->setAttribute(QWebEngineSettings::LocalStorageEnabled, true);
-
-  m_localization.resize(localization_id_couter);
-  m_localization[localization_id_quit] = "Quit";
-  m_localization[localization_id_is_received] = " is received";
-  m_localization[localization_id_is_confirmed] = " is confirmed";
-  m_localization[localization_id_income_transfer_unconfirmed] = "Income transfer (unconfirmed)";
-  m_localization[localization_id_income_transfer_confirmed] = "Income transfer confirmed";
-  m_localization[localization_id_locked] = "(locked)";
-  m_localization[localization_id_mined] = "(mined)";
-  m_localization[localization_id_minimized_title] = "Lethean app is minimized to tray";
-  m_localization[localization_id_minimized_text] = "You can restore it with double-click or context menu";
-  m_localization[localization_id_tray_menu_show] = "localization_id_tray_menu_show";
-  m_localization[localization_id_tray_menu_minimize] = "localization_id_tray_menu_minimize";
-
-  return true;
 }
 
 QString MainWindow::get_default_user_dir(const QString& param)
@@ -287,7 +177,7 @@ QString MainWindow::get_options()
 void MainWindow::tray_quit_requested()
 {
   TRY_ENTRY();
-  LOG_PRINT_MAGENTA("[GUI]->[HTML] tray_quit_requested", LOG_LEVEL_0);  
+  LOG_PRINT_MAGENTA("[GUI]->[HTML] tray_quit_requested", LOG_LEVEL_0);
   emit quit_requested("{}");
   CATCH_ENTRY2(void());
 }
@@ -296,7 +186,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
   TRY_ENTRY();
   LOG_PRINT_L0("[GUI] CLOSE EVENT");
-   CHECK_AND_ASSERT_MES(m_gui_deinitialize_done_1 == m_backend_stopped_2, void(), "m_gui_deinitialize_done_1 != m_backend_stopped_2, m_gui_deinitialize_done_1 = " << m_gui_deinitialize_done_1 
+   CHECK_AND_ASSERT_MES(m_gui_deinitialize_done_1 == m_backend_stopped_2, void(), "m_gui_deinitialize_done_1 != m_backend_stopped_2, m_gui_deinitialize_done_1 = " << m_gui_deinitialize_done_1
      << "m_backend_stopped_2 = " << m_backend_stopped_2);
 
 
@@ -309,7 +199,6 @@ void MainWindow::closeEvent(QCloseEvent *event)
    }
    else if (m_gui_deinitialize_done_1 && m_backend_stopped_2)
    {
-     store_pos(true);
      store_app_config();
      event->accept();
    }
@@ -342,53 +231,6 @@ std::string state_to_text(int s)
   CATCH_ENTRY2("");
 }
 
-void MainWindow::changeEvent(QEvent *e)
-{
-  TRY_ENTRY();
-  switch (e->type())
-  {
-  case QEvent::WindowStateChange:
-  {
-    QWindowStateChangeEvent* event = static_cast< QWindowStateChangeEvent* >(e);
-    qDebug() << "Old state: " << state_to_text(event->oldState()).c_str() << ", new state: " << state_to_text(this->windowState()).c_str();
-
-    if (event->oldState() & Qt::WindowMinimized && !(this->windowState() & Qt::WindowMinimized))
-    {
-      qDebug() << "Window restored (to normal or maximized state)!";
-      if (m_tray_icon)
-      {
-        //QTimer::singleShot(250, this, SLOT(show()));
-      }
-      restore_pos();
-    }
-    else if (!(event->oldState() & Qt::WindowMinimized) && (this->windowState() & Qt::WindowMinimized))
-    {
-      store_pos();
-      qDebug() << "Window minimized";
-      show_notification(m_localization[localization_id_minimized_title], m_localization[localization_id_minimized_text]);
-    }
-    else if (!(event->oldState() & Qt::WindowFullScreen) && (this->windowState() & Qt::WindowFullScreen))
-    {
-      //maximize
-      store_window_pos();
-      this->update();
-    }
-    else if ((event->oldState() & Qt::WindowFullScreen) && !(this->windowState() & Qt::WindowFullScreen))
-    {
-      //restore
-      this->update();
-    }
-
-    break;
-  }
-  default:
-    break;
-  }
-
-  QWidget::changeEvent(e);
-  CATCH_ENTRY2(void());
-}
-
 bool MainWindow::store_app_config()
 {
   TRY_ENTRY();
@@ -413,42 +255,21 @@ bool MainWindow::load_app_config()
 bool MainWindow::init(const std::string& html_path)
 {
   TRY_ENTRY();
-  //QtWebEngine::initialize();
-  init_tray_icon(html_path);
-  set_html_path(html_path);
   m_threads_pool.init(2);
   m_backend.subscribe_to_core_events(this);
 
   bool r = QSslSocket::supportsSsl();
-  if (r)
-  {
+  if (r) {
     LOG_PRINT_GREEN("[Support SSL]: YES", LOG_LEVEL_0);
-  }
-  else
-  {
-//    QMessageBox::question(this, "OpenSSL support disabled.", "OpenSSL support disabled.",
-//      QMessageBox::Ok);
+  } else {
     LOG_PRINT_RED("[Support SSL]: NO", LOG_LEVEL_0);
   }
-
-  //----
-  this->setContextMenuPolicy(Qt::ContextMenuPolicy::NoContextMenu);
-  m_view->setContextMenuPolicy(Qt::ContextMenuPolicy::NoContextMenu);
 
   return true;
   CATCH_ENTRY2(false);
 }
 
-void MainWindow::on_menu_show()
-{
-  TRY_ENTRY();
-  qDebug() << "Context menu: show()";
-  this->show();
-  this->activateWindow();
-  CATCH_ENTRY2(void());
-}
-
-void MainWindow::init_tray_icon(const std::string& html_path)
+void MainWindow::init_tray_icon()
 {
   TRY_ENTRY();
   if (!QSystemTrayIcon::isSystemTrayAvailable())
@@ -457,40 +278,26 @@ void MainWindow::init_tray_icon(const std::string& html_path)
     return;
   }
 
-
-  m_restore_action = std::unique_ptr<QAction>(new QAction(tr("&Restore"), this));
-  connect(m_restore_action.get(), SIGNAL(triggered()), this, SLOT(on_menu_show()));
-
   m_quit_action = std::unique_ptr<QAction>(new QAction(tr("&Quit"), this));
   connect(m_quit_action.get(), SIGNAL(triggered()), this, SLOT(tray_quit_requested()));
 
-  m_minimize_action = std::unique_ptr<QAction>(new QAction(tr("minimizeAction"), this));
-  connect(m_minimize_action.get(), SIGNAL(triggered()), this, SLOT(showMinimized()));
 
-  m_tray_icon_menu = std::unique_ptr<QMenu>(new QMenu(this));
-  m_tray_icon_menu->addAction(m_minimize_action.get());
+  m_tray_icon_menu = std::unique_ptr<QMenu>(new QMenu());
   //m_tray_icon_menu->addAction(m_restore_action.get());
-  m_tray_icon_menu->addSeparator();
   m_tray_icon_menu->addAction(m_quit_action.get());
 
   m_tray_icon = std::unique_ptr<QSystemTrayIcon>(new QSystemTrayIcon(this));
   m_tray_icon->setContextMenu(m_tray_icon_menu.get());
-
   //setup icon
 #ifdef TARGET_OS_MAC
-  m_normal_icon_path = html_path + "/files/app22macos.png"; // X11 tray icon size is 22x22
-  m_blocked_icon_path = html_path + "/files/app22macos_blocked.png"; // X11 tray icon size is 22x22
+  QIcon qi( ":/lthn.png" );
 #else
-  m_normal_icon_path = html_path + "/files/app22windows.png"; // X11 tray icon size is 22x22
-  m_blocked_icon_path = html_path + "/files/app22windows_blocked.png"; // X11 tray icon size
+  QIcon qi( ":/lthn.png" );
 #endif
                                                                       //setWindowIcon(QIcon(iconPath.c_str()));
-  QIcon qi( QString::fromWCharArray(epee::string_encoding::utf8_to_wstring(m_normal_icon_path).c_str()) );
-  qi.setIsMask(true);
+  //qi.setIsMask(true);
   m_tray_icon->setIcon(qi);
-  m_tray_icon->setToolTip(CURRENCY_NAME_BASE);
-  connect(m_tray_icon.get(), SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-    this, SLOT(trayIconActivated(QSystemTrayIcon::ActivationReason)));
+  m_tray_icon->setToolTip(  "Lethean Blockchain API Server");
   m_tray_icon->show();
   CATCH_ENTRY2(void());
 }
@@ -518,103 +325,6 @@ QString MainWindow::get_log_file()
   epee::file_io_utils::load_last_n_from_file_to_string(log_space::log_singletone::get_actual_log_file_path(), 1000000, buff);
   return QString::fromStdString(buff);
   CATCH_ENTRY2("");
-}
-
-void  MainWindow::store_window_pos()
-{
-  TRY_ENTRY();
-  QPoint pos = this->pos();
-  QSize sz = this->size();
-  m_config.m_window_position.first = pos.x();
-  m_config.m_window_position.second = pos.y();
-  m_config.m_window_size.first = sz.height();
-  m_config.m_window_size.second = sz.width();
-
-  CATCH_ENTRY2(void());
-}
-void MainWindow::store_pos(bool consider_showed)
-{
-  TRY_ENTRY();
-  m_config.is_maximazed = this->isMaximized();
-  //here position supposed to be filled from last unserialize  or filled on maximize handler
-  if (!m_config.is_maximazed)
-    store_window_pos();
-  if (consider_showed)
-    m_config.is_showed = this->isVisible();
-
-  CATCH_ENTRY2(void());
-}
-void MainWindow::restore_pos(bool consider_showed)
-{
-  TRY_ENTRY();
-  if (m_config.is_maximazed)
-  {
-    this->setWindowState(windowState() | Qt::WindowMaximized);
-  }
-  else
-  {
-    QPoint point = QApplication::desktop()->screenGeometry().bottomRight();
-    if (m_config.m_window_position.first + m_config.m_window_size.second > point.x() ||
-      m_config.m_window_position.second + m_config.m_window_size.first > point.y()
-      )
-    {
-      QSize sz = AUTO_VAL_INIT(sz);
-      sz.setHeight(770);
-      sz.setWidth(1200);
-      this->resize(sz);
-      store_window_pos();
-      //reset position(screen changed or other reason)
-    }
-    else
-    {
-      QPoint pos = AUTO_VAL_INIT(pos);
-      QSize sz = AUTO_VAL_INIT(sz);
-      pos.setX(m_config.m_window_position.first);
-      pos.setY(m_config.m_window_position.second);
-      sz.setHeight(m_config.m_window_size.first);
-      sz.setWidth(m_config.m_window_size.second);
-      this->move(pos);
-      this->resize(sz);
-    }
-  }
-
-  if (consider_showed)
-  {
-    if (m_config.is_showed)
-      this->showNormal();
-    else
-      this->showMinimized();
-  }
-
-  CATCH_ENTRY2(void());
-}
-void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
-{
-  TRY_ENTRY();
-  if (reason == QSystemTrayIcon::ActivationReason::Trigger)
-  {
-    if ( !(this->windowState() & Qt::WindowMinimized))
-    {
-      showMinimized();
-    }
-    else
-    {
-      showNormal();
-      activateWindow();
-    }
-
-
-  }
-  CATCH_ENTRY2(void());
-}
-
-void MainWindow::load_file(const QString &fileName)
-{
-  TRY_ENTRY();
-  LOG_PRINT_L0("Loading html from path: " << fileName.toStdString());
-  QUrl url = QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath());
-  m_view->load(url);
-  CATCH_ENTRY2(void());
 }
 
 QString MainWindow::set_clipboard(const QString& param)
@@ -647,35 +357,6 @@ QString MainWindow::on_request_quit()
   CATCH_ENTRY2(API_RETURN_CODE_INTERNAL_ERROR);
 }
 
-bool MainWindow::do_close()
-{
-  TRY_ENTRY();
-  this->close();
-  return true;
-  CATCH_ENTRY2(false);
-}
-
-bool MainWindow::show_inital()
-{
-  TRY_ENTRY();
-  if (load_app_config())
-    restore_pos(true);
-  else
-  {
-    m_config = AUTO_VAL_INIT(m_config);
-    this->show();
-    QSize sz = AUTO_VAL_INIT(sz);
-    sz.setHeight(770);
-    sz.setWidth(1200);
-    this->resize(sz);
-    store_window_pos();
-    m_config.is_maximazed = false;
-    m_config.is_showed = true;
-    m_config.disable_notifications = false;
-  }
-  return true;
-  CATCH_ENTRY2(false);
-}
 
 bool MainWindow::on_backend_stopped()
 {
@@ -686,7 +367,7 @@ bool MainWindow::on_backend_stopped()
 //  if (m_quit_requested)
 //  {
 
-    /*bool r = */QMetaObject::invokeMethod(this, "do_close", Qt::QueuedConnection);
+//    /*bool r = */QMetaObject::invokeMethod(this, "do_close", Qt::QueuedConnection);
 // }
   return true;
   CATCH_ENTRY2(false);
@@ -711,14 +392,6 @@ bool MainWindow::update_daemon_status(const view::daemon_status_info& info)
   CATCH_ENTRY2(false);
 }
 
-
-bool MainWindow::show_msg_box(const std::string& message)
-{
-  TRY_ENTRY();
-  QMessageBox::information(this, "Error", message.c_str(), QMessageBox::Ok);
-  return true;
-  CATCH_ENTRY2(false);
-}
 
 void qt_log_message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
@@ -755,13 +428,13 @@ bool MainWindow::remove_ipc()
   }
   return true;
 }
- 
+
 
 bool MainWindow::init_ipc_server()
 {
 
-  //in case previous instance wasn't close graceful, ipc channel will remain open and new creation will fail, so we 
-  //trying to close it anyway before open, to make sure there are no dead channels. If there are another running instance, it wom't 
+  //in case previous instance wasn't close graceful, ipc channel will remain open and new creation will fail, so we
+  //trying to close it anyway before open, to make sure there are no dead channels. If there are another running instance, it wom't
   //let channel to close, so it will fail later on creating channel
   remove_ipc();
 #define GUI_IPC_BUFFER_SIZE  10000
@@ -790,7 +463,7 @@ bool MainWindow::init_ipc_server()
             buff.resize(recvd_size, '*');
             handle_ipc_event(buff);//todo process token
           }
-        }        
+        }
         remove_ipc();
         LOG_PRINT_L0("IPC Handling thread finished");
       }
@@ -868,19 +541,11 @@ bool MainWindow::init_backend(int argc, char* argv[])
       return false;
   }
 
-  if (!init_window())
-  {
-    this->show_msg_box("Failed to main screen launch, check logs for the more detais.");
-    return false;
-  }
-
   if (!m_backend.init(this))
   {
     this->show_msg_box("Failed to initialize backend, check debug logs for more details.");
     return false;
   }
-
-
 
   if (m_backend.is_qt_logs_enabled())
   {
@@ -893,6 +558,8 @@ bool MainWindow::init_backend(int argc, char* argv[])
     this->show_msg_box("Failed to initialize IPC server, check debug logs for more details.");
     return false;
   }
+
+  init_tray_icon();
 
   return true;
   CATCH_ENTRY2(false);
@@ -960,11 +627,11 @@ bool MainWindow::update_wallet_status(const view::wallet_status_info& wsi)
 {
   TRY_ENTRY();
   m_wallet_states->operator [](wsi.wallet_id) = wsi.wallet_state;
-  
+
   std::string json_str_pub;
   epee::serialization::store_t_to_json(static_cast<const view::wallet_status_info_base&>(wsi), json_str_pub, 0, epee::serialization::eol_lf);
   LOG_PRINT_L0(get_wallet_log_prefix(wsi.wallet_id) + "SENDING SIGNAL -> [update_wallet_status]:" << std::endl << json_str_pub);
-  
+
   std::string json_str;
   epee::serialization::store_t_to_json(wsi, json_str, 0, epee::serialization::eol_lf);
   QMetaObject::invokeMethod(this, "update_wallet_status", Qt::QueuedConnection, Q_ARG(QString, json_str.c_str()));
@@ -1034,7 +701,7 @@ bool MainWindow::update_wallets_info(const view::wallets_summary_info& wsi)
   std::string json_str;
   epee::serialization::store_t_to_json(wsi, json_str, 0, epee::serialization::eol_lf);
   LOG_PRINT_L0("SENDING SIGNAL -> [update_wallets_info]"<< std::endl << json_str );
-  
+
   QMetaObject::invokeMethod(this, "update_wallets_info", Qt::QueuedConnection, Q_ARG(QString, json_str.c_str()));
   return true;
   CATCH_ENTRY2(false);
@@ -1088,7 +755,7 @@ bool MainWindow::money_transfer(const view::transfer_event_info& tei)
   else if (tei.ti.unlock_time)
     msg += m_localization[localization_id_locked];
 
-  
+
   show_notification(title, msg);
 
   return true;
@@ -1115,21 +782,6 @@ bool MainWindow::wallet_sync_progress(const view::wallet_sync_progres_param& p)
   LOG_PRINT_L2(get_wallet_log_prefix(p.wallet_id) + "SENDING SIGNAL -> [wallet_sync_progress]" << " wallet_id: " << p.wallet_id << ": " << p.progress << "%");
   //this->wallet_sync_progress(epee::serialization::store_t_to_json(p).c_str());
   QMetaObject::invokeMethod(this, "wallet_sync_progress", Qt::QueuedConnection, Q_ARG(QString, epee::serialization::store_t_to_json(p, 0, epee::serialization::eol_lf).c_str()));
-  return true;
-  CATCH_ENTRY2(false);
-}
-
-bool MainWindow::set_html_path(const std::string& path)
-{
-  TRY_ENTRY();
-  //init_tray_icon(path);
-#ifdef _MSC_VER
-  QString url = QString::fromUtf8(path.c_str()) + "/index.html";
-  load_file(url);
-#else
-//  load_file(QString((std::string("file://") + path + "/index.html").c_str()));
-  load_file(QString((std::string("") + path + "/index.html").c_str()));
-#endif
   return true;
   CATCH_ENTRY2(false);
 }
@@ -1318,7 +970,7 @@ void MainWindow::on_core_event(const std::string event_name, const currency::cor
 std::string get_events_que_json_string(const std::list<currency::core_event>& eq, std::string& methods_list)
 {
   TRY_ENTRY();
-  //t the moment portable_storage is not supporting polymorphic objects lists, so 
+  //t the moment portable_storage is not supporting polymorphic objects lists, so
   //there is no hope to make serialization with variant list, lets handle it manual
   std::stringstream ss;
   ss << "{  \"events\" : [";
@@ -1350,13 +1002,13 @@ void MainWindow::on_complete_events()
     TIME_MEASURE_START_MS(json_buff_generate_time);
     std::string json_buff = get_events_que_json_string(m_events.m_que, methods_list);
     TIME_MEASURE_FINISH_MS(json_buff_generate_time);
-    
+
 
     QMetaObject::invokeMethod(this, "on_core_event",
       Qt::QueuedConnection,
       Q_ARG(QString, QString(json_buff.c_str())));
     TIME_MEASURE_FINISH_MS(core_events_handl_time);
-    LOG_PRINT_L0("SENT SIGNAL -> [CORE_EVENTS]: " << m_events.m_que.size() 
+    LOG_PRINT_L0("SENT SIGNAL -> [CORE_EVENTS]: " << m_events.m_que.size()
       << ", handle_time: " << core_events_handl_time << "(json: " << json_buff_generate_time << ")ms, json_buff size = " << json_buff.size() << ", methods: " << methods_list);
     LOG_PRINT_L2("CORE_EVENTS sent signal details: " << ENDL << json_buff);
     m_events.m_que.clear();
@@ -1416,7 +1068,7 @@ QString MainWindow::get_secure_app_data(const QString& param)
 
   std::string filename = m_backend.get_config_folder() + "/" + GUI_SECURE_CONFIG_FILENAME;
   std::string res_body;
-  std::string rsp_code = tools::load_encrypted_file(filename, pwd.pass, res_body, APP_DATA_FILE_BINARY_SIGNATURE);    
+  std::string rsp_code = tools::load_encrypted_file(filename, pwd.pass, res_body, APP_DATA_FILE_BINARY_SIGNATURE);
   if (rsp_code != API_RETURN_CODE_OK)
   {
     view::api_response ar;
@@ -1475,7 +1127,7 @@ QString MainWindow::check_master_password(const QString& param)
   crypto::hash master_password_hash = crypto::cn_fast_hash(&master_password_pre_hash, sizeof master_password_pre_hash);
   crypto::hash pwd_pre_hash = crypto::cn_fast_hash(pwd.pass.c_str(), pwd.pass.length());
   crypto::hash pwd_hash = crypto::cn_fast_hash(&pwd_pre_hash, sizeof pwd_pre_hash);
- 
+
   if (m_master_password != pwd.pass)
   {
     ar.error_code = API_RETURN_CODE_WRONG_PASSWORD;
@@ -1561,7 +1213,7 @@ QString MainWindow::store_to_file(const QString& path, const QString& buff)
     return API_RETURN_CODE_ACCESS_DENIED;
   }
 
-  
+
   CATCH_ENTRY2(API_RETURN_CODE_INTERNAL_ERROR);
 }
 
@@ -1686,7 +1338,7 @@ QString MainWindow::set_log_level(const QString& param)
   epee::log_space::get_set_log_detalisation_level(true, lvl.v);
   default_ar.error_code = API_RETURN_CODE_OK;
   LOG_PRINT("[LOG LEVEL]: set to " << lvl.v, LOG_LEVEL_MIN);
-  
+
   return MAKE_RESPONSE(default_ar);
   CATCH_ENTRY_FAIL_API_RESPONCE();
 }
@@ -1724,23 +1376,23 @@ QString MainWindow::set_enable_tor(const QString& param)
 //   QString path = QFileDialog::getOpenFileName(this, "Select file",
 //     "",
 //     "");
-// 
+//
 //   if (!path.length())
 //   {
 //     ar.error_code = API_RETURN_CODE_CANCELED;
 //     return MAKE_RESPONSE(ar);
 //   }
-// 
+//
 //   currency::COMMAND_RPC_GET_OFFERS_EX::response rp = AUTO_VAL_INIT(rp);
 //   ar.error_code = m_backend.get_all_offers(rp);
-// 
+//
 //   std::string buff = epee::serialization::store_t_to_json(rp);
 //   bool r = file_io_utils::save_string_to_file(path.toStdString(), buff);
 //   if (!r)
 //     ar.error_code = API_RETURN_CODE_FAIL;
 //   else
 //     ar.error_code = API_RETURN_CODE_OK;
-// 
+//
 //   return MAKE_RESPONSE(ar);
 // }
 
@@ -1752,55 +1404,6 @@ QString MainWindow::webkit_launched_script()
   CATCH_ENTRY2(API_RETURN_CODE_INTERNAL_ERROR);
 }
 ////////////////////
-QString MainWindow::show_openfile_dialog(const QString& param)
-{
-  TRY_ENTRY();
-  view::system_filedialog_request ofdr = AUTO_VAL_INIT(ofdr);
-  view::system_filedialog_response ofdres = AUTO_VAL_INIT(ofdres);
-  if (!epee::serialization::load_t_from_json(ofdr, param.toStdString()))
-  {
-    ofdres.error_code = API_RETURN_CODE_BAD_ARG;
-    return epee::serialization::store_t_to_json(ofdres, 0, epee::serialization::eol_lf).c_str();
-  }
-
-  QString path = QFileDialog::getOpenFileName(this, ofdr.caption.c_str(),
-    ofdr.default_dir.c_str(),
-    ofdr.filemask.c_str());
-
-  if (!path.length())
-  {
-    ofdres.error_code = API_RETURN_CODE_CANCELED;
-    return epee::serialization::store_t_to_json(ofdres, 0, epee::serialization::eol_lf).c_str();
-  }
-
-  ofdres.error_code = API_RETURN_CODE_OK;
-  ofdres.path = path.toStdString();
-  return MAKE_RESPONSE(ofdres); 
-  CATCH_ENTRY_FAIL_API_RESPONCE();
-}
-
-
-QString MainWindow::show_savefile_dialog(const QString& param)
-{
-  TRY_ENTRY();
-  PREPARE_ARG_FROM_JSON(view::system_filedialog_request, ofdr);
-  view::system_filedialog_response ofdres = AUTO_VAL_INIT(ofdres);
-
-  QString path = QFileDialog::getSaveFileName(this, ofdr.caption.c_str(),
-    ofdr.default_dir.c_str(),
-    ofdr.filemask.c_str());
-
-  if (!path.length())
-  {
-    ofdres.error_code = API_RETURN_CODE_CANCELED;
-    return epee::serialization::store_t_to_json(ofdres, 0, epee::serialization::eol_lf).c_str();
-  }
-
-  ofdres.error_code = API_RETURN_CODE_OK;
-  ofdres.path = path.toStdString();
-  return MAKE_RESPONSE(ofdres);
-  CATCH_ENTRY_FAIL_API_RESPONCE();
-}
 
 QString MainWindow::close_wallet(const QString& param)
 {
@@ -2005,7 +1608,7 @@ QString MainWindow::push_offer(const QString& param)
   ar.error_code = m_backend.push_offer(a.wallet_id, a.od, res_tx);
   if (ar.error_code != API_RETURN_CODE_OK)
     return MAKE_RESPONSE(ar);
-  
+
   ar.response_data.success = true;
   ar.response_data.tx_hash = string_tools::pod_to_hex(currency::get_transaction_hash(res_tx));
   ar.response_data.tx_blob_size = currency::get_object_blobsize(res_tx);
@@ -2228,43 +1831,6 @@ QString MainWindow::get_seed_phrase_info(const QString& param)
   CATCH_ENTRY_FAIL_API_RESPONCE();
 }
 
-void MainWindow::contextMenuEvent(QContextMenuEvent * event)
-{
-  TRY_ENTRY();
-
-  CATCH_ENTRY2(void());
-}
-QString MainWindow::print_text(const QString& param)
-{
-  TRY_ENTRY();
-  LOG_API_TIMING();
-  PREPARE_ARG_FROM_JSON(view::print_text_param, ptp);
-
-  //in >> htmlContent;
-
-  QTextDocument *document = new QTextDocument();
-  document->setHtml(ptp.html_text.c_str());
-
-  QPrinter printer;
-  default_ar.error_code = API_RETURN_CODE_CANCELED;
-
-  QPrintDialog *dialog = new QPrintDialog(&printer, this);
-  dialog->setOptions(QAbstractPrintDialog::PrintToFile);
-  auto res = dialog->exec();
-  if (res != QDialog::Accepted)
-  {
-    LOG_PRINT_L0("[PRINT_TEXT] exec  != QDialog::Accepted, res=" << res);
-    return MAKE_RESPONSE(default_ar);
-  }
-
-  document->print(&printer);
-
-  delete document;
-  default_ar.error_code = API_RETURN_CODE_OK;
-  LOG_PRINT_L0("[PRINT_TEXT] default_ar.error_code = " << default_ar.error_code);
-  return MAKE_RESPONSE(default_ar);
-  CATCH_ENTRY_FAIL_API_RESPONCE();
-}
 
 QString MainWindow::print_log(const QString& param)
 {
@@ -2282,9 +1848,9 @@ void MainWindow::show_notification(const std::string& title, const std::string& 
 {
   TRY_ENTRY();
   LOG_PRINT_L1("system notification: \"" << title << "\", \"" << message << "\"");
-  
+
   // it's expected that title and message are utf-8 encoded!
-  
+
 #if !defined(__APPLE__)
   // use Qt tray icon to show messages on Windows and Linux
   CHECK_AND_ASSERT_MES(m_tray_icon != nullptr, (void)(0), "m_tray_icon is null!");
@@ -2295,5 +1861,13 @@ void MainWindow::show_notification(const std::string& title, const std::string& 
 #endif
   CATCH_ENTRY2(void());
 }
-
-
+QString MainWindow::get_wallet_info(const QString& param)
+{
+  TRY_ENTRY();
+  LOG_API_TIMING();
+  PREPARE_ARG_FROM_JSON(view::wallet_id_obj, waid);
+  PREPARE_RESPONSE(view::wallet_info, ar);
+  ar.error_code = m_backend.get_wallet_info(waid.wallet_id, ar.response_data);
+  return MAKE_RESPONSE(ar);
+  CATCH_ENTRY_FAIL_API_RESPONCE();
+}

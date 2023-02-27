@@ -39,8 +39,6 @@ fi
 rm -rf Lethean;
 mkdir -p Lethean;
 
-
-
 chmod 0777 ./src/letheand src/simplewallet src/connectivity_tool
 cp -Rv src/letheand src/simplewallet  src/connectivity_tool ./Lethean
 

@@ -1,0 +1,7 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource>
+        <file>app22macos.png</file>
+        <file>app22windows.png</file>
+        <file>lthn.png</file>
+    </qresource>
+</RCC>

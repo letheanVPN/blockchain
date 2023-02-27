@@ -69,14 +69,11 @@ file(GLOB_RECURSE WALLET wallet/*)
 file(GLOB_RECURSE MINER miner/*)
 
 if(BUILD_GUI)
-  if(MSVC)
-    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h gui/qt-daemon/app.rc)
-  elseif(APPLE)
-    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h gui/qt-daemon/*.mm)
+  if(APPLE)
+    file(GLOB_RECURSE QTSERVER gui/*.cpp gui/*.h gui/*.mm)
   else()
-    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h)
+    file(GLOB_RECURSE QTSERVER gui/*.cpp gui/*.h)
   endif()
-  list(FILTER QTDAEMON EXCLUDE REGEX "node_modules")
 endif()
 
 
@@ -94,7 +91,7 @@ source_group(connectivity-tool FILES ${CONN_TOOL})
 source_group(wallet FILES ${WALLET})
 
 if(BUILD_GUI)
-  source_group(qtdaemon FILES ${QTDAEMON})
+  source_group(qtserver FILES ${QTSERVER})
 endif()
 
 
@@ -183,23 +180,27 @@ set_property(TARGET common crypto currency_core rpc stratum wallet PROPERTY FOLD
 set_property(TARGET daemon simplewallet connectivity_tool PROPERTY FOLDER "prog")
 set_property(TARGET daemon PROPERTY OUTPUT_NAME "letheand")
 
+
 if(BUILD_GUI)
 
   if(APPLE)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
   endif()
 
+  set(AUTORCC ON)
   set(CMAKE_AUTOMOC ON)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
-  SET(MACOSX_BUNDLE_ICON_FILE app.icns)
-  add_executable(Lethean WIN32 MACOSX_BUNDLE ${QTDAEMON} )
-  ENABLE_SHARED_PCH(Lethean QTDAEMON)
+#  SET(MACOSX_BUNDLE_ICON_FILE app.icns)
+  qt5_add_resources (RCC_SOURCES gui/resources/files.qrc)
+  add_executable(Lethean WIN32 MACOSX_BUNDLE ${QTSERVER} ${RCC_SOURCES} )
+  ENABLE_SHARED_PCH(Lethean QTSERVER)
   ENABLE_SHARED_PCH_EXECUTABLE(Lethean)
+  set_property(TARGET Lethean PROPERTY OUTPUT_NAME "lethean-gui-server")
 
-  QT5_USE_MODULES(Lethean WebEngineWidgets WebChannel)
+  QT5_USE_MODULES(Lethean WebEngineWidgets WebChannel WebSockets)
   find_package(Qt5PrintSupport REQUIRED)
 
-  target_link_libraries(Lethean wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
+  target_link_libraries(Lethean wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebSockets Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
   if (UNIX AND NOT APPLE)
 	target_link_libraries(Lethean rt)
   endif()
@@ -213,33 +214,7 @@ if(BUILD_GUI)
   endif()
 
   set_property(TARGET Lethean PROPERTY FOLDER "prog")
-  set_target_properties(Lethean PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/Info.plist.in)
-
-  set(HTML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/layout/html)
-  set_target_properties(Lethean PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--html-path=${HTML_DIR}")
 
   set(CMAKE_AUTOMOC OFF)
 
-  # GUI convenience "bundle"
-  # set(GUI_DIR ${CMAKE_CURRENT_BINARY_DIR}/gui)
-  # set_target_properties(Lethean PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${GUI_DIR})
-  # add_custom_command(TARGET Lethean POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${HTML_DIR} ${GUI_DIR}/html)
-endif()
-
-if(APPLE)
-  set(SIMPLE_BUNDLE 1)
-endif()
-
-if(SIMPLE_BUNDLE)
-  set(INSTALL_DIR "${CMAKE_BINARY_DIR}/hp-${VERSION}")
-  install(TARGETS daemon simplewallet connectivity_tool
-      RUNTIME DESTINATION "${INSTALL_DIR}" COMPONENT Runtime
-  )
-
-  install(FILES ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} DESTINATION "${INSTALL_DIR}/lib")
-
-  if(APPLE)
-    set(FIXUP_COMMAND ${CMAKE_SOURCE_DIR}/utils/macosx_fixup.sh " " ${INSTALL_DIR})
-    install(CODE "execute_process(COMMAND ${FIXUP_COMMAND})")
-  endif()
 endif()

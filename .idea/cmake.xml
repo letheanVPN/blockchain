@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug-gcc" ENABLED="true" GENERATION_DIR="build" CONFIG_NAME="Debug" TOOLCHAIN_NAME="gcc" GENERATION_OPTIONS="-G &quot;Unix Makefiles&quot; -D TESTNET=TRUE" />
-      <configuration PROFILE_NAME="Release-gcc" ENABLED="false" GENERATION_DIR="build" CONFIG_NAME="Release" TOOLCHAIN_NAME="gcc" GENERATION_OPTIONS="-G &quot;Unix Makefiles&quot; -D TESTNET=TRUE" />
+      <configuration PROFILE_NAME="Debug-gcc" ENABLED="false" GENERATION_DIR="build" CONFIG_NAME="Debug" TOOLCHAIN_NAME="gcc" GENERATION_OPTIONS="-G &quot;Unix Makefiles&quot; -D TESTNET=TRUE" />
+      <configuration PROFILE_NAME="Release" ENABLED="true" GENERATION_DIR="build" CONFIG_NAME="Release" GENERATION_OPTIONS="-D TESTNET=TRUE -DBUILD_GUI=true" NO_GENERATOR="true" />
     </configurations>
   </component>
 </project>

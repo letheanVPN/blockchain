@@ -1,19 +1,18 @@
-name: cli-testnet
-
+name: "gui-testnet"
 on:
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-  push:
-    paths-ignore:
-      - '**.md'
-  pull_request:
-    paths-ignore:
-      - '**.md'
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+    push:
+      paths-ignore:
+        - '**.md'
+    pull_request:
+      paths-ignore:
+        - '**.md'
 
 env:
-  CCACHE_SETTINGS: |
-    ccache --max-size=150M
-    ccache --set-config=compression=true
+    CCACHE_SETTINGS: |
+      ccache --max-size=150M
+      ccache --set-config=compression=true
 
 jobs:
   linux-amd64:
@@ -32,28 +31,28 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ~/.ccache
-          key: ccache-${{ runner.os }}-build-testnet-cli-${{ github.sha }}
-          restore-keys: ccache-${{ runner.os }}-build-testnet-cli-
+          key: ccache-${{ runner.os }}-build-testnet-gui
+          restore-keys: ccache-${{ runner.os }}-build-testnet-gui
       - name: update apt
         run: sudo apt update
       - name: install dependencies
-        run: sudo apt-get install -y python-dev autotools-dev libboost-all-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+        run: sudo apt-get install -y qt5-default qtwebengine5-dev libqt5websockets5-dev python-dev autotools-dev libboost-all-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
       - name: build server
+        env:
+          QT_PREFIX_PATH: /usr/lib/qt5
         run: |
           ${{env.CCACHE_SETTINGS}}
-          ./utils/build/testnet_linux_cli.sh
-      - name: Move Tarball
-        run: cd build/release && mv lethean-linux-cli-*.tar.bz2 ../../
+          ./utils/build/testnet_linux_gui.sh
       - uses: actions/upload-artifact@v3
         with:
-          name: lethean-linux-cli
+          name: lethean-gui-bundle-linux-testnet-x86_64
           if-no-files-found: error
-          path: lethean-linux-cli-*.tar.bz2
+          path: lethean-gui-bundle-linux-testnet-x86_64.tar.bz2
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ github.workspace }}/lethean-linux-cli-*.tar.bz2
+          files: ${{ github.workspace }}/lethean-gui-bundle-linux-testnet-x86_64.tar.bz2
   macos-amd64:
     runs-on: macos-latest
     env:
@@ -70,33 +69,32 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: /Users/runner/Library/Caches/ccache
-          key: ccache-${{ runner.os }}-build-testnet-cli
-          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
+          key: ccache-${{ runner.os }}-build-testnet-gui
+          restore-keys: ccache-${{ runner.os }}-build-testnet-gui
       - name: install dependencies
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl boost icu4c ccache miniupnpc
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl boost icu4c ccache miniupnpc qt@5
       - name: build server
         env:
           PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
           OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
-          ZANO_BOOST_ROOT: "/opt/homebrew/opt/boost"
-          ZANO_BOOST_LIBS_PATH: "/opt/homebrew/opt/boost/lib"
+          ZANO_BOOST_ROOT: "/usr/local/opt/boost"
+          ZANO_BOOST_LIBS_PATH: "/usr/local/opt/boost/lib"
+          ZANO_QT_PATH: "/usr/local/opt/qt@5"
           CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk"
         run: |
           ${{env.CCACHE_SETTINGS}}
           export LIBRARY_PATH=${LIBRARY_PATH}:/usr/local/opt/icu4c/lib
-          ./utils/build/testnet_mac_osx_cli.sh
-      - name: Move Tarball
-        run: cd build/release && mv lethean-macos-cli-*.tar.bz2 ../../
+          ./utils/build/testnet_mac_osx_gui.sh
       - uses: actions/upload-artifact@v3
         with:
-          name: lethean-macos-cli
+          name: lethean-gui-bundle-macos-testnet-i386
           if-no-files-found: error
-          path: lethean-macos-cli-*.tar.bz2
+          path: lethean-gui-bundle-macos-testnet-i386.tar.bz2
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ github.workspace }}/lethean-macos-cli-*.tar.bz2
+          files: ${{ github.workspace }}/lethean-gui-bundle-macos-testnet-i386.tar.bz2
   windows-amd64:
     runs-on: windows-latest
     steps:
@@ -118,6 +116,15 @@ jobs:
           choco install openssl --version 1.1.1.1500 -y
           choco install ccache -y
           choco install zip -y
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+            version: '5.15.2'
+            host: 'windows'
+            target: 'desktop'
+            arch: 'win64_msvc2019_64'
+            dir: '${{ github.workspace }}/example/'
+            modules: 'qtcharts qtwebengine'
       - name: install msvc toolset
         uses: ilammy/msvc-dev-cmd@v1
       - name: Install boost
@@ -137,21 +144,21 @@ jobs:
           arch: x64
       - name: build server
         env:
-          QT_PREFIX_PATH: C:\ProgramData\chocolatey\lib\Qt5.11.2\5.11.2
+          QT_PREFIX_PATH: ${{ github.workspace }}/example/Qt/5.15.2/win64_msvc2019_64
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
           LOCAL_BOOST_PATH: ${{ steps.install-boost.outputs.BOOST_ROOT }}
           OPENSSL_ROOT_DIR: "C:\\Program Files\\OpenSSL-Win64"
         run: |
           refreshenv
           ${{env.CCACHE_SETTINGS}}
-          .\utils\build\testnet_windows_cli.bat
+          .\utils\build\testnet_windows_gui.bat
       - uses: actions/upload-artifact@v3
         with:
-          name: lethean-windows-cli
+          name: lethean-gui-bundle-win-testnet-x64
           if-no-files-found: error
-          path: ${{ github.workspace }}\lethean-win-cli-*.zip
+          path: ${{ github.workspace }}\lethean-gui-bundle-win-testnet-x64.zip
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ github.workspace }}/lethean-win-cli-*.zip
+          files: ${{ github.workspace }}\lethean-gui-bundle-win-testnet-x64.zip

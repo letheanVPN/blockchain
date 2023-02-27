@@ -32,15 +32,15 @@ QT_END_NAMESPACE
 // class MediatorObject : public QObject
 // {
 //   Q_OBJECT
-// 
+//
 // public:
-// 
+//
 // signals :
 //   /*!
 //   This signal is emitted from the C++ side and the text displayed on the HTML client side.
 //   */
 //   void from_c_to_html(const QString &text);
-// 
+//
 //   public slots:
 //         /*!
 //         This slot is invoked from the HTML client side and the text displayed on the server side.
@@ -49,25 +49,24 @@ QT_END_NAMESPACE
 // };
 
 //
-class MainWindow : public QMainWindow, 
+class MainWindow : public QObject,
                    public currency::i_core_event_handler,
-                   public view::i_view, 
+                   public view::i_view,
                    public QAbstractNativeEventFilter
 {
   Q_OBJECT
 
-public:
+  public:
   MainWindow();
   ~MainWindow();
 
   bool init_backend(int argc, char* argv[]);
-  bool show_inital();
   void show_notification(const std::string& title, const std::string& message);
   bool handle_ipc_event(const std::string& arguments);
 
   struct app_config
   {
-    
+
     epee::kvserializable_pair<int64_t, int64_t> m_window_position;
     epee::kvserializable_pair<int64_t, int64_t> m_window_size;
     bool is_maximazed;
@@ -86,12 +85,9 @@ public:
   protected slots:
 
   void on_load_finished(bool ok);
-  bool    do_close();
 
 
   public slots:
-  QString show_openfile_dialog(const QString& param);
-  QString show_savefile_dialog(const QString& param);
   QString open_wallet(const QString& param);
   QString get_my_offers(const QString& param);
   QString get_fav_offers(const QString& param);
@@ -156,7 +152,6 @@ public:
   QString toggle_autostart(const QString& param);
   QString is_valid_restore_wallet_text(const QString& param);
   QString get_seed_phrase_info(const QString& param);
-  QString print_text(const QString& param);
   QString print_log(const QString& param);
   QString set_clipboard(const QString& param);
   QString set_localization_strings(const QString str);
@@ -166,9 +161,9 @@ public:
   QString get_exchange_last_top(const QString& params);
   QString get_tx_pool_info();
   QString get_default_fee();
-  QString get_options();  
+  QString get_options();
   void    bool_toggle_icon(const QString& param);
-  
+
   bool    get_is_disabled_notifications();
   bool    set_is_disabled_notifications(const bool& param);
   QString export_wallet_history(const QString& param);
@@ -176,15 +171,13 @@ public:
   QString check_available_sources(const QString& param);
   QString open_url_in_browser(const QString& param);
 
-  void    trayIconActivated(QSystemTrayIcon::ActivationReason reason);
   void    tray_quit_requested();
-  void    on_menu_show();
   QString is_remnotenode_mode_preconfigured();
   QString start_backend(const QString& params);
 
   QString async_call(const QString& func_name, const QString& params);
   QString sync_call(const QString& func_name, const QString& params);
-
+  QString get_wallet_info(const QString& param);
   //for test purposes onlys
   QString request_dummy();
 
@@ -213,7 +206,6 @@ private:
   //------- i_view ---------
   virtual bool update_daemon_status(const view::daemon_status_info& info);
   virtual bool on_backend_stopped();
-  virtual bool show_msg_box(const std::string& message);
   virtual bool update_wallet_status(const view::wallet_status_info& wsi);
   virtual bool update_wallets_info(const view::wallets_summary_info& wsi);
   virtual bool money_transfer(const view::transfer_event_info& tei);
@@ -229,34 +221,23 @@ private:
 
 
   void closeEvent(QCloseEvent *event);
-  void contextMenuEvent(QContextMenuEvent * event);
-  void changeEvent(QEvent *e);
   void on_maximized();
   bool handle_deeplink_params_in_commandline();
   //void setOrientation(Qt::ScreenOrientation orientation);
-  
-  
 
-  void init_tray_icon(const std::string& htmlPath);
+
+
+  void init_tray_icon();
   bool set_html_path(const std::string& path);
   void load_file(const QString &fileName);
-  void store_pos(bool consider_showed = false);
-  void store_window_pos();
-  void restore_pos(bool consider_showed = false);
   bool store_app_config();
   bool load_app_config();
   bool init_window();
   bool init_ipc_server();
   bool remove_ipc();
-  
+
 
   std::string get_wallet_log_prefix(size_t wallet_id) const { return m_backend.get_wallet_log_prefix(wallet_id); }
-
-
-  //MediatorObject mo;
-  // UI
-  QWebEngineView *m_view;
-  QWebChannel* m_channel;
 
   // DATA
   wallets_manager m_backend;
@@ -269,7 +250,6 @@ private:
 
   std::string m_master_password;
 
-
   app_config m_config;
 
   epee::locked_object<std::map<uint64_t, uint64_t>> m_wallet_states;
@@ -277,7 +257,7 @@ private:
   struct events_que_struct
   {
     std::list<currency::core_event> m_que;
-    
+
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(m_que)
     END_KV_SERIALIZE_MAP()
@@ -289,10 +269,10 @@ private:
   enum localization_string_indices
   {
     // order is surprisingly important here! (see also updateLocalisation in AppController.js)
-    localization_id_quit = 0, 
+    localization_id_quit = 0,
     localization_id_is_received,
-    localization_id_is_confirmed, 
-    localization_id_income_transfer_unconfirmed, 
+    localization_id_is_confirmed,
+    localization_id_income_transfer_unconfirmed,
     localization_id_income_transfer_confirmed,
     localization_id_mined,
     localization_id_locked,

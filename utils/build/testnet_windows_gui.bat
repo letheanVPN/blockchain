@@ -4,17 +4,12 @@ call utils\build\extras\win\configure_local_paths.cmd
 SET LOCAL_BOOST_LIB_PATH=%LOCAL_BOOST_PATH%\lib64-msvc-14.2
 SET QT_MSVC_PATH=%QT_PREFIX_PATH%\msvc2019_64
 
-SET ACHIVE_NAME_PREFIX=lethean-win-gui-x64-
+SET ACHIVE_NAME_PREFIX=lethean-gui-bundle-win-testnet-x64
 SET MY_PATH=%~dp0
 SET SOURCES_PATH=%MY_PATH:~0,-13%
 
-IF NOT [%build_prefix%] == [] (
-  SET ACHIVE_NAME_PREFIX=%ACHIVE_NAME_PREFIX%%build_prefix%-
-)
-
 SET TESTNET_DEF=-D TESTNET=TRUE
 SET TESTNET_LABEL=testnet
-SET ACHIVE_NAME_PREFIX=%ACHIVE_NAME_PREFIX%testnet-
 
 
 SET PARAM=%~1
@@ -55,16 +50,6 @@ IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
 
-msbuild src/daemon.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
-IF %ERRORLEVEL% NEQ 0 (
-  goto error
-)
-
-msbuild src/simplewallet.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
-IF %ERRORLEVEL% NEQ 0 (
-  goto error
-)
-
 msbuild src/Lethean.vcxproj /p:SubSystem="WINDOWS,5.02" /p:Configuration=Release /t:Build
 
 IF %ERRORLEVEL% NEQ 0 (
@@ -76,16 +61,10 @@ IF %ERRORLEVEL% NEQ 0 (
 echo "sources are built successfully"
 
 
-
-
 :skip_build
 cd %SOURCES_PATH%/build
 
-set cmd=src\Release\simplewallet.exe --version
-FOR /F "tokens=3" %%a IN ('%cmd%') DO set version=%%a
-echo '%version%'
-
-set build_zip_filename=%ACHIVE_NAME_PREFIX%%version%.zip
+set build_zip_filename=%ACHIVE_NAME_PREFIX%.zip
 set build_zip_path=%SOURCES_PATH%\%build_zip_filename%
 
 del /F /Q %build_zip_path%
@@ -99,12 +78,15 @@ cd src\release
 
 mkdir bunch
 
-copy /Y Lethean.exe bunch
+copy /Y lethean-gui-server.exe bunch
 copy /Y letheand.exe bunch
 copy /Y simplewallet.exe bunch
 copy /Y *.pdb bunch
 
-%QT_MSVC_PATH%\bin\windeployqt.exe bunch\Lethean.exe
+copy /Y %OPENSSL_ROOT_DIR%\bin\libcrypto-1_1-x64.dll bunch
+copy /Y %OPENSSL_ROOT_DIR%\bin\libssl-1_1-x64.dll bunch
+
+%QT_MSVC_PATH%\bin\windeployqt.exe bunch\lethean-gui-server.exe
 
 cd bunch
 
@@ -112,16 +94,6 @@ zip -r %build_zip_path% *.*
 IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
-
-
-@echo "Add html"
-
-cd %SOURCES_PATH%\src\gui\qt-daemon\layout
-zip -x html/package.json html/gulpfile.js html/less/* -r %build_zip_path% html
-IF %ERRORLEVEL% NEQ 0 (
-  goto error
-)
-
 
 @echo "Add runtime stuff"
 
@@ -138,35 +110,8 @@ IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
 
-
-@echo "---------------------------------------------------------------"
-@echo "-------------------Building installer--------------------------"
-@echo "---------------------------------------------------------------"
-
-mkdir installer_src
-
-
-unzip -o %build_zip_path% -d installer_src
-IF %ERRORLEVEL% NEQ 0 (
-  goto error
-)
-
-
-"%INNOSETUP_PATH%"  /dBinariesPath=../../../../build/installer_src /DMyAppVersion=%version% /o%SOURCES_PATH% /f%ACHIVE_NAME_PREFIX%%version%-installer ..\utils\build\extras\win\setup_64.iss
-IF %ERRORLEVEL% NEQ 0 (
-  goto error
-)
-
-
 @echo "---------------------------------------------------------------"
 @echo "---------------------------------------------------------------"
-
-set installer_file=%ACHIVE_NAME_PREFIX%%version%-installer.exe
-set installer_path=%SOURCES_PATH%\%installer_file%
-
-call :sha256 %installer_path% installer_checksum
-
-call :sha256 %build_zip_path% build_zip_checksum
 
 goto success
 
