@@ -2,7 +2,7 @@ call utils\build\extras\win\configure_local_paths.cmd
 
 ;; MSVC version-specific paths
 SET LOCAL_BOOST_LIB_PATH=%LOCAL_BOOST_PATH%\lib64-msvc-14.2
-SET QT_MSVC_PATH=%QT_PREFIX_PATH%\msvc2019_64
+SET QT_MSVC_PATH=%QT_PREFIX_PATH%
 
 SET ACHIVE_NAME_PREFIX=lethean-gui-bundle-win-testnet-x64
 SET MY_PATH=%~dp0
@@ -79,27 +79,16 @@ cd src\release
 mkdir bunch
 
 copy /Y lethean-gui-server.exe bunch
-copy /Y letheand.exe bunch
-copy /Y simplewallet.exe bunch
 copy /Y *.pdb bunch
 
-copy /Y %OPENSSL_ROOT_DIR%\bin\libcrypto-1_1-x64.dll bunch
-copy /Y %OPENSSL_ROOT_DIR%\bin\libssl-1_1-x64.dll bunch
+copy /Y "%OPENSSL_ROOT_DIR%\bin\libcrypto-1_1-x64.dll" bunch
+copy /Y "%OPENSSL_ROOT_DIR%\bin\libssl-1_1-x64.dll" bunch
 
-%QT_MSVC_PATH%\bin\windeployqt.exe bunch\lethean-gui-server.exe
+windeployqt.exe bunch\lethean-gui-server.exe
 
 cd bunch
 
-zip -r %build_zip_path% *.*
-IF %ERRORLEVEL% NEQ 0 (
-  goto error
-)
-
-@echo "Add runtime stuff"
-
-
-cd %ETC_BINARIES_PATH%
-zip -r %build_zip_path% *.*
+zip -r %build_zip_path% *
 IF %ERRORLEVEL% NEQ 0 (
   goto error
 )

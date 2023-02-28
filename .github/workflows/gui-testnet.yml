@@ -18,7 +18,7 @@ jobs:
   linux-amd64:
     runs-on: ubuntu-20.04
     env:
-      CCACHE_TEMPDIR: /tmp/.ccache-temp
+      CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.1
@@ -30,7 +30,7 @@ jobs:
           submodules: recursive
       - uses: actions/cache@v3
         with:
-          path: ~/.ccache
+          path: ${{ github.workspace }}/ccache
           key: ccache-${{ runner.os }}-build-testnet-gui
           restore-keys: ccache-${{ runner.os }}-build-testnet-gui
       - name: update apt
@@ -56,7 +56,7 @@ jobs:
   macos-amd64:
     runs-on: macos-latest
     env:
-      CCACHE_TEMPDIR: /tmp/.ccache-temp
+      CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.1
@@ -68,7 +68,7 @@ jobs:
           submodules: recursive
       - uses: actions/cache@v3
         with:
-          path: /Users/runner/Library/Caches/ccache
+          path: ${{ github.workspace }}/ccache
           key: ccache-${{ runner.os }}-build-testnet-gui
           restore-keys: ccache-${{ runner.os }}-build-testnet-gui
       - name: install dependencies
@@ -97,6 +97,8 @@ jobs:
           files: ${{ github.workspace }}/lethean-gui-bundle-macos-testnet-i386.tar.bz2
   windows-amd64:
     runs-on: windows-latest
+    env:
+      CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.1
@@ -106,11 +108,12 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-      - uses: actions/cache@v3
+      - name: cCache Cache
+        uses: actions/cache@v3
         with:
-          path: ~\.ccache
-          key: ccache-${{ runner.os }}-build-testnet-cli
-          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
+          path: ${{ github.workspace }}/ccache
+          key: ccache-${{ runner.os }}-build-testnet-gui
+          restore-keys: ccache-${{ runner.os }}-build-testnet-gui
       - name: Eat the Choco
         run: |
           choco install openssl --version 1.1.1.1500 -y
@@ -125,6 +128,8 @@ jobs:
             arch: 'win64_msvc2019_64'
             dir: '${{ github.workspace }}/example/'
             modules: 'qtcharts qtwebengine'
+            tools: 'tools_cmake tools_vcredist'
+            cache: true
       - name: install msvc toolset
         uses: ilammy/msvc-dev-cmd@v1
       - name: Install boost
@@ -148,8 +153,8 @@ jobs:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
           LOCAL_BOOST_PATH: ${{ steps.install-boost.outputs.BOOST_ROOT }}
           OPENSSL_ROOT_DIR: "C:\\Program Files\\OpenSSL-Win64"
+          CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
         run: |
-          refreshenv
           ${{env.CCACHE_SETTINGS}}
           .\utils\build\testnet_windows_gui.bat
       - uses: actions/upload-artifact@v3
