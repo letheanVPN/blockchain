@@ -53,7 +53,7 @@
 #define TX_DEFAULT_FEE                                  ((uint64_t)1000000) // .01
 #define TX_MINIMUM_FEE                                  ((uint64_t)1000000) // .01
 
-#define CURRENCY_BLOCK_REWARD                           1000000000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
+#define CURRENCY_BLOCK_REWARD                           10000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
 
 
 #define WALLET_MAX_ALLOWED_OUTPUT_AMOUNT                ((uint64_t)0xffffffffffffffffLL)
@@ -109,11 +109,11 @@
 #define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
 #else
 #define SEED_NODE_HOST                                  "testnet.lethean.io"
-#define P2P_DEFAULT_PORT                                31121
-#define RPC_DEFAULT_PORT                                31211
-#define STRATUM_DEFAULT_PORT                            31777
+#define P2P_DEFAULT_PORT                                31122
+#define RPC_DEFAULT_PORT                                31212
+#define STRATUM_DEFAULT_PORT                            31778
 #define P2P_NETWORK_ID_TESTNET_FLAG                     0
-#define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
+#define P2P_MAINTAINERS_PUB_KEY                         "cc6076dd0ba1bdb1dd65c8aedcc4c15705d713060f33c4a12ce301eb86f4c684"
 #endif
 
 #define P2P_NETWORK_ID_VER                              (CURRENCY_FORMATION_VERSION+0)
@@ -178,8 +178,8 @@
 #define CURRENCY_NAME                                   CURRENCY_NAME_BASE
 #define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE
 #else
-#define CURRENCY_NAME                                   CURRENCY_NAME_BASE"_testnet"
-#define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE"_testnet"
+#define CURRENCY_NAME                                   CURRENCY_NAME_BASE"_testnet2"
+#define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE"_testnet2"
 #endif
 
 //premine
@@ -191,7 +191,7 @@
 #define ALIAS_REWARDS_ACCOUNT_VIEW_SEC_KEY              "0000000000000000000000000000000000000000000000000000000000000000" //burn alias money
 
 #define ALIAS_MINIMUM_PUBLIC_SHORT_NAME_ALLOWED         6
-#define ALIAS_SHORT_NAMES_VALIDATION_PUB_KEY            "1081e86ba23c7b74e7e93b78582e7a4724b034944a7a2bc3b41502737e0eaf8d"
+#define ALIAS_SHORT_NAMES_VALIDATION_PUB_KEY            "fc5c69233067971ca4e55cbf21d5cc3fd947393945fa5c2041794a1e17f43c21"
 
 
 #define ALIAS_NAME_MAX_LEN                              255
