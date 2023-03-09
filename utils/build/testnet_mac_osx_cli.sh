@@ -18,7 +18,7 @@ fi
 
 testnet_def="-D TESTNET=TRUE"
 testnet_label="testnet "
-ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}testnet-
+ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}testnet
 
 
 rm -rf build; mkdir -p build/release; cd build/release;
@@ -42,11 +42,9 @@ mkdir -p Lethean;
 chmod 0777 ./src/letheand src/simplewallet src/connectivity_tool
 cp -Rv src/letheand src/simplewallet  src/connectivity_tool ./Lethean
 
-read version_str <<< $(./src/letheand --version | awk '/^Lethean/ { print $2 }')
-version_str=${version_str}
-echo $version_str
 
-package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.tar.bz2
+
+package_filename=${ARCHIVE_NAME_PREFIX}.tar.bz2
 
 rm -f ./$package_filename
 tar -cjvf $package_filename Lethean

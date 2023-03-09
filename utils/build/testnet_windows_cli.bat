@@ -14,7 +14,7 @@ IF NOT [%build_prefix%] == [] (
 
 SET TESTNET_DEF=-D TESTNET=TRUE
 SET TESTNET_LABEL=testnet
-SET ACHIVE_NAME_PREFIX=%ACHIVE_NAME_PREFIX%testnet-
+SET ACHIVE_NAME_PREFIX=%ACHIVE_NAME_PREFIX%testnet
 
 
 @echo on
@@ -72,12 +72,8 @@ echo "sources are built successfully"
 :skip_build
 cd %SOURCES_PATH%/build
 
-set cmd=src\Release\simplewallet.exe --version
-FOR /F "tokens=3" %%a IN ('%cmd%') DO set version=%%a
-set version=%version:~0,-2%
-echo '%version%'
 
-set build_zip_filename=%ACHIVE_NAME_PREFIX%%version%.zip
+set build_zip_filename=%ACHIVE_NAME_PREFIX%.zip
 set build_zip_path=%SOURCES_PATH%\%build_zip_filename%
 
 del /F /Q %build_zip_path%

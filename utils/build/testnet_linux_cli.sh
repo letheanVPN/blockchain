@@ -21,16 +21,16 @@ fi
 
 testnet_def="-D TESTNET=TRUE"
 testnet_label="testnet "
-ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}testnet-
+ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}testnet
 
 prj_root=$(pwd)
 
 echo "---------------- BUILDING PROJECT ----------------"
 echo "--------------------------------------------------"
 
-echo "Building...." 
+echo "Building...."
 
-rm -rf build; mkdir -p build/release; cd build/release; 
+rm -rf build; mkdir -p build/release; cd build/release;
 cmake $testnet_def -D STATIC=true -D ARCH=x86-64 -D CMAKE_BUILD_TYPE=Release ../..
 if [ $? -ne 0 ]; then
     echo "Failed to run cmake"
@@ -44,11 +44,6 @@ if [ $? -ne 0 ]; then
 fi
 
 
-read version_str <<< $(./src/letheand --version | awk '/^Lethean/ { print $2 }')
-version_str=${version_str}
-echo $version_str
-
-
 rm -rf Lethean;
 mkdir -p Lethean;
 
@@ -56,7 +51,7 @@ mkdir -p Lethean;
 cp -Rv src/letheand src/simplewallet  src/connectivity_tool ./Lethean
 chmod 0777 ./src/letheand src/simplewallet  src/connectivity_tool
 
-package_filename=${ARCHIVE_NAME_PREFIX}${version_str}.tar.bz2
+package_filename=${ARCHIVE_NAME_PREFIX}.tar.bz2
 
 rm -f ./$package_filename
 tar -cjvf $package_filename Lethean
