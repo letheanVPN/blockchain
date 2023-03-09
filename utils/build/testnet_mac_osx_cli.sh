@@ -47,7 +47,8 @@ cp -Rv src/letheand src/simplewallet  src/connectivity_tool ./Lethean
 package_filename=${ARCHIVE_NAME_PREFIX}.tar.bz2
 
 rm -f ./$package_filename
-tar -cjvf $package_filename Lethean
+cd Lethean
+tar -cjvf ../$package_filename *
 if [ $? -ne 0 ]; then
     echo "Failed to pack"
     exit 1
