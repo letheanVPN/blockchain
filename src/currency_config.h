@@ -101,6 +101,7 @@
 
 #ifndef TESTNET
 #define SEED_NODE_HOST                                  "mainnet.lethean.io"
+
 #define P2P_DEFAULT_PORT                                (36942 + CURRENCY_FORMATION_VERSION)
 #define RPC_DEFAULT_PORT                                36942
 #define STRATUM_DEFAULT_PORT                            36941
@@ -109,6 +110,7 @@
 #define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
 #else
 #define SEED_NODE_HOST                                  "testnet.lethean.io"
+#define SEED_NODE_HOST2                                  "dev.lthn.network"
 #define P2P_DEFAULT_PORT                                31122
 #define RPC_DEFAULT_PORT                                31212
 #define STRATUM_DEFAULT_PORT                            31778

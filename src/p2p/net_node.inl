@@ -312,6 +312,7 @@ namespace nodetool
 
     //TODO:
     ADD_HARDCODED_SEED_NODE(SEED_NODE_HOST, P2P_DEFAULT_PORT);
+    ADD_HARDCODED_SEED_NODE(SEED_NODE_HOST2, P2P_DEFAULT_PORT);
 
     bool res = handle_command_line(vm);
     CHECK_AND_ASSERT_MES(res, false, "Failed to handle command line");
