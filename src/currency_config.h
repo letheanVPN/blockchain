@@ -53,7 +53,7 @@
 #define TX_DEFAULT_FEE                                  ((uint64_t)1000000) // .01
 #define TX_MINIMUM_FEE                                  ((uint64_t)1000000) // .01
 
-#define CURRENCY_BLOCK_REWARD                           100000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
+#define CURRENCY_BLOCK_REWARD                           10000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
 
 
 #define WALLET_MAX_ALLOWED_OUTPUT_AMOUNT                ((uint64_t)0xffffffffffffffffLL)
@@ -106,7 +106,7 @@
 #define RPC_DEFAULT_PORT                                36942
 #define STRATUM_DEFAULT_PORT                            36941
 #define STRARUM_DEFAULT_PORT                            36941
-#define P2P_NETWORK_ID_TESTNET_FLAG                     1
+#define P2P_NETWORK_ID_TESTNET_FLAG                     0
 #define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
 #else
 #define SEED_NODE_HOST                                  "testnet.lethean.io"
@@ -114,7 +114,7 @@
 #define P2P_DEFAULT_PORT                                31122
 #define RPC_DEFAULT_PORT                                31212
 #define STRATUM_DEFAULT_PORT                            31778
-#define P2P_NETWORK_ID_TESTNET_FLAG                     0
+#define P2P_NETWORK_ID_TESTNET_FLAG                     1
 #define P2P_MAINTAINERS_PUB_KEY                         "cc6076dd0ba1bdb1dd65c8aedcc4c15705d713060f33c4a12ce301eb86f4c684"
 #endif
 
@@ -180,8 +180,8 @@
 #define CURRENCY_NAME                                   CURRENCY_NAME_BASE
 #define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE
 #else
-#define CURRENCY_NAME                                   CURRENCY_NAME_BASE"_testnet2"
-#define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE"_testnet2"
+#define CURRENCY_NAME                                   CURRENCY_NAME_BASE"_testnet3"
+#define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE"_testnet3"
 #endif
 
 //premine
