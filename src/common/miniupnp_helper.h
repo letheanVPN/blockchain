@@ -4,7 +4,7 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#pragma once 
+#pragma once
 
 #include <thread>
 #include <string>
@@ -17,7 +17,7 @@ extern "C" {
 }
 
 #include "misc_language.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #include "version.h"
 
 namespace tools
@@ -34,9 +34,9 @@ namespace tools
     uint32_t m_external_port;
     uint32_t m_internal_port;
     uint32_t m_period_ms;
-  public: 
+  public:
     miniupnp_helper():m_devlist(nullptr),
-      m_urls(AUTO_VAL_INIT(m_urls)), 
+      m_urls(AUTO_VAL_INIT(m_urls)),
       m_data(AUTO_VAL_INIT(m_data)),
       m_IGD(0),
       m_external_port(0),
@@ -123,7 +123,7 @@ namespace tools
 
       if(m_devlist)
       {
-        freeUPNPDevlist(m_devlist); 
+        freeUPNPDevlist(m_devlist);
         m_devlist = nullptr;
       }
 
@@ -156,8 +156,8 @@ namespace tools
 
       if(r!=UPNPCOMMAND_SUCCESS)
       {
-        LOG_PRINT_L1("AddPortMapping with external_port_str= " << external_port_str << 
-                                         ", internal_port_str="  << internal_port_str << 
+        LOG_PRINT_L1("AddPortMapping with external_port_str= " << external_port_str <<
+                                         ", internal_port_str="  << internal_port_str <<
                                          ", failed with code=" << r << "(" << strupnperror(r) << ")");
       }else
       {

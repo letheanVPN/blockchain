@@ -1,10 +1,19 @@
-[![Coverity Scan](https://scan.coverity.com/projects/18767/badge.svg)](https://scan.coverity.com/projects/zanoproject)
-[![Discord](https://img.shields.io/discord/538361472691077130?label=discord&logo=discord)](https://discord.gg/wE3rmYY)
+# Addresses 
 
+- `iT`/`0x73f7` - Main prefix 
+- `iTH`/`0x6af7` - integrated paymennt_id address prefix
+- `iTHn`/`0xdeaf7` - auditable wallet address
+- `iTHa`/`0x7eaf7` -  auditable integrated paymennt_id address prefix
+
+## Ports
+
+- STRATUM: `36941`
+- RPC: `36942`
+- P2P: `36943`
 ## Cloning
 
 Be sure to clone the repository properly:\
-`$ git clone --recursive https://github.com/hyle-team/zano.git`
+`$ git clone --recursive https://github.com/letheanVPN/blockchain-iTw3.git`
 
 # Building
 --------
@@ -24,7 +33,7 @@ Be sure to clone the repository properly:\
 
 Note:\
 [*server version*] denotes steps required for building command-line tools (daemon, simplewallet, etc.).\
-[*GUI version*] denotes steps required for building Zano executable with GUI.
+[*GUI version*] denotes steps required for building LTHN executable with GUI.
 
 <br />
 
@@ -109,9 +118,10 @@ For instance, by adding the following lines to `~/.bashrc`
           BOOST_ROOT=$HOME/boost_1_70_0 OPENSSL_ROOT_DIR=$HOME/openssl cmake ..
           make -j1 daemon simplewallet
 
-   2. If you set the variables in step 6:
-
-          cd zano && mkdir build && cd build
+          cd lthn/ && make -j1
+      or 
+   
+          cd lthn && mkdir build && cd build
           cmake ..
           make -j1 daemon simplewallet
 
@@ -125,7 +135,7 @@ For instance, by adding the following lines to `~/.bashrc`
    
    1. Build GUI:
 
-          cd zano
+          cd lthn
           utils/build_script_linux.sh
 
     Look for the binaries in `build` folder
@@ -133,19 +143,32 @@ For instance, by adding the following lines to `~/.bashrc`
 <br />
 
 ### Windows
-Recommended OS version: Windows 7 x64, Windows 11 x64.
-1. Install required prerequisites (Boost, Qt, CMake, OpenSSL).
-2. Edit paths in `utils/configure_local_paths.cmd`.
-3. Run one of `utils/configure_win64_msvsNNNN_gui.cmd` according to your MSVC version.
-4. Go to the build folder and open generated Zano.sln in MSVC.
-5. Build.
+Recommended OS versions: Windows 7+ x64, Windows 11 x64.
+
+1. Install [Chocolatey](https://chocolatey.org/install)
+2. Install required prerequisites (Boost, Qt, CMake, OpenSSL).
+
+   _NOTE: At time of writing the following versions were available on Chocolatey_
+   ```
+   choco install boost-msvc-14.2 --version 1.74.0 -y
+   choco install qt5-default --version 5.15.2.20211228 -y
+   choco install cmake --version 3.23.1 -y 
+   choco install openssl --version 1.1.1.1500 -y
+   ```
+
+3. Clone repository, then complete the following:
+   1. Edit paths in file `utils/configure_local_paths.cmd.example`.
+   2. Rename `configure_local_paths.cmd.example` to `configure_local_paths.cmd` (do not commit).
+4. Run one of `utils/configure_win64_msvsNNNN_gui.cmd` according to your MSVC version.
+5. Go to the build folder and open generated Zano.sln in MSVC.
+6. Build.
 
 In order to correctly deploy Qt GUI application, you also need to do the following:
 
-6. Copy Zano.exe to a folder (e.g. `depoy`). 
-7. Run  `PATH_TO_QT\bin\windeployqt.exe deploy\Zano.exe`.
+6. Copy Lethean.exe to a folder (e.g. `depoy`). 
+7. Run  `PATH_TO_QT\bin\windeployqt.exe deploy\Lethean.exe`.
 8. Copy folder `\src\gui\qt-daemon\html` to `deploy\html`.
-9. Now you can run `Zano.exe`
+9. Now you can run `Lethean.exe`
 
 <br />
 
@@ -160,12 +183,12 @@ To build GUI application:
 1. Create self-signing certificate via Keychain Access:\
     a. Run Keychain Access.\
     b. Choose Keychain Access > Certificate Assistant > Create a Certificate.\
-    c. Use “Zano” (without quotes) as certificate name.\
+    c. Use “LetheanVPN” (without quotes) as certificate name.\
     d. Choose “Code Signing” in “Certificate Type” field.\
     e. Press “Create”, then “Done”.\
     f. Make sure the certificate was added to keychain "System". If not—move it to "System".\
     g. Double click the certificate you've just added, enter the trust section and under "When using this certificate" select "Always trust".\
-    h. Unfold the certificate in Keychain Access window and double click the underlying private key "Zano". Select "Access Control" tab, then select "Allow all applications to access this item". Click "Save Changes".
+    h. Unfold the certificate in Keychain Access window and double click the underlying private key "LetheanVPN". Select "Access Control" tab, then select "Allow all applications to access this item". Click "Save Changes".
 2. Revise building script, comment out unwanted steps and run it:  `utils/build_script_mac_osx.sh`
 3. The application should be here: `/buid_mac_osx_64/release/src`
 

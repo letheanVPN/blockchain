@@ -1,0 +1,16 @@
+version: "3"
+services:
+  server-chain:
+    container_name: letheand
+    tty: true
+    build:
+      context: ../../
+      dockerfile: utils/docker/Dockerfile
+    image: lthn/chain:testnet
+    platform: linux/amd64
+    restart: always
+    volumes:
+      - ~/Lethean/data:/home/lethean/data
+    ports:
+      - 31121
+      - 31211

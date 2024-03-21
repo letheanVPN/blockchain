@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "db_backend_selector.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #include "command_line.h"
 #include "db_backend_lmdb.h"
 #include "db_backend_mdbx.h"
@@ -42,7 +42,7 @@ namespace db
         m_engine_type = db_mdbx;
 #else
         LOG_PRINT_L0(" DB ENGINE: " << ARG_DB_ENGINE_MDBX << " is not suported by this build(see DISABLE_MDBX cmake option), STOPPING");
-#endif 
+#endif
       }
       else
       {
@@ -122,7 +122,7 @@ namespace db
 
   std::string db_backend_selector::get_temp_config_folder() const
   {
-    return m_config_folder + "_TEMP";                                                                  
+    return m_config_folder + "_TEMP";
   }
 
 

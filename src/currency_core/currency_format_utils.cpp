@@ -66,7 +66,7 @@ namespace currency
       }
       return true;
     }
-    
+
     // okay, have some ZC inputs
 
     CHECK_AND_ASSERT_MES(zc_ins_count == ogc.pseudo_outs_plus_real_out_blinding_masks.size(), false, "zc_ins_count != pseudo_outs_plus_real_out_blinding_masks");
@@ -84,7 +84,7 @@ namespace currency
     {
       const crypto::public_key H = ogc.asset_ids[j].to_public_key();
       const crypto::point_t& T = ogc.blinded_asset_ids[j];
-      
+
       std::vector<crypto::point_t> ring;
       ring.reserve(zc_ins_count);
       size_t secret_index = SIZE_MAX;
@@ -172,7 +172,7 @@ namespace currency
     if (is_asset_emitting_transaction(tx, &ado))
     {
       crypto::point_t asset_id_pt{};
-      CHECK_AND_ASSERT_MES(get_or_calculate_asset_id(ado, &asset_id_pt, nullptr), false, "get_or_calculate_asset_id failed"); // TODO @#@# expensive operation, consider caching 
+      CHECK_AND_ASSERT_MES(get_or_calculate_asset_id(ado, &asset_id_pt, nullptr), false, "get_or_calculate_asset_id failed"); // TODO @#@# expensive operation, consider caching
       pseudo_outs_blinded_asset_ids.emplace_back(asset_id_pt); // additional ring member for asset emitting tx
     }
 
@@ -368,7 +368,7 @@ namespace currency
     bool pos                                  /* = false */,
     const pos_entry& pe                       /* = pos_entry() */,  // only pe.stake_unlock_time and pe.stake_amount are used now, TODO: consider refactoring -- sowle
     tx_generation_context* ogc_ptr            /* = nullptr */,
-    const keypair* tx_one_time_key_to_use     /* = nullptr */, 
+    const keypair* tx_one_time_key_to_use     /* = nullptr */,
     const std::vector<tx_destination_entry>& destinations_ /* = std::vector<tx_destination_entry>() */
   )
   {
@@ -388,7 +388,7 @@ namespace currency
     {
       block_reward += fee;
     }
-      
+
     if (!destinations.size())
     {
       //
@@ -454,7 +454,7 @@ namespace currency
       if (!add_tx_extra_userdata(tx, extra_nonce))
         return false;
 
-    //at this moment we do apply_unlock_time only for coin_base transactions 
+    //at this moment we do apply_unlock_time only for coin_base transactions
     apply_unlock_time(destinations, tx);
     //we always add extra_padding with 2 bytes length to make possible for get_block_template to adjust cumulative size
     tx.extra.push_back(extra_padding());
@@ -504,7 +504,7 @@ namespace currency
       tx_gen_context.amount_commitments_sum += tx_gen_context.amount_commitments[output_index];
       ++output_index;
     }
-    
+
     if (tx.attachment.size())
       add_attachments_info_to_extra(tx.extra, tx.attachment);
 
@@ -521,7 +521,7 @@ namespace currency
     if (tx.version > TRANSACTION_VERSION_PRE_HF4 && !pos)
     {
       // This is for PoW blocks only, because PoS blocks proofs are handled in wallet2::prepare_and_sign_pos_block() due to the necessity of making Zarcanum proofs first
-      // 
+      //
       // tx hash should be sealed by now
       crypto::hash tx_id = get_transaction_hash(tx);
 
@@ -684,7 +684,7 @@ namespace currency
       }
       return true;
     }
-    
+
     // pre-HF4 txs
     return check_tx_bare_balance(tx, additional_inputs_amount_and_fees_for_mining_tx);
   }
@@ -824,7 +824,7 @@ namespace currency
 
       if (ts < WALLET_BRAIN_DATE_OFFSET)
         return false;
-      
+
       creation_timestamp = ts;
     }
 
@@ -854,7 +854,7 @@ namespace currency
 
       uint64_t amount_in = 0;
       uint64_t amount_out = get_outs_money_amount(tx);
-   
+
       for(auto& in : tx.vin)
         amount_in += get_amount_from_variant(in);
 
@@ -870,9 +870,9 @@ namespace currency
       fee += ztd.fee;
       return true; // continue
       };
-      
+
     bool r = process_type_in_variant_container<zarcanum_tx_data_v1>(tx.extra, cb, false);
-      
+
     if (!r)
     {
       fee = 0;
@@ -1147,7 +1147,7 @@ namespace currency
     //a.meta_info;
     //if (a.owner != b.owner) return false;
     if (new_ado.hidden_supply != prev_ado.hidden_supply) return false;
-    
+
     return true;
   }
   //---------------------------------------------------------------
@@ -1200,12 +1200,12 @@ namespace currency
 
         crypto::scalar_t amount_mask   = crypto::hash_helper_t::hs(CRYPTO_HDS_OUT_AMOUNT_MASK, h);
         out.encrypted_amount = de.amount ^ amount_mask.m_u64[0];
-      
+
         CHECK_AND_ASSERT_MES(~de.flags & tx_destination_entry_flags::tdef_explicit_native_asset_id || de.asset_id == currency::native_coin_asset_id, false, "explicit_native_asset_id may be used only with native asset id");
         asset_blinding_mask = de.flags & tx_destination_entry_flags::tdef_explicit_native_asset_id ? 0 : crypto::hash_helper_t::hs(CRYPTO_HDS_OUT_ASSET_BLINDING_MASK, h); // s = Hs(domain_sep, Hs(8 * r * V, i))
         blinded_asset_id = crypto::point_t(de.asset_id) + asset_blinding_mask * crypto::c_point_X;
         out.blinded_asset_id = (crypto::c_scalar_1div8 * blinded_asset_id).to_public_key(); // T = 1/8 * (H_asset + s * X)
-        
+
         amount_blinding_mask = de.flags & tx_destination_entry_flags::tdef_zero_amount_blinding_mask ? 0 : crypto::hash_helper_t::hs(CRYPTO_HDS_OUT_AMOUNT_BLINDING_MASK, h); // y = Hs(domain_sep, Hs(8 * r * V, i))
         amount_commitment = de.amount * blinded_asset_id + amount_blinding_mask * crypto::c_point_G;
         out.amount_commitment = (crypto::c_scalar_1div8 * amount_commitment).to_public_key(); // E = 1/8 * e * T + 1/8 * y * G
@@ -1221,10 +1221,10 @@ namespace currency
 
         out.stealth_address = (h * crypto::c_point_G + crypto::point_t(apa.spend_public_key)).to_public_key();
         out.concealing_point = (crypto::hash_helper_t::hs(CRYPTO_HDS_OUT_CONCEALING_POINT, h) * crypto::point_t(apa.view_public_key)).to_public_key(); // Q = 1/8 * Hs(domain_sep, Hs(8 * r * V, i) ) * 8 * V
-      
+
         crypto::scalar_t amount_mask = crypto::hash_helper_t::hs(CRYPTO_HDS_OUT_AMOUNT_MASK, h);
         out.encrypted_amount = de.amount ^ amount_mask.m_u64[0];
-      
+
         CHECK_AND_ASSERT_MES(~de.flags & tx_destination_entry_flags::tdef_explicit_native_asset_id || de.asset_id == currency::native_coin_asset_id, false, "explicit_native_asset_id may be used only with native asset id");
         asset_blinding_mask = de.flags & tx_destination_entry_flags::tdef_explicit_native_asset_id ? 0 : crypto::hash_helper_t::hs(CRYPTO_HDS_OUT_ASSET_BLINDING_MASK, h); // s = Hs(domain_sep, Hs(8 * r * V, i))
         blinded_asset_id = crypto::point_t(de.asset_id) + asset_blinding_mask * crypto::c_point_X;
@@ -1243,7 +1243,7 @@ namespace currency
         DBG_VAL_PRINT(amount_blinding_mask);
         DBG_VAL_PRINT(amount_mask);
         DBG_VAL_PRINT(amount_commitment);
-        
+
         if (de.addr.front().is_auditable())
           out.mix_attr = CURRENCY_TO_KEY_OUT_FORCED_NO_MIX; // override mix_attr to 1 for auditable target addresses
         else
@@ -1251,7 +1251,7 @@ namespace currency
 
         uint16_t hint = get_derivation_hint(reinterpret_cast<crypto::key_derivation&>(derivation));
         if (deriv_cache.count(hint) == 0)
-        {          
+        {
           tx.extra.push_back(make_tx_derivation_hint_from_uint16(hint));
           deriv_cache.insert(hint);
         }
@@ -1283,7 +1283,7 @@ namespace currency
 
           uint16_t hint = get_derivation_hint(derivation);
           if (deriv_cache.count(hint) == 0)
-          {          
+          {
             tx.extra.push_back(make_tx_derivation_hint_from_uint16(hint));
             deriv_cache.insert(hint);
           }
@@ -1321,7 +1321,7 @@ namespace currency
         if (htlc_dest.htlc_hash == null_hash)
         {
           //we use deterministic origin, to make possible access origin on different wallets copies
-        
+
           result.htlc_origin = generate_origin_for_htlc(htlc, self);
 
           //calculate hash
@@ -1351,7 +1351,7 @@ namespace currency
           tk.mix_attr = CURRENCY_TO_KEY_OUT_FORCED_NO_MIX; // override mix_attr to 1 for auditable target addresses
         else
           tk.mix_attr = tx_outs_attr;
-      
+
         out.target = tk;
       }
       else
@@ -1398,14 +1398,14 @@ namespace currency
     eai.cnt = attachment.size();
   }
   //---------------------------------------------------------------
-  bool construct_tx(const account_keys& sender_account_keys, 
+  bool construct_tx(const account_keys& sender_account_keys,
     const std::vector<tx_source_entry>& sources,
     const std::vector<tx_destination_entry>& destinations,
-    const std::vector<attachment_v>& attachments,    
+    const std::vector<attachment_v>& attachments,
     transaction& tx,
     uint64_t tx_version,
     uint64_t unlock_time,
-    uint8_t tx_outs_attr, 
+    uint8_t tx_outs_attr,
     bool shuffle)
   {
     crypto::secret_key one_time_secret_key = AUTO_VAL_INIT(one_time_secret_key);
@@ -1538,7 +1538,7 @@ namespace currency
     const crypto::key_derivation& rkey;
     std::vector<payload_items_v>& rdecrypted_att;
     decrypt_attach_visitor(const crypto::key_derivation& key,
-      std::vector<payload_items_v>& decrypted_att, 
+      std::vector<payload_items_v>& decrypted_att,
       const account_keys& acc_keys,
       bool is_income,
       const transaction& tx,
@@ -1546,8 +1546,8 @@ namespace currency
       rkey(key),
       m_tx(tx),
       m_is_income(is_income),
-      rdecrypted_att(decrypted_att), 
-      m_acc_keys(acc_keys), 
+      rdecrypted_att(decrypted_att),
+      m_acc_keys(acc_keys),
       m_tx_onetime_pubkey(tx_onetime_pubkey)
     {}
     void operator()(const tx_comment& comment)
@@ -1572,7 +1572,7 @@ namespace currency
             {
               return; // this field invisible for sender
             }
-            //decrypting derivation 
+            //decrypting derivation
             derivation_local = *(crypto::key_derivation*)&sa.security[0];
             crypto::chacha_crypt(derivation_local, m_acc_keys.spend_secret_key);
           }
@@ -1591,7 +1591,7 @@ namespace currency
         else
         {
           crypto::chacha_crypt(local_sa.body, derivation_local);
-        }  
+        }
       }
 
       if (sa.flags&TX_SERVICE_ATTACHMENT_DEFLATE_BODY)
@@ -1733,11 +1733,11 @@ namespace currency
 
       for (auto& a : tx.attachment)
         boost::apply_visitor(v, a);
-      
+
       return true;
     }
-    const crypto::public_key onetime_pub = get_tx_pub_key_from_extra(tx);
-    
+const crypto::public_key onetime_pub = get_tx_pub_key_from_extra(tx);
+
     decrypt_payload_items(derivation, tx.extra, decrypted_items, is_income, tx, acc_keys, onetime_pub);
     decrypt_payload_items(derivation, tx.attachment, decrypted_items, is_income, tx, acc_keys, onetime_pub);
     return true;
@@ -1922,7 +1922,7 @@ namespace currency
   {
     //
     //find target account to encrypt attachment.
-    //for now we use just firs target account that is not sender, 
+    //for now we use just firs target account that is not sender,
     //in case if there is no real targets we use sender credentials to encrypt attachments
     account_public_address crypt_destination_addr = get_crypt_address_from_destinations(sender_account_keys, destinations);
 
@@ -2182,9 +2182,9 @@ namespace currency
     return native_coin_asset_descriptor;
   }
 
-  bool construct_tx_handle_ado(const account_keys& sender_account_keys, 
-    const finalize_tx_param& ftp, 
-    asset_descriptor_operation& ado, 
+  bool construct_tx_handle_ado(const account_keys& sender_account_keys,
+    const finalize_tx_param& ftp,
+    asset_descriptor_operation& ado,
     tx_generation_context& gen_context,
     const keypair& tx_key,
     std::vector<tx_destination_entry>& shuffled_dsts)
@@ -2198,7 +2198,7 @@ namespace currency
       // old:
       // asset_control_key = Hs(CRYPTO_HDS_ASSET_CONTROL_KEY, 8 * tx_key.sec * sender_account_keys.account_address.spend_public_key, 0)
       // ado.descriptor.owner = asset_control_key * G
-      
+
       ado.descriptor.owner = sender_account_keys.account_address.spend_public_key;
 
       CHECK_AND_ASSERT_MES(get_or_calculate_asset_id(ado, &gen_context.ao_asset_id_pt, &gen_context.ao_asset_id), false, "get_or_calculate_asset_id failed");
@@ -2252,7 +2252,7 @@ namespace currency
       ado.amount_commitment = (crypto::c_scalar_1div8 * gen_context.ao_amount_commitment).to_public_key();
 
       if (ftp.pevents_dispatcher) ftp.pevents_dispatcher->RAISE_DEBUG_EVENT(wde_construct_tx_handle_asset_descriptor_operation_before_burn{ &ado });
-    
+
     }
     else
     {
@@ -2323,7 +2323,7 @@ namespace currency
     const uint8_t& tx_outs_attr = ftp.tx_outs_attr;
     const bool& shuffle = ftp.shuffle;
     const uint64_t& flags = ftp.flags;
-    
+
     bool r = false;
     transaction& tx = result.tx;
     crypto::secret_key& one_time_tx_secret_key = result.one_time_key;
@@ -2348,7 +2348,7 @@ namespace currency
 
       if (flags != 0)
         set_tx_flags(tx, flags);
-      //generate key pair  
+      //generate key pair
       if (expiration_time != 0)
         set_tx_expiration_time(tx, expiration_time);
     }
@@ -2474,7 +2474,7 @@ namespace currency
 
       if (src_entr.is_zc())
       {
-        // if at least one decoy output of a ZC input has a non-explicit asset id, then we can't say that all inputs are obviously native coins 
+        // if at least one decoy output of a ZC input has a non-explicit asset id, then we can't say that all inputs are obviously native coins
         for (const tx_source_entry::output_entry& oe : in_context.outputs)
         {
           if (crypto::point_t(oe.blinded_asset_id).modify_mul8() != currency::native_coin_asset_id_pt)
@@ -2515,7 +2515,7 @@ namespace currency
       CHECK_AND_ASSERT_MES(gen_context.tx_key.pub != null_pkey && gen_context.tx_key.sec != null_skey, false, "In append mode both public and secret keys must be provided");
 
       //separately encrypt attachments without putting extra
-      result.derivation = get_encryption_key_derivation(true, tx, sender_account_keys); 
+      result.derivation = get_encryption_key_derivation(true, tx, sender_account_keys);
       crypto::key_derivation& derivation = result.derivation;
       CHECK_AND_ASSERT_MES(derivation != null_derivation, false, "failed to generate_key_derivation");
       bool was_attachment_crypted_entries = false;
@@ -2545,7 +2545,7 @@ namespace currency
     }
 
 
-    
+
     //
     // OUTs
     //
@@ -2569,7 +2569,7 @@ namespace currency
     if (shuffle)
       std::sort(shuffled_dsts.begin(), shuffled_dsts.end(), [](const tx_destination_entry& de1, const tx_destination_entry& de2) { return de1.amount < de2.amount; });
 
-    // TODO: consider "Shuffle" inputs 
+    // TODO: consider "Shuffle" inputs
 
     // construct outputs
     uint64_t native_coins_output_sum = 0;
@@ -2660,7 +2660,7 @@ namespace currency
       if (tx.attachment.size())
         add_attachments_info_to_extra(tx.extra, tx.attachment);
     }
-    
+
 
     //
     // generate proofs and signatures
@@ -2677,7 +2677,7 @@ namespace currency
       size_t i_mapped = inputs_mapping[i_];
       const tx_source_entry& source_entry = sources[i_mapped];
       crypto::hash tx_hash_for_signature = prepare_prefix_hash_for_sign(tx, i_ + input_starter_index, tx_prefix_hash);
-      CHECK_AND_ASSERT_MES(tx_hash_for_signature != null_hash, false, "prepare_prefix_hash_for_sign failed");      
+      CHECK_AND_ASSERT_MES(tx_hash_for_signature != null_hash, false, "prepare_prefix_hash_for_sign failed");
       std::stringstream ss_ring_s;
 
       if (source_entry.is_zc())
@@ -2733,8 +2733,8 @@ namespace currency
         aop.opt_amount_commitment_g_proof = aop_g_sig;
         tx.proofs.emplace_back(std::move(aop));
       }
-      if(ftp.need_to_generate_ado_proof)        
-      { 
+      if(ftp.need_to_generate_ado_proof)
+      {
         asset_operation_ownership_proof aoop = AUTO_VAL_INIT(aoop);
 
         if (ftp.pthirdparty_sign_handler)
@@ -2745,7 +2745,7 @@ namespace currency
         }
         else
         {
-          //generate signature by wallet account 
+          //generate signature by wallet account
           r = crypto::generate_schnorr_sig(tx_prefix_hash, ftp.ado_current_asset_owner, sender_account_keys.spend_secret_key, aoop.gss);
           CHECK_AND_ASSERT_MES(r, false, "Failed to sign ado proof");
         }
@@ -2794,7 +2794,7 @@ namespace currency
       VARIANT_CASE_CONST(tx_out_bare, o)
         reward += o.amount;
       VARIANT_CASE_CONST(tx_out_zarcanum, o)
-        //@#@      
+        //@#@
       VARIANT_SWITCH_END();
     }
     reward -= income;
@@ -2828,7 +2828,7 @@ namespace currency
       password_used = false;
     }
     uint64_t timestamp = count_of_weeks * WALLET_BRAIN_DATE_QUANTUM + WALLET_BRAIN_DATE_OFFSET;
-    
+
     return timestamp;
   }
   //---------------------------------------------------------------
@@ -2896,7 +2896,7 @@ namespace currency
     size_t participant_index = std::find(out_ms.keys.begin(), out_ms.keys.end(), ms_in_ephemeral_key.pub) - out_ms.keys.begin();
     LOC_CHK(participant_index < out_ms.keys.size(), "Can't find given participant's ms key in ms output keys list");
     LOC_CHK(ms_input_index <  tx.signatures.size(), "transaction does not have signatures vector entry for ms input #" << ms_input_index);
-    
+
     LOC_CHK(tx.signatures[ms_input_index].type() == typeid(NLSAG_sig), "Wrong type of signature");
     auto& sigs = boost::get<NLSAG_sig>(tx.signatures[ms_input_index]).s;
     LOC_CHK(!sigs.empty(), "empty signatures container");
@@ -2904,7 +2904,7 @@ namespace currency
     bool extra_signature_expected = (get_tx_flags(tx) & TX_FLAG_SIGNATURE_MODE_SEPARATE) && ms_input_index == tx.vin.size() - 1;
     size_t allocated_sigs_for_participants = extra_signature_expected ? sigs.size() - 1 : sigs.size();
     LOC_CHK(participant_index < allocated_sigs_for_participants, "participant index (" << participant_index << ") is out of bound: " << allocated_sigs_for_participants); // NOTE: this may fail if the input has already been fully signed and 'sigs' was compacted
-  
+
     crypto::hash tx_hash_for_signature = prepare_prefix_hash_for_sign(tx, ms_input_index, get_transaction_hash(tx));
     LOC_CHK(tx_hash_for_signature != null_hash, "failed to  prepare_prefix_hash_for_sign");
 
@@ -2969,7 +2969,7 @@ namespace currency
         in.type() == typeid(txin_to_key) ||
         in.type() == typeid(txin_multisig) ||
         in.type() == typeid(txin_htlc) ||
-        in.type() == typeid(txin_zc_input), 
+        in.type() == typeid(txin_zc_input),
         false, "wrong input type: " << in.type().name() << ", in transaction " << get_transaction_hash(tx));
     }
     return true;
@@ -2978,7 +2978,7 @@ namespace currency
   /*
   bool add_padding_to_tx(transaction& tx, size_t count)
   {
-    
+
     WARNING: potantially unsafe implementation!
     1) requires extra_padding being previously added to tx's extra;
     2) transaction size may increase by more than 'count' bytes due to varint encoding (thus, if 'count' is 128 it will add 129 bytes)
@@ -3039,7 +3039,7 @@ namespace currency
       VARIANT_CASE_CONST(tx_out_bare, out)
       {
         CHECK_AND_NO_ASSERT_MES(0 < out.amount, false, "zero amount output in transaction id=" << get_transaction_hash(tx));
-        
+
         VARIANT_SWITCH_BEGIN(out.target);
         VARIANT_CASE_CONST(txout_to_key, tk)
           if (!check_key(tk.key))
@@ -3253,7 +3253,7 @@ namespace currency
       return false;
 
     return true;
-  } 
+  }
   //---------------------------------------------------------------
   bool lookup_acc_outs(const account_keys& acc, const transaction& tx, std::vector<wallet_out_info>& outs, crypto::key_derivation& derivation)
   {
@@ -3515,7 +3515,7 @@ namespace currency
           return ts;
       }
     }
-    
+
     // next try etc_tx_time
     etc_tx_time t = AUTO_VAL_INIT(t);
     if (get_type_in_variant_container(b.miner_tx.extra, t))
@@ -3564,7 +3564,7 @@ namespace currency
 
   //------------------------------------------------------------------
 #define ANTI_OVERFLOW_AMOUNT       1000000
-#define GET_PERECENTS_BIG_NUMBERS(per, total) (per/ANTI_OVERFLOW_AMOUNT)*100 / (total/ANTI_OVERFLOW_AMOUNT) 
+#define GET_PERECENTS_BIG_NUMBERS(per, total) (per/ANTI_OVERFLOW_AMOUNT)*100 / (total/ANTI_OVERFLOW_AMOUNT)
 
   void print_reward_change()
   {
@@ -3587,7 +3587,7 @@ namespace currency
         std::cout << std::left
           << std::setw(10) << day
           << std::setw(19) << print_money(emission_reward)
-          << std::setw(4) << print_money(already_generated_coins) 
+          << std::setw(4) << print_money(already_generated_coins)
           << "(POS: " << boost::lexical_cast<std::string>(GET_PERECENTS_BIG_NUMBERS(total_generated_in_year_by_pos, money_was_at_begining_of_year)) << "%"
           << ", POW: " << boost::lexical_cast<std::string>(GET_PERECENTS_BIG_NUMBERS(total_generated_in_year_by_pow, money_was_at_begining_of_year)) << "%)"
 
@@ -3622,7 +3622,7 @@ namespace currency
   {
 //     std::cout << std::endl << "Reward change for 20 days:" << std::endl;
 //     std::cout << std::setw(10) << std::left << "day" << std::setw(19) << "block reward" << std::setw(19) << "generated coins" << std::endl;
-// 
+//
 //     const boost::multiprecision::uint128_t& already_generated_coins = PREMINE_AMOUNT;
 //     //uint64_t total_money_supply = TOTAL_MONEY_SUPPLY;
 //     uint64_t h = 0;
@@ -3630,15 +3630,15 @@ namespace currency
 //     {
 //       uint64_t emission_reward = 0;
 //       get_block_reward(h % 2, 0, 0, already_generated_coins, emission_reward, h, (already_generated_coins - PREMINE_AMOUNT) * 140);
-// 
+//
 //       std::cout << std::left
 //         << std::setw(10) << day
 //         << std::setw(19) << print_money(emission_reward)
 //         << std::setw(4) << print_money(already_generated_coins)//std::string(std::to_string(GET_PERECENTS_BIG_NUMBERS((already_generated_coins), total_money_supply)) + "%")
 //         << std::endl;
-// 
-// 
-// 
+//
+//
+//
 //       for (size_t i = 0; i != 720; i++)
 //       {
 //         h++;
@@ -3649,7 +3649,7 @@ namespace currency
 //       }
 //     }
   }
-  
+
   std::string print_reward_change_first_blocks(size_t n_of_first_blocks)
   {
     std::stringstream ss;
@@ -3691,7 +3691,7 @@ namespace currency
   //------------------------------------------------------------------
   void print_currency_details()
   {
-    //for future forks 
+    //for future forks
 
     std::cout << "Currency name: \t\t" << CURRENCY_NAME << "(" << CURRENCY_NAME_SHORT << ")" << std::endl;
     std::cout << "Money supply: \t\t " << CURRENCY_BLOCK_REWARD * CURRENCY_BLOCKS_PER_DAY * 365 << " coins per year" << std::endl;
@@ -3725,9 +3725,11 @@ namespace currency
 #ifndef TESTNET
 //    std::string genesis_coinbase_tx_hex((const char*)&ggenesis_tx_raw, sizeof(ggenesis_tx_raw));
 
-#else 
+#else
     std::string genesis_coinbase_tx_hex = "";
 #endif
+
+    // Testnet proof phrase: "It takes advantage of the nature of information being easy to spread but hard to stifle. - Satoshi Nakamoto"
 
     //genesis proof phrase: "Liverpool beat Barcelona: Greatest Champions League comebacks of all time"
     //taken from: https://www.bbc.com/sport/football/48163330
@@ -3967,7 +3969,7 @@ namespace currency
           }
           else// if (ao.type() == typeid(ref_by_id))
           {
-            //disable for the reset at the moment 
+            //disable for the reset at the moment
             entry_to_fill.global_indexes.back() = std::numeric_limits<uint64_t>::max();
           }
         }
@@ -3987,7 +3989,7 @@ namespace currency
         {
           entry_to_fill.multisig_count = boost::get<NLSAG_sig>(tx.signatures[tei.ins.size() - 1]).s.size();
         }
-          
+
       }
     }
     return true;
@@ -4034,7 +4036,7 @@ namespace currency
           gindices[amount] += 1;
         }
       VARIANT_CASE_CONST(tx_out_zarcanum, o)
-        //@#@      
+        //@#@
       VARIANT_SWITCH_END();
     }
   }
@@ -4072,7 +4074,7 @@ namespace currency
   {
     if (!height)
       return PREMINE_AMOUNT;
-  
+
     return CURRENCY_BLOCK_REWARD;
   }
   //-----------------------------------------------------------------------------------------------
@@ -4152,12 +4154,12 @@ namespace currency
   std::string get_account_address_as_str(const account_public_address& addr)
   {
     if (addr.flags == 0)
-      return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr.to_old())); // classic Zano address
+      return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr.to_old())); // classic Lethean address
 
     if (addr.flags & ACCOUNT_PUBLIC_ADDRESS_FLAG_AUDITABLE)
-      return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Zano address (auditable)
-    
-    return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Zano address (normal)
+      return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Lethean address (auditable)
+
+    return tools::base58::encode_addr(CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr)); // new format Lethean address (normal)
   }
   //-----------------------------------------------------------------------
   bool is_address_like_wrapped(const std::string& addr)
@@ -4170,12 +4172,12 @@ namespace currency
   std::string get_account_address_and_payment_id_as_str(const account_public_address& addr, const payment_id_t& payment_id)
   {
     if (addr.flags == 0)
-      return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr.to_old()) + payment_id); // classic integrated Zano address
+      return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr.to_old()) + payment_id); // classic integrated Lethean address
 
     if (addr.flags & ACCOUNT_PUBLIC_ADDRESS_FLAG_AUDITABLE)
-      return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Zano address (auditable)
-    
-    return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Zano address (normal)
+      return tools::base58::encode_addr(CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Lethean address (auditable)
+
+    return tools::base58::encode_addr(CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX, t_serializable_object_to_blob(addr) + payment_id); // new format integrated Lethean address (normal)
   }
   //-----------------------------------------------------------------------
   bool get_account_address_from_str(account_public_address& addr, const std::string& str)
@@ -4388,12 +4390,12 @@ namespace currency
     size_t i = 0;
     for (auto& p_out_k : output_keys_ptrs)
       s << "    " << std::setw(2) << i++ << " " << *p_out_k << ENDL;
-  
+
     s << "  signatures (" << sig.size() << ")" << ENDL;
     i = 0;
     for (auto& sig_el : sig)
       s << "    " << std::setw(2) << i++ << " " << sig_el << ENDL;
-  
+
     return s.str();
   }
 
@@ -4438,7 +4440,7 @@ namespace currency
   {
     if (a.cnt == b.cnt && a.hsh == b.hsh && a.sz == b.sz)
       return true;
-    else 
+    else
       return false;
   }
   //--------------------------------------------------------------------------------
@@ -4540,7 +4542,7 @@ namespace currency
 //         << ", a_pos_cumulative_difficulty:" << a_pos_cumulative_difficulty << ENDL
 //         << ", b_pos_cumulative_difficulty:" << b_pos_cumulative_difficulty << ENDL
 //         << ", a_pow_cumulative_difficulty:" << a_pow_cumulative_difficulty << ENDL
-//         << ", b_pow_cumulative_difficulty:" << b_pow_cumulative_difficulty << ENDL       
+//         << ", b_pow_cumulative_difficulty:" << b_pow_cumulative_difficulty << ENDL
 //       );
 //     }
     TRY_ENTRY();
@@ -4549,7 +4551,7 @@ namespace currency
     CATCH_ENTRY_WITH_FORWARDING_EXCEPTION();
   }
   //--------------------------------------------------------------------------------
-  // Note:  we adjust formula and introduce multiplier, 
+  // Note:  we adjust formula and introduce multiplier,
   //        that let us never dive into floating point calculations (which we can't use in consensus)
   //        this multiplier should be greater than max multiprecision::uint128_t power 2
 
@@ -4585,7 +4587,7 @@ namespace currency
     //         << ", a_pos_cumulative_difficulty:" << a_pos_cumulative_difficulty << ENDL
     //         << ", b_pos_cumulative_difficulty:" << b_pos_cumulative_difficulty << ENDL
     //         << ", a_pow_cumulative_difficulty:" << a_pow_cumulative_difficulty << ENDL
-    //         << ", b_pow_cumulative_difficulty:" << b_pow_cumulative_difficulty << ENDL       
+    //         << ", b_pow_cumulative_difficulty:" << b_pow_cumulative_difficulty << ENDL
     //       );
     //     }
     TRY_ENTRY();

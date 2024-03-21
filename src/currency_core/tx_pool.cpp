@@ -12,7 +12,7 @@
 #include "common/db_backend_selector.h"
 #include "tx_pool.h"
 #include "currency_boost_serialization.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #include "blockchain_storage.h"
 #include "common/boost_serialization_helper.h"
 #include "common/int-util.h"
@@ -37,7 +37,7 @@ DISABLE_VS_WARNINGS(4244 4345 4503) //'boost::foreach_detail_::or_' : decorated 
 
 #define CONFLICT_KEY_IMAGE_SPENT_DEPTH_TO_REMOVE_TX_FROM_POOL 50 // if there's a conflict in key images between tx in the pool and in the blockchain this much depth in required to remove correspongin tx from pool
 
-#undef LOG_DEFAULT_CHANNEL 
+#undef LOG_DEFAULT_CHANNEL
 #define LOG_DEFAULT_CHANNEL "tx_pool"
 ENABLE_CHANNEL_BY_DEFAULT("tx_pool");
 
@@ -52,7 +52,7 @@ namespace currency
     m_db(nullptr, m_dummy_rw_lock),
     m_db_transactions(m_db),
     m_db_black_tx_list(m_db),
-    m_db_solo_options(m_db), 
+    m_db_solo_options(m_db),
 //    m_db_key_images_set(m_db),
     m_db_alias_names(m_db),
     m_db_alias_addresses(m_db),
@@ -69,13 +69,13 @@ namespace currency
     }
 
     const txin_multisig& ms_in = boost::get<const txin_multisig>(tx.vin[0]);
-    crypto::hash related_tx_id = null_hash; uint64_t out_no = 0;    
+    crypto::hash related_tx_id = null_hash; uint64_t out_no = 0;
     if (!m_blockchain.get_multisig_id_details(ms_in.multisig_out_id, related_tx_id, out_no))
     {
       LOG_ERROR("Related multisig tx not found, multisig_out_id=" << ms_in.multisig_out_id);
       return false;
     }
-    
+
     auto related_tx_ptr = m_blockchain.get_tx_chain_entry(related_tx_id);
     if (!related_tx_ptr)
     {
@@ -83,7 +83,7 @@ namespace currency
         << "(discovered by reviewing tx " << get_transaction_hash(tx) <<") tx not found in blockchain, multisig_out_id=" << ms_in.multisig_out_id);
       return false;
     }
-    
+
     if (get_tx_fee(tx) < get_tx_fee(related_tx_ptr->tx))
     {
       LOG_ERROR("Tx " << get_transaction_hash(tx) << " fee=" << get_tx_fee(tx) << " less then parent multisig tx " << related_tx_id << " fee= " << get_tx_fee(related_tx_ptr->tx));
@@ -109,7 +109,6 @@ namespace currency
     // defaults
     tvc.m_added_to_pool = false;
     tvc.m_verification_failed = true;
-
     if (!kept_by_block && !from_core && m_blockchain.is_in_checkpoint_zone())
     {
       // BCS is in CP zone, tx verification is impossible until it gets synchronized
@@ -139,7 +138,7 @@ namespace currency
         ", diff: " << epee::misc_utils::get_time_interval_string(ts_median + TX_EXPIRATION_MEDIAN_SHIFT - tx_expiration_time) << ")");
       tvc.m_verification_failed = true;
       return false;
-    }      
+    }
     TIME_MEASURE_FINISH_PD(expiration_validate_time);
 
 
@@ -170,7 +169,7 @@ namespace currency
     {
 
       if(!validate_tx_semantic(tx, blob_size))
-      {          
+      {
         // tx semantics check failed
         LOG_PRINT_RED_L0("Transaction " << id << " semantics check failed ");
         tvc.m_verification_failed = true;
@@ -188,13 +187,13 @@ namespace currency
       {
         //if (is_valid_contract_finalization_tx(tx))
         //{
-          // that means tx has less fee then allowed by current tx pull rules, but this transaction is actually 
-          // a finalization of contract, and template of this contract finalization tx was prepared actually before 
+          // that means tx has less fee then allowed by current tx pull rules, but this transaction is actually
+          // a finalization of contract, and template of this contract finalization tx was prepared actually before
           // fee rules had been changed, so it's ok, let it in.
         //}
         //else
         {
-          // this tx has no fee 
+          // this tx has no fee
           LOG_PRINT_RED_L0("Transaction " << id << " has too small fee: " << print_money_brief(tx_fee) << ", minimum fee: " << print_money_brief(m_blockchain.get_core_runtime_config().tx_pool_min_fee));
           tvc.m_verification_failed = false;
           tvc.m_should_be_relayed = false;
@@ -225,7 +224,6 @@ namespace currency
     TIME_MEASURE_FINISH_PD(check_inputs_time);
 
     do_insert_transaction(tx, id, blob_size, kept_by_block, tx_fee, ch_inp_res ? max_used_block_id : null_hash, ch_inp_res ? max_used_block_height : 0);
-    
     TIME_MEASURE_FINISH_PD(tx_processing_time);
     tvc.m_added_to_pool = true;
     tvc.m_should_be_relayed = ch_inp_res; // relay tx only if it has valid inputs (i.e. do not relay kept_by_block tx with wrong inputs)
@@ -348,7 +346,7 @@ namespace currency
       extra_alias_entry eai2 = AUTO_VAL_INIT(eai2);
       bool already_have_alias_registered = m_blockchain.get_alias_info(eai.m_alias, eai2);
       //size_t alias_size = eai.m_alias.size();
-      
+
       if (!is_in_block  && !eai.m_sign.size() && already_have_alias_registered)
       {
         LOG_PRINT_L0("Alias \"" << eai.m_alias  << "\" already registered in blockchain, transaction rejected");
@@ -360,8 +358,8 @@ namespace currency
       if (!is_in_block && !eai.m_sign.size() &&
         prev_alias.size())
       {
-        LOG_PRINT_L0("Address \"" << get_account_address_as_str(eai.m_address)  
-          << "\" already registered with \""<< prev_alias 
+        LOG_PRINT_L0("Address \"" << get_account_address_as_str(eai.m_address)
+          << "\" already registered with \""<< prev_alias
           << "\" alias in blockchain (new alias: \"" << eai.m_alias  << "\"), transaction rejected");
         r = false;
         return false; // stop handling
@@ -408,10 +406,10 @@ namespace currency
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::take_tx(const crypto::hash &id, transaction &tx, size_t& blob_size, uint64_t& fee)
   {
-    
+
     m_db_transactions.begin_transaction();
     misc_utils::auto_scope_leave_caller seh = misc_utils::create_scope_leave_handler([&](){m_db_transactions.commit_transaction();});
-    
+
     auto txe_tr = m_db_transactions.find(id);
     if (txe_tr == m_db_transactions.end())
       return false;
@@ -431,13 +429,13 @@ namespace currency
   }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::remove_stuck_transactions()
-  {    
+  {
     if (!CRITICAL_SECTION_TRY_LOCK(m_remove_stuck_txs_lock))
       return true;
 
     CRITICAL_REGION_LOCAL(m_remove_stuck_txs_lock);
     CRITICAL_SECTION_UNLOCK(m_remove_stuck_txs_lock);// release try_lock iteration
-    
+
     m_db_transactions.begin_transaction();
     misc_utils::auto_scope_leave_caller seh = misc_utils::create_scope_leave_handler([&](){m_db_transactions.commit_transaction(); });
 
@@ -450,14 +448,14 @@ namespace currency
       transaction tx;
       bool kept_by_block;
     };
-    
+
     std::vector<tx_to_delete_entry> to_delete;
 
     const uint64_t tx_expiration_ts_median = m_blockchain.get_tx_expiration_median();
     m_db_transactions.enumerate_items([&](uint64_t i, const crypto::hash& h, const tx_details &tx_entry)
     {
-      //never remove transactions which related to alt blocks, 
-      //or we can get network split as a worst case (impossible to switch to 
+      //never remove transactions which related to alt blocks,
+      //or we can get network split as a worst case (impossible to switch to
       //altchain if it won, and node stuck forever).
       if (m_blockchain.is_tx_related_to_altblock(h))
         return true;
@@ -503,7 +501,7 @@ namespace currency
 
       return true;
     });
-    
+
     for (auto& e : to_delete)
     {
       m_db_transactions.erase(e.hash);
@@ -514,7 +512,7 @@ namespace currency
     return true;
   }
   //---------------------------------------------------------------------------------
-  size_t tx_memory_pool::get_transactions_count() const 
+  size_t tx_memory_pool::get_transactions_count() const
   {
     return m_db_transactions.size();
   }
@@ -628,7 +626,7 @@ namespace currency
 
     m_blockchain.fill_tx_rpc_details(trei, ptei->tx, nullptr, id, ptei->receive_time, false);
     return true;
-  }  
+  }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::get_transaction(const crypto::hash& id, transaction& tx) const
   {
@@ -703,7 +701,7 @@ namespace currency
   }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::have_tx(const crypto::hash &id) const
-  {    
+  {
     if(m_db_transactions.get(id))
       return true;
 
@@ -746,21 +744,21 @@ namespace currency
     }
     return false;
   }
-  //--------------------------------------------------------------------------------- 
+  //---------------------------------------------------------------------------------
   bool tx_memory_pool::on_tx_add(crypto::hash tx_id, const transaction& tx, bool kept_by_block)
   {
     insert_key_images(tx_id, tx, kept_by_block);
     insert_alias_info(tx);
     return true;
   }
-  //--------------------------------------------------------------------------------- 
+  //---------------------------------------------------------------------------------
   bool tx_memory_pool::on_tx_remove(const crypto::hash &id, const transaction& tx, bool kept_by_block)
   {
     remove_key_images(id, tx, kept_by_block);
     remove_alias_info(tx);
     return true;
   }
-  //--------------------------------------------------------------------------------- 
+  //---------------------------------------------------------------------------------
   bool tx_memory_pool::insert_alias_info(const transaction& tx)
   {
     tx_extra_info ei = AUTO_VAL_INIT(ei);
@@ -774,10 +772,10 @@ namespace currency
 
     return true;
   }
-  //--------------------------------------------------------------------------------- 
+  //---------------------------------------------------------------------------------
   bool tx_memory_pool::remove_alias_info(const transaction& tx)
   {
-    
+
     tx_extra_info ei = AUTO_VAL_INIT(ei);
     bool r = parse_and_validate_tx_extra(tx, ei);
     CHECK_AND_ASSERT_MES(r, false, "failed to validate transaction extra on unprocess_blockchain_tx_extra");
@@ -789,7 +787,7 @@ namespace currency
 
     return true;
   }
-  //--------------------------------------------------------------------------------- 
+  //---------------------------------------------------------------------------------
   bool tx_memory_pool::remove_key_images(const crypto::hash &tx_id, const transaction& tx, bool kept_by_block)
   {
     CRITICAL_REGION_LOCAL(m_key_images_lock);
@@ -797,7 +795,7 @@ namespace currency
     {
       crypto::key_image k_image = AUTO_VAL_INIT(k_image);
       if (get_key_image_from_txin_v(in, k_image))
-      {        
+      {
         auto it_map = epee::misc_utils::it_get_or_insert_value_initialized(m_key_images, k_image);
         auto& id_set = it_map->second;
         size_t count_before = id_set.size();
@@ -816,7 +814,7 @@ namespace currency
   }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::get_key_images_from_tx_pool(key_image_cache& key_images) const
-  {    
+  {
     m_db_transactions.enumerate_items([&](uint64_t i, const crypto::hash& h, const tx_details &tx_entry)
     {
       for (auto& in : tx_entry.tx.vin)
@@ -854,7 +852,7 @@ namespace currency
   //---------------------------------------------------------------------------------
   void tx_memory_pool::purge_transactions()
   {
-    
+
     m_db.begin_transaction();
     m_db_transactions.clear();
     m_db.commit_transaction();
@@ -871,7 +869,7 @@ namespace currency
     CIRITCAL_OPERATION(m_key_images,clear());
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::is_transaction_ready_to_go(tx_details& txd, const crypto::hash& id)const 
+  bool tx_memory_pool::is_transaction_ready_to_go(tx_details& txd, const crypto::hash& id)const
   {
     //not the best implementation at this time, sorry :(
 
@@ -914,7 +912,7 @@ namespace currency
     {
       return false;
     }
-      
+
 
     if (!check_tx_multisig_ins_and_outs(txd.tx, false))
       return false;
@@ -923,7 +921,7 @@ namespace currency
     return true;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::have_key_images(const std::unordered_set<crypto::key_image>& k_images, const transaction& tx)const 
+  bool tx_memory_pool::have_key_images(const std::unordered_set<crypto::key_image>& k_images, const transaction& tx)const
   {
     LOCAL_READONLY_TRANSACTION();
     for(size_t i = 0; i!= tx.vin.size(); i++)
@@ -952,14 +950,14 @@ namespace currency
     return true;
   }
   //---------------------------------------------------------------------------------
-  std::string tx_memory_pool::print_pool(bool short_format)const 
+  std::string tx_memory_pool::print_pool(bool short_format)const
   {
     std::stringstream ss;
     if (short_format)
     {
       std::list<std::pair<crypto::hash, tx_details>> txs;
       {
-        
+
         m_db_transactions.enumerate_items([&txs](uint64_t i, const crypto::hash& h, const tx_details &tx_entry) { txs.push_back(std::make_pair(h, tx_entry)); return true; });
       }
       if (txs.empty())
@@ -967,7 +965,7 @@ namespace currency
       // sort output by receive time
       txs.sort([](const std::pair<crypto::hash, tx_details>& lhs, const std::pair<crypto::hash, tx_details>& rhs) -> bool { return lhs.second.receive_time < rhs.second.receive_time; });
       ss << "#    | transaction id                                                 | size  | fee       | ins | outs | outs money      | live_time      | max used block   | last failed block | kept by a block?" << ENDL;
-      //     1234  f99fe6d4335fc0ddd69e6880a4d95e0f6ea398de0324a6837021a61c6a31cacd  87157   0.10000111  2000  2000   112000.12345678   d0.h10.m16.s17   123456 <12345..>   123456 <12345..>    YES   
+      //     1234  f99fe6d4335fc0ddd69e6880a4d95e0f6ea398de0324a6837021a61c6a31cacd  87157   0.10000111  2000  2000   112000.12345678   d0.h10.m16.s17   123456 <12345..>   123456 <12345..>    YES
       size_t i = 0;
       for (auto& tx : txs)
       {
@@ -990,9 +988,9 @@ namespace currency
       }
       return ss.str();
     }
-    
+
     // long format
-    
+
     m_db_transactions.enumerate_items([&](uint64_t i, const crypto::hash& h, const tx_details &tx_entry)
     {
       auto& txd = tx_entry;
@@ -1012,32 +1010,32 @@ namespace currency
     return ss.str();
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::fill_block_template(block &bl, 
-    bool pos, 
-    size_t median_size, 
+  bool tx_memory_pool::fill_block_template(block &bl,
+    bool pos,
+    size_t median_size,
     const boost::multiprecision::uint128_t& already_generated_coins,
-    size_t &total_size, 
-    uint64_t &fee, 
-    uint64_t height, 
+    size_t &total_size,
+    uint64_t &fee,
+    uint64_t height,
     const std::list<transaction>& explicit_txs
   )
   {
     LOCAL_READONLY_TRANSACTION();
     //typedef transactions_container::value_type txv;
     typedef std::pair<crypto::hash, std::shared_ptr<const tx_details> > txv;
-    
+
 
     std::vector<txv> txs_v;
     txs_v.reserve(m_db_transactions.size());
     std::vector<size_t> txs; // selected transactions, vector of indices of txs_v
 
-    
-    //keep getting it as a values cz db items cache will keep it as unserialised object stored by shared ptrs 
+
+    //keep getting it as a values cz db items cache will keep it as unserialised object stored by shared ptrs
     m_db_transactions.enumerate_keys([&](uint64_t i, crypto::hash& k){txs_v.resize(i + 1); txs_v[i].first = k; return true;});
     txs.resize(txs_v.size(), SIZE_MAX);
-    
+
     for (uint64_t i = 0; i != txs_v.size(); i++)
-    {      
+    {
       auto& k = txs_v[i].first;
       txs_v[i].second = m_db_transactions.get(k);
       if (!txs_v[i].second)
@@ -1048,8 +1046,8 @@ namespace currency
       txs[i] = i;
     }
 
-    
-    
+
+
     std::sort(txs.begin(), txs.end(), [&txs_v](size_t a, size_t b) -> bool {
       boost::multiprecision::uint128_t a_, b_;
       a_ = boost::multiprecision::uint128_t(txs_v[a].second->fee) * txs_v[b].second->blob_size;
@@ -1073,7 +1071,7 @@ namespace currency
 
     // scan txs for alias reg requests - if there are such requests, don't process alias updates
     bool alias_regs_exist = false;
-    for (auto txi : txs) 
+    for (auto txi : txs)
     {
       tx_extra_info ei = AUTO_VAL_INIT(ei);
       bool r = parse_and_validate_tx_extra(txs_v[txi].second->tx, ei);
@@ -1097,8 +1095,8 @@ namespace currency
       {
           txs[i] = SIZE_MAX;
           continue;
-      } 
-      
+      }
+
       // alias checks
       tx_extra_info ei = AUTO_VAL_INIT(ei);
       bool r = parse_and_validate_tx_extra(tx.second->tx, ei);
@@ -1114,11 +1112,11 @@ namespace currency
         }
       }
 
-      //is_transaction_ready_to_go can change tx_details in case of some errors, so we make local copy, 
+      //is_transaction_ready_to_go can change tx_details in case of some errors, so we make local copy,
       //do check if it's changed and reassign it to db if needed
       tx_details local_copy_txd = *(tx.second);
       bool is_tx_ready_to_go_result = is_transaction_ready_to_go(local_copy_txd, tx.first);
-      if (!is_tx_ready_to_go_result && 
+      if (!is_tx_ready_to_go_result &&
         (local_copy_txd.last_failed_height != tx.second->last_failed_height || local_copy_txd.last_failed_id != tx.second->last_failed_id))
       {
         m_db_transactions.begin_transaction();
@@ -1169,7 +1167,7 @@ namespace currency
         }
       }
     }
-    // add explicit transactions 
+    // add explicit transactions
     for (const auto& tx : explicit_txs)
     {
       fee += get_tx_fee(tx);
@@ -1212,7 +1210,7 @@ namespace currency
     }
 
     const std::string db_folder_path = dbbs.get_pool_db_folder_path();
-    
+
     LOG_PRINT_L0("Loading blockchain from " << db_folder_path << "...");
 
     bool db_opened_okay = false;
@@ -1248,7 +1246,7 @@ namespace currency
       if (m_db_storage_major_compatibility_version > 0 && m_db_storage_major_compatibility_version != TRANSACTION_POOL_MAJOR_COMPATIBILITY_VERSION)
       {
         need_reinit = true;
-        LOG_PRINT_MAGENTA("Tx pool DB needs reinit because it has major compatibility ver is " << m_db_storage_major_compatibility_version << ", expected: " << TRANSACTION_POOL_MAJOR_COMPATIBILITY_VERSION, LOG_LEVEL_0); 
+        LOG_PRINT_MAGENTA("Tx pool DB needs reinit because it has major compatibility ver is " << m_db_storage_major_compatibility_version << ", expected: " << TRANSACTION_POOL_MAJOR_COMPATIBILITY_VERSION, LOG_LEVEL_0);
       }
 
       if (need_reinit)
@@ -1296,7 +1294,7 @@ namespace currency
   bool tx_memory_pool::load_keyimages_cache()
   {
     CRITICAL_REGION_LOCAL(m_key_images_lock);
-    return get_key_images_from_tx_pool(m_key_images);    
+    return get_key_images_from_tx_pool(m_key_images);
   }
   //---------------------------------------------------------------------------------
   bool tx_memory_pool::deinit()
@@ -1366,9 +1364,9 @@ namespace currency
     return false;
   }
   //---------------------------------------------------------------------------------
-  bool tx_memory_pool::check_tx_multisig_ins_and_outs(const transaction& tx, bool check_against_pool_txs) const 
+  bool tx_memory_pool::check_tx_multisig_ins_and_outs(const transaction& tx, bool check_against_pool_txs) const
   {
-    
+
     LOCAL_READONLY_TRANSACTION();
     std::vector<ms_out_info> ms_ids;
     collect_multisig_ids_from_tx(tx, ms_ids);
@@ -1394,7 +1392,7 @@ namespace currency
             LOG_PRINT_L0("Transaction " << get_transaction_hash(tx) << (el.is_input ? " : input #" : " : output #") << el.input_output_index << " has multisig id " << el.multisig_id <<
               " that is already in the pool in tx " << get_transaction_hash(tx_entry.tx));
             return false;
-          }  
+          }
           return true;
         });
         if (has_found)
@@ -1406,7 +1404,7 @@ namespace currency
   }
 }
 
-#undef LOG_DEFAULT_CHANNEL 
+#undef LOG_DEFAULT_CHANNEL
 #define LOG_DEFAULT_CHANNEL NULL
 
 

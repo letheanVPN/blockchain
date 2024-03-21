@@ -12,4 +12,4 @@ EOM
 esac
 
 printf "blockchain_lmdb_data_file_size.value "
-sudo ls -l /root/.Zano/blockchain_lmdb_v1/data.mdb | cut -d" " -f5
+sudo ls -l /root/.Lethean/blockchain_lmdb_v1/data.mdb | cut -d" " -f5

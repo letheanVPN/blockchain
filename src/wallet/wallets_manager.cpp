@@ -74,7 +74,7 @@ wallets_manager::wallets_manager():m_pview(&m_view_stub),
                                  m_rpc_proxy(new tools::core_fast_rpc_proxy(m_rpc_server)),
                                  m_offers_service(nullptr),
                                  m_wallet_rpc_server(this),
-#else 
+#else
                                  m_rpc_proxy(new tools::default_http_core_proxy()),
 #endif                            
                        
@@ -175,7 +175,7 @@ bool wallets_manager::init_command_line(int argc, char* argv[], std::string& fai
   command_line::add_arg(desc_cmd_sett, command_line::arg_log_level);
   command_line::add_arg(desc_cmd_sett, command_line::arg_console);
   command_line::add_arg(desc_cmd_only, command_line::arg_show_details);
-  
+
   command_line::add_arg(desc_cmd_sett, arg_alloc_win_console);
   command_line::add_arg(desc_cmd_sett, arg_sandbox_disable);
   command_line::add_arg(desc_cmd_sett, arg_html_folder);
@@ -1044,7 +1044,7 @@ std::string wallets_manager::open_wallet(const std::wstring& path, const std::st
 
   w->set_votes_config_path(m_data_dir + "/" + CURRENCY_VOTING_CONFIG_DEFAULT_FILENAME);
 
-  
+
   std::string return_code = API_RETURN_CODE_OK;
   while (true)
   {
@@ -1662,10 +1662,10 @@ std::string wallets_manager::get_wallet_info(uint64_t wallet_id, view::wallet_in
 std::string wallets_manager::get_wallet_info_extra(uint64_t wallet_id, view::wallet_info_extra& wi)
 {
   GET_WALLET_OPT_BY_ID(wallet_id, wo);
-  
+
   auto locker_object = wo.w.lock();
   tools::wallet2& rw = *(*(*locker_object)); //this looks a bit crazy, i know
-  
+
   auto& keys = rw.get_account().get_keys();
 
   wi.view_private_key = epee::string_tools::pod_to_hex(keys.view_secret_key);
@@ -1810,7 +1810,7 @@ std::string wallets_manager::reset_wallet_password(uint64_t wallet_id, const std
 }
 std::string wallets_manager::use_whitelisting(uint64_t wallet_id, bool use)
 {
-  GET_WALLET_OPT_BY_ID(wallet_id, w);  
+  GET_WALLET_OPT_BY_ID(wallet_id, w);
   w.w->get()->set_use_assets_whitelisting(use);
   return API_RETURN_CODE_OK;
 }
@@ -2079,11 +2079,11 @@ void wallets_manager::on_mw_get_wallets(std::vector<tools::wallet_public::wallet
 }
 bool wallets_manager::on_mw_select_wallet(uint64_t wallet_id)
 {
-  SHARED_CRITICAL_REGION_LOCAL(m_wallets_lock);    
-  auto it = m_wallets.find(wallet_id);      
-  if (it == m_wallets.end())                
-    return false; 
- 
+  SHARED_CRITICAL_REGION_LOCAL(m_wallets_lock);
+  auto it = m_wallets.find(wallet_id);
+  if (it == m_wallets.end())
+    return false;
+
 #ifndef MOBILE_WALLET_BUILD
   m_rpc_selected_wallet_id = wallet_id;
 #endif
@@ -2104,7 +2104,7 @@ bool wallets_manager::on_mw_select_wallet(const tools::wallet_public::COMMAND_MW
 }
 
 
-void wallets_manager::lock() 
+void wallets_manager::lock()
 {
 #ifndef MOBILE_WALLET_BUILD
   {
@@ -2119,7 +2119,7 @@ void wallets_manager::lock()
 #endif
 }
 
-void wallets_manager::unlock() 
+void wallets_manager::unlock()
 {
 #ifndef MOBILE_WALLET_BUILD
   m_current_wallet_locked_object.reset();

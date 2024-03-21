@@ -132,11 +132,11 @@ TEST(validate_parse_amount_case, validate_parse_amount)
   uint64_t res = 0;
   bool r = currency::parse_amount(res, "0.0001");
   ASSERT_TRUE(r);
-  ASSERT_EQ(res, 100000000);
+  ASSERT_EQ(res, 10000);
 
   r = currency::parse_amount(res, "100.0001");
   ASSERT_TRUE(r);
-  ASSERT_EQ(res, 100000100000000);
+  ASSERT_EQ(res, 10000010000);
 
   r = currency::parse_amount(res, "000.0000");
   ASSERT_TRUE(r);
@@ -149,11 +149,11 @@ TEST(validate_parse_amount_case, validate_parse_amount)
 
   r = currency::parse_amount(res, "   100.0001    ");
   ASSERT_TRUE(r);
-  ASSERT_EQ(res, 100000100000000);
+  ASSERT_EQ(res, 10000010000);
 
   r = currency::parse_amount(res, "   100.0000    ");
   ASSERT_TRUE(r);
-  ASSERT_EQ(res, 100000000000000);
+  ASSERT_EQ(res, 10000000000);
 
   r = currency::parse_amount(res, "   100. 0000    ");
   ASSERT_FALSE(r);

@@ -14,7 +14,7 @@
 
 #include "common/int-util.h"
 #include "crypto/hash.h"
-#include "currency_core/currency_config.h"
+#include "currency_config.h"
 #include "difficulty.h"
 #include "profile_tools.h"
 
@@ -55,7 +55,7 @@ namespace currency {
     return a + b < a || (c && a + b == (uint64_t)-1);
   }
 
- 
+
 #if defined(_MSC_VER)
 #ifdef max
 #undef max
@@ -98,7 +98,7 @@ namespace currency {
       return false;
     // usual slow check
     boost::multiprecision::uint512_t hashVal = 0;
-    for(int i = 0; i < 4; i++) 
+    for(int i = 0; i < 4; i++)
     {
       hashVal <<= 64;
       hashVal |= swap64le(((const uint64_t *) &h)[3-i]);
@@ -155,7 +155,7 @@ namespace currency {
       cut_end = cut_begin + (REDEF_DIFFICULTY_WINDOW - (REDEF_DIFFICULTY_CUT_OLD + REDEF_DIFFICULTY_CUT_LAST));
       if (cut_end > length)
         cut_end = length;
-      
+
     }
     CHECK_AND_ASSERT_THROW_MES(/*cut_begin >= 0 &&*/ cut_begin + 2 <= cut_end && cut_end <= length, "validation in next_difficulty is failed");
   }
@@ -201,11 +201,11 @@ namespace currency {
     CHECK_AND_ASSERT_MES(length <= DIFFICULTY_WINDOW, 0, "length <= DIFFICULTY_WINDOW check failed, length=" << length);
 
     sort(timestamps.begin(), timestamps.end(), std::greater<uint64_t>());
-    
+
     static_assert(2 * DIFFICULTY_CUT <= DIFFICULTY_WINDOW - 2, "Cut length is too large");
     wide_difficulty_type dif_slow = get_adjustment_for_zone(timestamps, cumulative_difficulties, target_seconds, DIFFICULTY_WINDOW, DIFFICULTY_CUT/2, DIFFICULTY_CUT/2);
     wide_difficulty_type dif_medium = get_adjustment_for_zone(timestamps, cumulative_difficulties, target_seconds, DIFFICULTY_WINDOW/3, DIFFICULTY_CUT / 8, DIFFICULTY_CUT / 12);
-    wide_difficulty_type dif_fast = get_adjustment_for_zone(timestamps, cumulative_difficulties, target_seconds, DIFFICULTY_WINDOW/18, DIFFICULTY_CUT / 10, 2); 
+    wide_difficulty_type dif_fast = get_adjustment_for_zone(timestamps, cumulative_difficulties, target_seconds, DIFFICULTY_WINDOW/18, DIFFICULTY_CUT / 10, 2);
     uint64_t devider = 1;
     wide_difficulty_type summ = dif_slow;
     if (dif_medium != 0)
