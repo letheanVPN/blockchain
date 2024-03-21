@@ -26,8 +26,13 @@ jobs:
           - os: windows-2019
           - os: macos-13
           - os: ubuntu-latest
+    env:
+      CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: amd64
@@ -45,6 +50,16 @@ jobs:
       - name: Install autotools on macOS
         run: brew install automake
         if: ${{ matrix.os == 'macos-13' }}
+      - uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/ccache
+          key: ccache-${{ runner.os }}-build-testnet-cli
+          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
+      - uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/ccache
+          key: ccache-${{ runner.os }}-build-testnet-cli
+          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
       - name: Install Conan
         run: pip install conan pytest && conan --version
       - name: Setup CMake and Ninja
