@@ -47,7 +47,9 @@ jobs:
           cmakeVersion: "~3.25.0"
           ninjaVersion: "^1.11.1"
       - name: Call make release-testnet
-        run: make release-testnet
+        run: |
+          conan config install contrib/cmake/settings_user.yml
+          make release-testnet
   linux-amd64:
     runs-on: ubuntu-20.04
     env:
