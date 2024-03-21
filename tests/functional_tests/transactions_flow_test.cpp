@@ -21,7 +21,6 @@ using namespace epee;
 
 using namespace currency;
 namespace ph = boost::placeholders;
-
 #define TESTS_DEFAULT_FEE                   TX_DEFAULT_FEE 
 
 std::string get_random_hex_text(size_t len)
@@ -312,7 +311,7 @@ void wait_receive_and_unlock_money(tools::wallet2& w, uint64_t amount_to_wait)
 
 class flow_test_console_cmmands_handler
 {
-  
+
   epee::console_handlers_binder m_cmd_binder;
   flow_test_context& m_context;
 public:
@@ -453,7 +452,7 @@ bool transactions_flow_test(
   LOG_PRINT_GREEN("Transfers: " << get_incoming_transfers_str(w1), LOG_LEVEL_0);
 
   uint64_t transfer_size = TX_DEFAULT_FEE;//amount_to_transfer / transactions_count;
-  tools::transfer_container incoming_transfers; 
+  tools::transfer_container incoming_transfers;
   size_t prepared_transfers = 0;
 
    

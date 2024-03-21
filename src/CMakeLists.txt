@@ -78,7 +78,13 @@ if(BUILD_GUI)
   endif()
   list(FILTER QTDAEMON EXCLUDE REGEX "node_modules")
 endif()
-
+# if(BUILD_GUI)
+#  if(APPLE)
+#    file(GLOB_RECURSE QTSERVER gui/*.cpp gui/*.h gui/*.mm)
+#  else()
+#    file(GLOB_RECURSE QTSERVER gui/*.cpp gui/*.h)
+#  endif()
+#endif()
 
 source_group(pch FILES ${PCH})
 source_group(common FILES ${COMMON})
@@ -94,7 +100,7 @@ source_group(connectivity-tool FILES ${CONN_TOOL})
 source_group(wallet FILES ${WALLET})
 
 if(BUILD_GUI)
-  source_group(qtdaemon FILES ${QTDAEMON})
+  source_group(qtserver FILES ${QTSERVER})
 endif()
 
 
@@ -165,7 +171,7 @@ add_dependencies(daemon version)
 target_link_libraries(daemon rpc stratum currency_core crypto common libminiupnpc-static zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 ENABLE_SHARED_PCH(daemon DAEMON)
 ENABLE_SHARED_PCH_EXECUTABLE(daemon)
-                     
+
 add_executable(connectivity_tool ${CONN_TOOL})
 add_dependencies(connectivity_tool version)
 target_link_libraries(connectivity_tool currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
@@ -173,7 +179,7 @@ ENABLE_SHARED_PCH(connectivity_tool CONN_TOOL)
 ENABLE_SHARED_PCH_EXECUTABLE(connectivity_tool)
 
 add_executable(simplewallet ${SIMPLEWALLET})
-add_dependencies(simplewallet version) 
+add_dependencies(simplewallet version)
 target_link_libraries(simplewallet wallet rpc currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 
 ENABLE_SHARED_PCH(simplewallet SIMPLEWALLET)
@@ -181,7 +187,8 @@ ENABLE_SHARED_PCH_EXECUTABLE(simplewallet)
 
 set_property(TARGET common crypto currency_core rpc stratum wallet PROPERTY FOLDER "libs")
 set_property(TARGET daemon simplewallet connectivity_tool PROPERTY FOLDER "prog")
-set_property(TARGET daemon PROPERTY OUTPUT_NAME "zanod")
+set_property(TARGET daemon PROPERTY OUTPUT_NAME "letheand")
+
 
 if(BUILD_GUI)
 
@@ -189,57 +196,34 @@ if(BUILD_GUI)
     FIND_LIBRARY(COCOA_LIBRARY Cocoa)
   endif()
 
+  set(AUTORCC ON)
   set(CMAKE_AUTOMOC ON)
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
-  SET(MACOSX_BUNDLE_ICON_FILE app.icns)
-  add_executable(Zano WIN32 MACOSX_BUNDLE ${QTDAEMON} )
-  ENABLE_SHARED_PCH(Zano QTDAEMON)
-  ENABLE_SHARED_PCH_EXECUTABLE(Zano)
-	  
-  QT5_USE_MODULES(Zano WebEngineWidgets WebChannel)
+#  SET(MACOSX_BUNDLE_ICON_FILE app.icns)
+  qt5_add_resources (RCC_SOURCES gui/resources/files.qrc)
+  add_executable(Lethean WIN32 MACOSX_BUNDLE ${QTSERVER} ${RCC_SOURCES} )
+  ENABLE_SHARED_PCH(Lethean QTSERVER)
+  ENABLE_SHARED_PCH_EXECUTABLE(Lethean)
+  set_property(TARGET Lethean PROPERTY OUTPUT_NAME "lethean-gui-server")
+
+  QT5_USE_MODULES(Lethean WebEngineWidgets WebChannel WebSockets)
   find_package(Qt5PrintSupport REQUIRED)
 
-  target_link_libraries(Zano wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+  target_link_libraries(Lethean wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebSockets Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
   if (UNIX AND NOT APPLE)
-	target_link_libraries(Zano rt)
+	target_link_libraries(Lethean rt)
   endif()
 
   if(APPLE)
-    target_link_libraries(Zano ${COCOA_LIBRARY})
-    set_property(TARGET Zano PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
+    target_link_libraries(Lethean ${COCOA_LIBRARY})
+    set_property(TARGET Lethean PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
   endif()
   if(MSVC)
-    target_link_libraries(Zano shlwapi.lib)
+    target_link_libraries(Lethean shlwapi.lib)
   endif()
 
-  set_property(TARGET Zano PROPERTY FOLDER "prog")
-  set_target_properties(Zano PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/Info.plist.in)
-
-  set(HTML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/layout/html)
-  set_target_properties(Zano PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--html-path=${HTML_DIR}")
+  set_property(TARGET Lethean PROPERTY FOLDER "prog")
 
   set(CMAKE_AUTOMOC OFF)
 
-  # GUI convenience "bundle"
-  # set(GUI_DIR ${CMAKE_CURRENT_BINARY_DIR}/gui)
-  # set_target_properties(Zano PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${GUI_DIR})
-  # add_custom_command(TARGET Zano POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${HTML_DIR} ${GUI_DIR}/html)
-endif()
-
-if(APPLE)
-  set(SIMPLE_BUNDLE 1)
-endif()
-
-if(SIMPLE_BUNDLE)
-  set(INSTALL_DIR "${CMAKE_BINARY_DIR}/hp-${VERSION}")
-  install(TARGETS daemon simplewallet connectivity_tool
-      RUNTIME DESTINATION "${INSTALL_DIR}" COMPONENT Runtime
-  )
-
-  install(FILES ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} DESTINATION "${INSTALL_DIR}/lib")
-
-  if(APPLE)
-    set(FIXUP_COMMAND ${CMAKE_SOURCE_DIR}/utils/macosx_fixup.sh " " ${INSTALL_DIR})
-    install(CODE "execute_process(COMMAND ${FIXUP_COMMAND})")
-  endif()
 endif()

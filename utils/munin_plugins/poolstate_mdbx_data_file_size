@@ -12,4 +12,4 @@ EOM
 esac
 
 printf "poolstate_mdbx_data_file_size.value "
-sudo ls -l /root/.Zano/poolstate_mdbx_v1/mdbx.dat | cut -d" " -f5
+sudo ls -l /root/.Lethean/poolstate_mdbx_v1/mdbx.dat | cut -d" " -f5

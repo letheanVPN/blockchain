@@ -16,11 +16,11 @@ namespace currency
   struct tx_cost_struct
   {
     std::string usd_needed_for_erc20;
-    std::string zano_needed_for_erc20;
+    std::string lethean_needed_for_erc20;
 
     BEGIN_KV_SERIALIZE_MAP()
       KV_SERIALIZE(usd_needed_for_erc20)
-      KV_SERIALIZE(zano_needed_for_erc20)
+      KV_SERIALIZE(lethean_needed_for_erc20)
     END_KV_SERIALIZE_MAP()
   };
 

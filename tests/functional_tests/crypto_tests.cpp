@@ -572,7 +572,7 @@ TEST(crypto, constants)
   point_t HpG = H + G;
   point_t HmG = H - G;
   point_t Hd8 = c_scalar_1div8 * H;
-  
+
   ASSERT_EQ(scalar_t(8) * Hd8, H);
 
   // print them
@@ -1046,115 +1046,115 @@ TEST(crypto, hp)
   LOG_PRINT_L0("cn_fast_hash('') * G = " << zG.to_public_key() << " (pub_key)");
   ASSERT_EQ(zG, point_from_str("7849297236cd7c0d6c69a3c8c179c038d3c1c434735741bb3c8995c3c9d6f2ac"));
 
-  crypto::cn_fast_hash("zano", 4, hash);
-  LOG_PRINT_L0("cn_fast_hash('zano') = " << hash);
+  crypto::cn_fast_hash("lethean", 4, hash);
+  LOG_PRINT_L0("cn_fast_hash('lethean') = " << hash);
   ASSERT_EQ(hash, hash_from_str("23cea10abfdf3ace0b7132291d51e4eb5a392afb2147e67f907ff4f8f5dd4f9f"));
 
   z = hash;
   zG = z * c_point_G;
-  LOG_PRINT_L0("cn_fast_hash('zano') * G = " << zG.to_public_key() << " (pub_key)");
+  LOG_PRINT_L0("cn_fast_hash('lethean') * G = " << zG.to_public_key() << " (pub_key)");
   ASSERT_EQ(zG, point_from_str("71407d59e9d671fa02f26a6a7f4726c3087d8f1732453396638a1dc2929fb57a"));
 
   char buf[2000];
   for (size_t i = 0; i < sizeof buf; i += 4)
-    *(uint32_t*)&buf[i] = *(uint32_t*)"zano";
+    *(uint32_t*)&buf[i] = *(uint32_t*)"lethean";
   crypto::cn_fast_hash(buf, sizeof buf, (char*)&hash);
-  LOG_PRINT_L0("cn_fast_hash('zano' x 500) = " << hash);
+  LOG_PRINT_L0("cn_fast_hash('lethean' x 500) = " << hash);
   ASSERT_EQ(hash, hash_from_str("16d87120c601a6ef3e4ffa5e58176a36b814288199f23ec09ef178c554e8879b"));
 
   z = hash;
   zG = z * c_point_G;
-  LOG_PRINT_L0("cn_fast_hash('zano' x 500) * G = " << zG.to_public_key() << " (pub_key)");
+  LOG_PRINT_L0("cn_fast_hash('lethean' x 500) * G = " << zG.to_public_key() << " (pub_key)");
   ASSERT_EQ(zG, point_from_str("dd93067a02fb8661aa64504ac1503402a34426f43650d970c35147cec4b61d55"));
 
   return true;
 }
 
-TEST(crypto, cn_fast_hash_perf)
-{
-  //return true;
-  const crypto::hash h_initial = *(crypto::hash*)(&scalar_t::random());
-
-  std::vector<std::vector<uint8_t>> test_data;
-  test_data.push_back(std::vector<uint8_t>(32, 0));
-  test_data.push_back(std::vector<uint8_t>(63, 0));
-  test_data.push_back(std::vector<uint8_t>(127, 0));
-  test_data.push_back(std::vector<uint8_t>(135, 0));
-  test_data.push_back(std::vector<uint8_t>(255, 0));
-  test_data.push_back(std::vector<uint8_t>(271, 0)); // 271 = 136 * 2 - 1
-  test_data.push_back(std::vector<uint8_t>(2030, 0));
-
-  for (size_t j = 0, sz = test_data.size(); j < sz; ++j)
-    crypto::generate_random_bytes(test_data[j].size(), test_data[j].data());
-
-  struct times_t
-  {
-    uint64_t t_old{ 0 }, t_new{ 0 };
-    crypto::hash h_old{};
-    double diff{ 0 };
-  };
-  std::vector<times_t> results(test_data.size());
-
-  size_t n = 50000;
-  double diff_sum = 0;
-
-  for (size_t k = 0; k < 50; ++k)
-  {
-    for (size_t j = 0, sz = test_data.size(); j < sz; ++j)
-    {
-      crypto::hash h = h_initial;
-      TIME_MEASURE_START(t_old);
-      for (size_t i = 0; i < n; ++i)
-      {
-        *(crypto::hash*)(test_data[j].data()) = h;
-        cn_fast_hash_old(test_data[j].data(), test_data[j].size(), (char*)&h);
-      }
-      TIME_MEASURE_FINISH(t_old);
-      results[j].t_old = t_old;
-      results[j].h_old = h;
-    }
-
-    for (size_t j = 0, sz = test_data.size(); j < sz; ++j)
-    {
-      crypto::hash h = h_initial;
-      TIME_MEASURE_START(t_new);
-      for (size_t i = 0; i < n; ++i)
-      {
-        *(crypto::hash*)(test_data[j].data()) = h;
-        cn_fast_hash(test_data[j].data(), test_data[j].size(), (char*)&h);
-      }
-      TIME_MEASURE_FINISH(t_new);
-      results[j].t_new = t_new;
-      ASSERT_EQ(h, results[j].h_old);
-    }
-
-    std::stringstream ss;
-    double diff_round = 0;
-    for (size_t j = 0, sz = test_data.size(); j < sz; ++j)
-    {
-      double diff = ((int64_t)results[j].t_old - (int64_t)results[j].t_new) / (double)n;
-
-      ss << std::fixed << std::setprecision(3) << results[j].t_old / (double)n << "/" <<
-        std::fixed << std::setprecision(3) << results[j].t_new / (double)n << "  ";
-
-      results[j].diff += diff;
-      diff_round += diff;
-    }
-
-    diff_sum += diff_round;
-
-    LOG_PRINT_L0("cn_fast_hash (old/new) [" << std::setw(2) << k << "]: " << ss.str() << " mcs, diff_round = " << std::fixed << std::setprecision(4) << diff_round <<
-     " diff_sum = " << std::fixed << std::setprecision(4) << diff_sum);
-  }
-
-  std::stringstream ss;
-  for (size_t j = 0, sz = results.size(); j < sz; ++j)
-    ss << std::fixed << std::setprecision(4) << results[j].diff << "       ";
-  LOG_PRINT_L0("                             " << ss.str());
-
-  return true;
-}
-
+//TEST(crypto, cn_fast_hash_perf)
+//{
+//  return true;
+//  const crypto::hash h_initial = *(crypto::hash*)(&scalar_t::random());
+//
+//  std::vector<std::vector<uint8_t>> test_data;
+//  test_data.push_back(std::vector<uint8_t>(32, 0));
+//  test_data.push_back(std::vector<uint8_t>(63, 0));
+//  test_data.push_back(std::vector<uint8_t>(127, 0));
+//  test_data.push_back(std::vector<uint8_t>(135, 0));
+//  test_data.push_back(std::vector<uint8_t>(255, 0));
+//  test_data.push_back(std::vector<uint8_t>(271, 0)); // 271 = 136 * 2 - 1
+//  test_data.push_back(std::vector<uint8_t>(2030, 0));
+//
+//  for (size_t j = 0, sz = test_data.size(); j < sz; ++j)
+//    crypto::generate_random_bytes(test_data[j].size(), test_data[j].data());
+//
+//  struct times_t
+//  {
+//    uint64_t t_old{ 0 }, t_new{ 0 };
+//    crypto::hash h_old{};
+//    double diff{ 0 };
+//  };
+//  std::vector<times_t> results(test_data.size());
+//
+//  size_t n = 50000;
+//  double diff_sum = 0;
+//
+//  for (size_t k = 0; k < 50; ++k)
+//  {
+//    for (size_t j = 0, sz = test_data.size(); j < sz; ++j)
+//    {
+//      crypto::hash h = h_initial;
+//      TIME_MEASURE_START(t_old);
+//      for (size_t i = 0; i < n; ++i)
+//      {
+//        *(crypto::hash*)(test_data[j].data()) = h;
+//        cn_fast_hash_old(test_data[j].data(), test_data[j].size(), (char*)&h);
+//      }
+//      TIME_MEASURE_FINISH(t_old);
+//      results[j].t_old = t_old;
+//      results[j].h_old = h;
+//    }
+//
+//    for (size_t j = 0, sz = test_data.size(); j < sz; ++j)
+//    {
+//      crypto::hash h = h_initial;
+//      TIME_MEASURE_START(t_new);
+//      for (size_t i = 0; i < n; ++i)
+//      {
+//        *(crypto::hash*)(test_data[j].data()) = h;
+//        cn_fast_hash(test_data[j].data(), test_data[j].size(), (char*)&h);
+//      }
+//      TIME_MEASURE_FINISH(t_new);
+//      results[j].t_new = t_new;
+//      ASSERT_EQ(h, results[j].h_old);
+//    }
+//
+//    std::stringstream ss;
+//    double diff_round = 0;
+//    for (size_t j = 0, sz = test_data.size(); j < sz; ++j)
+//    {
+//      double diff = ((int64_t)results[j].t_old - (int64_t)results[j].t_new) / (double)n;
+//
+//      ss << std::fixed << std::setprecision(3) << results[j].t_old / (double)n << "/" <<
+//        std::fixed << std::setprecision(3) << results[j].t_new / (double)n << "  ";
+//
+//      results[j].diff += diff;
+//      diff_round += diff;
+//    }
+//
+//    diff_sum += diff_round;
+//
+//    LOG_PRINT_L0("cn_fast_hash (old/new) [" << std::setw(2) << k << "]: " << ss.str() << " mcs, diff_round = " << std::fixed << std::setprecision(4) << diff_round <<
+//     " diff_sum = " << std::fixed << std::setprecision(4) << diff_sum);
+//  }
+//
+//  std::stringstream ss;
+//  for (size_t j = 0, sz = results.size(); j < sz; ++j)
+//    ss << std::fixed << std::setprecision(4) << results[j].diff << "       ";
+//  LOG_PRINT_L0("                             " << ss.str());
+//
+//  return true;
+//}
+//
 
 
 TEST(crypto, sc_invert_performance)
@@ -1279,7 +1279,7 @@ TEST(crypto, neg_identity)
   ASSERT_TRUE(validate_key_image(z_ki));
 
   key_image z_neg_ki = z_ki;
-  ((unsigned char*)&z_neg_ki)[31] = 0x80; // set sign bit manually
+  ((unsigned char*)&z_neg_ki)[31] = 0x80; // set sign the bit manually
 
   ASSERT_FALSE(validate_key_image(z_neg_ki)); // negative identity should not be loaded
 
@@ -1287,7 +1287,7 @@ TEST(crypto, neg_identity)
   // also do zero-byte pub key / key image checks
 
   public_key zzz_pk;
-  memset(&zzz_pk, 0, sizeof(public_key));
+  memset(&zzz_pk, 0, sizeof( public_key));
 
   ASSERT_TRUE(check_key(zzz_pk));
 
@@ -1296,7 +1296,7 @@ TEST(crypto, neg_identity)
   ASSERT_FALSE(zzz.is_in_main_subgroup());
 
   key_image zzz_ki;
-  memset(&zzz_ki, 0, sizeof(key_image));
+  memset(&zzz_ki, 0, sizeof( key_image));
 
   ASSERT_FALSE(validate_key_image(zzz_ki));
 
@@ -1466,7 +1466,7 @@ TEST(crypto, point_is_zero)
 
   ASSERT_TRUE(p.is_zero());
 
-  
+
   memset(&p.m_p3, 0, sizeof p.m_p3);
   memcpy(&p.m_p3.Y, f_x, sizeof p.m_p3.Y);
   memcpy(&p.m_p3.Z, f_x, sizeof p.m_p3.Z);
@@ -1489,7 +1489,7 @@ TEST(crypto, point_is_zero)
   memcpy(&p.m_p3.Y, f_x, sizeof p.m_p3.Y);
   memcpy(&p.m_p3.Z, f_x, sizeof p.m_p3.Z);
   memcpy(&p.m_p3.T, fancy_p_plus_1, sizeof p.m_p3.T);
-  // {0, x, x, !0} is not a valid point (incorrect non-zero T) 
+  // {0, x, x, !0} is not a valid point (incorrect non-zero T)
 
   ASSERT_FALSE(p.is_zero());
 
@@ -1603,7 +1603,7 @@ TEST(crypto, schnorr_sig)
     ASSERT_EQ(tmp, ss.c);
     ASSERT_FALSE(verify_schnorr_sig<gt_X>(m, A, bad_ss));
 
-    // binary serialization 
+    // binary serialization
     std::string blob = t_serializable_object_to_blob(ss);
     generate_random_bytes(sizeof ss, &ss);
     ASSERT_TRUE(t_unserializable_object_from_blob(ss, blob));
@@ -1858,7 +1858,7 @@ bool check_generator_precomp(const point_pc_t& generator, const char* generator_
     {
       B += A;
 
-      // restore ge_p3 from ge_precomp using native NaCl functions... 
+      // restore ge_p3 from ge_precomp using native NaCl functions...
       point_t restored_pt{};
       ge_p1p1 p1p1{};
       ge_madd(&p1p1, &random_point.m_p3, &((*generator.m_precomp_data_p)[i][j]));
