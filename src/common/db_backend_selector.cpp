@@ -3,7 +3,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "db_backend_selector.h"
-#include "currency_config.h"
+#include "currency_core/currency_config.h"
 #include "command_line.h"
 #include "db_backend_lmdb.h"
 #include "db_backend_mdbx.h"

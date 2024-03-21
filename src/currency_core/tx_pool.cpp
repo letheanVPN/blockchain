@@ -12,7 +12,7 @@
 #include "common/db_backend_selector.h"
 #include "tx_pool.h"
 #include "currency_boost_serialization.h"
-#include "currency_config.h"
+#include "currency_core/currency_config.h"
 #include "blockchain_storage.h"
 #include "common/boost_serialization_helper.h"
 #include "common/int-util.h"

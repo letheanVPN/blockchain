@@ -19,7 +19,8 @@
 
 #define CURRENCY_MAX_BLOCK_NUMBER                       500000000
 #define CURRENCY_MAX_BLOCK_SIZE                         500000000  // block header blob limit, never used!
-#define CURRENCY_TX_MAX_ALLOWED_OUTS                    2 // effective starting HF4 Zarcanum
+#define CURRENCY_TX_MAX_ALLOWED_OUTS                    2000 // effective starting HF4 Zarcanum
+#define CURRENCY_TX_MIN_ALLOWED_OUTS                    2      // effective starting HF4 Zarcanum
 #define CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX           0x73f7   // addresses start with 'iT'
 #define CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX     0x6af7  // integrated addresses start with 'iTH'
 #define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  0x6af7 // integrated addresses start with 'iTH' (new format)
@@ -29,7 +30,7 @@
 #define CURRENT_TRANSACTION_VERSION                     2
 #define TRANSACTION_VERSION_INITAL                      0
 #define TRANSACTION_VERSION_PRE_HF4                     1
-#define TRANSACTION_VERSION_POST_HF4                    2
+#define TRANSACTION_VERSION_POST_HF4                    ((uint64_t)2)
 #define HF1_BLOCK_MAJOR_VERSION                         1
 #define HF3_BLOCK_MAJOR_VERSION                         2
 #define HF3_BLOCK_MINOR_VERSION                         0
@@ -110,7 +111,7 @@
 
 #ifndef TESTNET
 #define SEED_NODE_HOST                                  "mainnet.lethean.io"
-
+#define SEED_NODE_HOST2                                  "dev.network"
 #define P2P_DEFAULT_PORT                                (36942 + CURRENCY_FORMATION_VERSION)
 #define RPC_DEFAULT_PORT                                36942
 #define STRATUM_DEFAULT_PORT                            36941
@@ -270,10 +271,12 @@
 #define ZANO_HARDFORK_01_AFTER_HEIGHT                   1
 #define ZANO_HARDFORK_02_AFTER_HEIGHT                   2
 #define ZANO_HARDFORK_03_AFTER_HEIGHT                   3
+#define ZANO_HARDFORK_04_AFTER_HEIGHT                   3
 #else
 #define ZANO_HARDFORK_01_AFTER_HEIGHT                   1
 #define ZANO_HARDFORK_02_AFTER_HEIGHT                   2
 #define ZANO_HARDFORK_03_AFTER_HEIGHT                   3
+#define ZANO_HARDFORK_04_AFTER_HEIGHT                   3
 #endif
 
 

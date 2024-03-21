@@ -8,7 +8,7 @@
 #endif
 #include "plain_wallet_api.h"
 #include "plain_wallet_api_defs.h"
-#include "currency_config.h"
+#include "currency_core/currency_config.h"
 #include "version.h"
 #include "string_tools.h"
 #include "currency_core/currency_format_utils.h"

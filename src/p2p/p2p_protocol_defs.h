@@ -9,7 +9,7 @@
 #include <boost/uuid/uuid.hpp>
 #include "serialization/keyvalue_serialization.h"
 #include "misc_language.h"
-#include "currency_config.h"
+#include "currency_core/currency_config.h"
 #include "crypto/crypto.h"
 
 namespace nodetool

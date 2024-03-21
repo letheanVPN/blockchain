@@ -17,7 +17,7 @@ extern "C" {
 }
 
 #include "misc_language.h"
-#include "currency_config.h"
+#include "currency_core/currency_config.h"
 #include "version.h"
 
 namespace tools

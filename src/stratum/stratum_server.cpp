@@ -6,7 +6,7 @@
 #include "stratum_server.h"
 #include "stratum_helpers.h"
 #include "net/abstract_tcp_server2.h"
-#include "currency_config.h"
+#include "currency_core/currency_config.h"
 #include "currency_core/currency_core.h"
 #include "common/command_line.h"
 #include "common/int-util.h"

@@ -28,7 +28,7 @@
 // #endif
 #include <stdint.h>
 #include <math.h>
-#include "currency_config.h"
+#include "currency_core/currency_config.h"
 #define GUI_LINK_NAME "Lethean"
 
 #ifdef WIN32

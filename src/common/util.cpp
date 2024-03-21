@@ -9,7 +9,7 @@
 using namespace epee;
 
 #include "util.h"
-#include "currency_config.h"
+#include "currency_core/currency_config.h"
 #include "version.h"
 
 #ifdef WIN32

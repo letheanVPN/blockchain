@@ -21,7 +21,7 @@ namespace tools
   };
 
 #ifndef TESTNET
-@todo bookmarking bootstrap file location
+//@todo bookmarking bootstrap file location
   //  static constexpr pre_download_entry c_pre_download_mdbx = { "http://95.217.42.247/pre-download/zano_mdbx_95_1161000.pak", "26660ffcdaf80a43a586e64a1a6da042dcb9ff3b58e14ce1ec9a775b995dc146", 1330022593, 2684313600 };
 //  static constexpr pre_download_entry c_pre_download_lmdb = { "http://95.217.42.247/pre-download/zano_lmdb_95_1161000.pak", "9dd03f08dea396fe32e6483a8221b292be35fa41c29748f119f11c3275956cdc", 1787475468, 2600247296 };
   static constexpr pre_download_entry c_pre_download_mdbx = { "", "", 0, 0 };
