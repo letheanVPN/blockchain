@@ -663,7 +663,7 @@ bool simple_wallet::restore_wallet(const std::string& wallet_file, const std::st
     "Your wallet has been restored.\n" <<
     "To start synchronizing with the daemon use \"refresh\" command.\n" <<
     "Use \"help\" command to see the list of available commands.\n" <<
-    "Always use \"exit\" command when closing simplewallet to save\n" <<
+    "Always use \"exit\" command when closing lethean-cli-wallet to save\n" <<
     "current session's state. Otherwise, you will possibly need to synchronize \n" <<
     "your wallet again. Your wallet keys is NOT under risk anyway.\n" <<
     "**********************************************************************";
@@ -2695,7 +2695,7 @@ int main(int argc, char* argv[])
 
     if (command_line::get_arg(vm, command_line::arg_help))
     {
-      success_msg_writer() << "Usage: simplewallet [--wallet-file=<file>|--generate-new-wallet=<file>] [--daemon-address=<host>:<port>] [<COMMAND>]";
+      success_msg_writer() << "Usage: lethean-cli-wallet [--wallet-file=<file>|--generate-new-wallet=<file>] [--daemon-address=<host>:<port>] [<COMMAND>]";
       success_msg_writer() << desc_all << '\n' << sw->get_commands_str();
       return false;
     }

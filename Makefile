@@ -56,6 +56,27 @@ static-release-testnet:
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
 
 #
+# CI
+#
+ci-linux-release: static-release
+	@rm -fr lethean && mkdir -p lethean
+	@cp -r build/release/src/letheand lethean/letheand
+	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet
+	@chmod +x lethean/lethean*
+	@tar -cjvf lethean-linux-amd64-cli.tar.bz2 lethean/
+	@rm -rf lethean
+
+ci-linux-amd64-testnet: static-release-testnet
+	@rm -fr lethean && mkdir -p lethean
+	@cp -r build/release/src/letheand lethean/letheand-testnet
+	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet-testnet
+	@chmod +x lethean/lethean*
+	@tar -cjvf testnet-lethean-linux-amd64-cli.tar.bz2 lethean/
+	@rm -rf lethean
+
+
+
+#
 # GUI
 #
 
@@ -102,4 +123,4 @@ macos-gui:
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release debug static static-release gui gui-release gui-static gui-release-static gui-debug test test-release test-debug clean tags  macos-gui
+.PHONY: all release debug static static-release gui gui-release gui-static gui-release-static gui-debug test test-release test-debug clean tags  macos-gui ci-testnet ci-release
