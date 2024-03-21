@@ -82,7 +82,7 @@ jobs:
           files: '*ethean-${{ matrix.target }}-cli.*'
       - name: Release Branch
         uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/heads/main')
+        if: startsWith(github.ref, 'refs/heads/iTw3')
         with:
           tag_name: canary
           prerelease: true
