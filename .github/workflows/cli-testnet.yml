@@ -55,11 +55,15 @@ jobs:
           path: ${{ github.workspace }}/ccache
           key: ccache-${{ runner.os }}-build-testnet-cli
           restore-keys: ccache-${{ runner.os }}-build-testnet-cli
-      - uses: actions/cache@v3
+      - name: Using the builtin GitHub Cache Action for .conan
+        id: github-cache-conan
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-conan-modules
         with:
-          path: ${{ github.workspace }}/ccache
-          key: ccache-${{ runner.os }}-build-testnet-cli
-          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
+          save-always: true
+          path: ${{ env.CONAN_USER_HOME }}
+          key: host-${{ runner.os }}-target-${{ runner.os }}-${{ hashFiles('conanfile.py') }}
       - name: Install Conan
         run: pip install conan pytest && conan --version
       - name: Setup CMake and Ninja
