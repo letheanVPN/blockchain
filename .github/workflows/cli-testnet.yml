@@ -33,6 +33,11 @@ jobs:
           arch: amd64
         if: ${{ matrix.os == 'windows-2019' }}
         name: setup msvc vcvars
+      - name: install dependencies
+        run: |
+          sudo apt update
+          sudo apt-get install -y git ccache
+        if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Setup Python
         uses: actions/setup-python@v4.6.0
         with:
