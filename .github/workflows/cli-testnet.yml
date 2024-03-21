@@ -16,6 +16,38 @@ env:
     ccache --set-config=compression=true
 
 jobs:
+  easy-compile:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-2019, macos-13, ubuntu-latest ]
+        include:
+          - os: windows-2019
+          - os: macos-13
+          - os: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.2
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+        if: ${{ matrix.os == 'windows-2019' }}
+        name: setup msvc vcvars
+      - name: Setup Python
+        uses: actions/setup-python@v4.6.0
+        with:
+          python-version: "3.10"
+      - name: Install autotools on macOS
+        run: brew install automake
+        if: ${{ matrix.os == 'macos-13' }}
+      - name: Install Conan
+        run: pip install conan pytest && conan --version
+      - name: Setup CMake and Ninja
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: "~3.25.0"
+          ninjaVersion: "^1.11.1"
+      - name: Call make release-testnet
+        run: make release-testnet
   linux-amd64:
     runs-on: ubuntu-20.04
     env:

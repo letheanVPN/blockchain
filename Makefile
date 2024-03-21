@@ -12,10 +12,10 @@ endif
 cmake = cmake $(cmake_gen)
 
 cmake_debug = $(cmake) -D CMAKE_BUILD_TYPE=Debug -D MUTE_ERRORS=FALSE
-cmake_release = $(cmake) -D CMAKE_BUILD_TYPE=Release
+cmake_release = $(cmake) -D CMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=contrib/cmake/conan_provider.cmake
 
 cmake_gui = -D BUILD_GUI=ON
-cmake_testnet = -D TESTNET=ON
+cmake_testnet = -D TESTNET=ON -D BUILD_TESTS=OFF
 cmake_static = -D STATIC=ON
 cmake_tests = -D BUILD_TESTS=ON -D TESTNET=ON
 
