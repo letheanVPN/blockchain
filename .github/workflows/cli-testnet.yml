@@ -28,6 +28,7 @@ jobs:
           - os: ubuntu-latest
     env:
       CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
+      CONAN_HOME: "${{ github.workspace }}/build/"
     steps:
       - uses: actions/checkout@v4
         with:
@@ -62,7 +63,7 @@ jobs:
           cache-name: cache-conan-modules
         with:
           save-always: true
-          path: ${{ env.CONAN_USER_HOME }}
+          path: ${{ env.CONAN_HOME }}
           key: host-${{ runner.os }}-target-${{ runner.os }}-${{ hashFiles('conanfile.py') }}
       - name: Install Conan
         run: pip install conan pytest && conan --version
