@@ -75,19 +75,19 @@ jobs:
       - name: Call make release-testnet
         run: |
           conan config install contrib/cmake/settings_user.yml
-          make ci-${{ runner.target }}-testnet
+          make ci-${{ matrix.target }}-testnet
       - name: Release Tag
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: '*ethean-${{ runner.target }}-cli.*'
+          files: '*ethean-${{ matrix.target }}-cli.*'
       - name: Release Branch
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/heads/main')
         with:
           tag_name: canary
           prerelease: true
-          files: '*ethean-${{ runner.target }}-cli.*'
+          files: '*ethean-${{ matrix.target }}-cli.*'
 #  linux-amd64:
 #    runs-on: ubuntu-20.04
 #    env:
