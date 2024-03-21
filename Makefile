@@ -27,14 +27,16 @@ endef
 build = build
 dir_debug = $(build)/debug
 dir_release = $(build)/release
+current_dir := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
+export CONAN_HOME = $(current_dir)$(build)
 
-all: release
+all: help
 
-release:
+release: ## Build release non-static binaries
 	$(eval command += $(cmake_release))
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
 
-release-testnet:
+release-testnet: ## Build testnet non-static binaries
 	$(eval command += $(cmake_release) $(cmake_testnet))
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
 
@@ -47,18 +49,18 @@ debug-testnet:
 	$(call CMAKE,$(dir_debug),$(command)) && $(MAKE)
 
 static: static-release
-static-release:
+static-release: ## Build release static binaries
 	$(eval command += $(cmake_release) $(cmake_static))
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
 
-static-release-testnet:
+static-release-testnet: ## Build testnet release static binaries
 	$(eval command += $(cmake_release) $(cmake_static) $(cmake_testnet))
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
 
 #
 # CI
 #
-ci-linux-release: static-release
+ci-linux-amd64-release: static-release ## Build lethean-linux-amd64-cli.tar.bz2
 	@rm -fr lethean && mkdir -p lethean
 	@cp -r build/release/src/letheand lethean/letheand
 	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet
@@ -66,7 +68,7 @@ ci-linux-release: static-release
 	@tar -cjvf lethean-linux-amd64-cli.tar.bz2 lethean/
 	@rm -rf lethean
 
-ci-linux-amd64-testnet: static-release-testnet
+ci-linux-amd64-testnet: static-release-testnet ## Build testnet-lethean-linux-amd64-cli.tar.bz2
 	@rm -fr lethean && mkdir -p lethean
 	@cp -r build/release/src/letheand lethean/letheand-testnet
 	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet-testnet
@@ -74,7 +76,8 @@ ci-linux-amd64-testnet: static-release-testnet
 	@tar -cjvf testnet-lethean-linux-amd64-cli.tar.bz2 lethean/
 	@rm -rf lethean
 
-
+conan:
+	@conan config install contrib/cmake/settings_user.yml
 
 #
 # GUI
@@ -115,12 +118,15 @@ test-debug:
 	$(call CMAKE,$(dir_debug),$(command)) && $(MAKE) && $(MAKE) test
 
 clean:
-	rm -rf build
+	rm -rf build/release build/debug
 
 macos-gui:
 	bash ./utils/build/testnet_mac_osx_gui.sh
 
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
+
+help: ## Show this help
+	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m make %-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: all release debug static static-release gui gui-release gui-static gui-release-static gui-debug test test-release test-debug clean tags  macos-gui ci-testnet ci-release

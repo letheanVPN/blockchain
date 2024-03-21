@@ -45,7 +45,7 @@ jobs:
           sudo apt-get install -y git ccache
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Setup Python
-        uses: actions/setup-python@v4.6.0
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
       - name: Install autotools on macOS
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/ccache
-          key: ccache-${{ runner.os }}-${{ matrix.os }}-build-testnet-cli
+          key: ccache-${{ runner.os }}-${{ matrix.target }}-build-testnet-cli
       - name: Using the builtin GitHub Cache Action for .conan
         id: github-cache-conan
         uses: actions/cache@v4
@@ -62,8 +62,8 @@ jobs:
           cache-name: cache-conan-modules
         with:
           save-always: true
-          path: ${{ env.CONAN_HOME }}
-          key: host-${{ runner.os }}-target-${{ matrix.os }}-${{ hashFiles('contrib/cmake/conanfile.py') }}
+          path: ${{ github.workspace }}/build/p
+          key: host-${{ runner.os }}-target-${{ matrix.target }}-${{ hashFiles('contrib/cmake/conanfile.py') }}
       - name: Install Conan
         run: pip install conan pytest && conan --version
       - name: Setup CMake and Ninja
@@ -73,7 +73,6 @@ jobs:
           ninjaVersion: "^1.11.1"
       - name: Call make release-testnet
         run: |
-          conan config install contrib/cmake/settings_user.yml
           make ci-${{ matrix.target }}-testnet
       - name: Release Tag
         uses: softprops/action-gh-release@v1
