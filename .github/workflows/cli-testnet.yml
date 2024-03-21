@@ -56,7 +56,7 @@ jobs:
         with:
           path: ${{ github.workspace }}/ccache
           key: ccache-${{ runner.os }}-${{ matrix.target }}-build-testnet-cli
-      - name: Using the builtin GitHub Cache Action for .conan
+      - name: Cache Conan
         id: github-cache-conan
         uses: actions/cache@v4
         env:
