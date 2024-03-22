@@ -60,21 +60,33 @@ static-release-testnet: ## Build testnet release static binaries
 #
 # CI
 #
-ci-linux-amd64-release: static-release ## Build lethean-linux-amd64-cli.tar.bz2
+
+ci-package-linux:
 	@rm -fr lethean && mkdir -p lethean
 	@cp -r build/release/src/letheand lethean/letheand
 	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet
 	@chmod +x lethean/lethean*
-	@tar -cjvf lethean-linux-amd64-cli.tar.bz2 lethean/
-	@rm -rf lethean
 
-ci-linux-amd64-testnet: static-release-testnet ## Build testnet-lethean-linux-amd64-cli.tar.bz2
-	@rm -fr lethean && mkdir -p lethean
-	@cp -r build/release/src/letheand lethean/letheand-testnet
-	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet-testnet
-	@chmod +x lethean/lethean*
+ci-linux-amd64-release: static-release ci-package-linux ## Build lethean-linux-amd64-cli.tar.bz2
+	@tar -cjvf lethean-linux-amd64-cli.tar.bz2 lethean/
+
+ci-linux-amd64-release: static-release ci-package-linux ## Build lethean-linux-amd64-cli.tar.bz2
+	@tar -cjvf lethean-linux-amd64-cli.tar.bz2 lethean/
+
+ci-macos-amd64-release: static-release ci-package-linux ## Build lethean-macos-amd64-cli.tar.bz2
+	@tar -cjvf lethean-macos-amd64-cli.tar.bz2 lethean/
+
+ci-macos-arm64-release: static-release ci-package-linux ## Build lethean-macos-arm64-cli.tar.bz2
+	@tar -cjvf lethean-macos-arm64-cli.tar.bz2 lethean/
+
+ci-linux-amd64-testnet: static-release-testnet ci-package-linux ## Build testnet-lethean-linux-amd64-cli.tar.bz2
 	@tar -cjvf testnet-lethean-linux-amd64-cli.tar.bz2 lethean/
-	@rm -rf lethean
+
+ci-macos-amd64-testnet: static-release-testnet ci-package-linux ## Build testnet-lethean-macos-amd64-cli.tar.bz2
+	@tar -cjvf testnet-lethean-macos-amd64-cli.tar.bz2 lethean/
+
+ci-macos-arm64-testnet: static-release-testnet ci-package-linux ## Build testnet-lethean-macos-arm64-cli.tar.bz2
+	@tar -cjvf testnet-lethean-macos-arm64-cli.tar.bz2 lethean/
 
 conan:
 	@conan config install contrib/cmake/settings_user.yml

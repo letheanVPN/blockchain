@@ -2,4 +2,4 @@ compiler:
     gcc:
         version: ["11.4.0"]
     apple-clang:
-        version: ["15.0.0.15000040"]
+        version: ["15.0.0.15000040", "15.0.0.15000309"]
