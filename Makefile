@@ -70,9 +70,6 @@ ci-package-linux:
 ci-linux-amd64-release: static-release ci-package-linux ## Build lethean-linux-amd64-cli.tar.bz2
 	@tar -cjvf lethean-linux-amd64-cli.tar.bz2 lethean/
 
-ci-linux-amd64-release: static-release ci-package-linux ## Build lethean-linux-amd64-cli.tar.bz2
-	@tar -cjvf lethean-linux-amd64-cli.tar.bz2 lethean/
-
 ci-macos-amd64-release: static-release ci-package-linux ## Build lethean-macos-amd64-cli.tar.bz2
 	@tar -cjvf lethean-macos-amd64-cli.tar.bz2 lethean/
 
