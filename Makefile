@@ -32,7 +32,7 @@ current_dir := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 export CONAN_HOME = $(current_dir)$(build)
 
 conan_profile_linux = $(CONAN_HOME)/profiles/linux-amd64
-conan_toolchain = -DCMAKE_TOOLCHAIN_FILE=$(CONAN_HOME)/Release/generators/conan_toolchain.cmake
+conan_toolchain = -DCMAKE_TOOLCHAIN_FILE=$(dir_release)/Release/generators/conan_toolchain.cmake
 
 all: help
 
