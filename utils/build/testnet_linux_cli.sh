@@ -37,24 +37,24 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make -j2 daemon simplewallet connectivity_tool
+make -j2 daemon lethean-cli-wallet connectivity_tool
 if [ $? -ne 0 ]; then
     echo "Failed to make!"
     exit 1
 fi
 
 
-rm -rf Lethean;
-mkdir -p Lethean;
+rm -rf lethean;
+mkdir -p lethean;
 
+chmod 0777 ./src/letheand src/lethean-cli-wallet  src/connectivity_tool
+cp -Rv src/letheand src/lethean-cli-wallet  src/connectivity_tool ./lethean
 
-cp -Rv src/letheand src/simplewallet  src/connectivity_tool ./Lethean
-chmod 0777 ./src/letheand src/simplewallet  src/connectivity_tool
 
 package_filename=${ARCHIVE_NAME_PREFIX}.tar.bz2
 
 rm -f ./$package_filename
-cd Lethean
+cd lethean
 tar -cjvf ../$package_filename *
 if [ $? -ne 0 ]; then
     echo "Failed to pack"
