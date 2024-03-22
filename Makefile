@@ -139,3 +139,4 @@ help: ## Show this help
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m make %-30s\033[0m %s\n", $$1, $$2}'
 
 .PHONY: all release debug static static-release gui gui-release gui-static gui-release-static gui-debug test test-release test-debug clean tags  macos-gui ci-testnet ci-release
+.PHONY: ci-package-linux ci-linux-amd64-release ci-macos-amd64-release ci-macos-arm64-release ci-linux-amd64-testnet ci-macos-amd64-testnet ci-macos-arm64-testnet
