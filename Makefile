@@ -87,6 +87,9 @@ ci-macos-arm64-release: static-release ci-package-linux ## Build lethean-macos-a
 ci-linux-amd64-testnet: static-release-testnet ci-package-linux ## Build testnet-lethean-linux-amd64-cli.tar.bz2
 	@tar -cjvf testnet-lethean-linux-amd64-cli.tar.bz2 lethean/
 
+ci-windows-amd64-testnet: static-release-testnet ci-package-windows ## Build testnet-lethean-windows-amd64-cli.tar.bz2
+	@tar -cjvf testnet-lethean-windows-amd64-cli.tar.bz2 lethean/
+
 ci-macos-amd64-testnet: static-release-testnet ci-package-linux ## Build testnet-lethean-macos-amd64-cli.tar.bz2
 	@tar -cjvf testnet-lethean-macos-amd64-cli.tar.bz2 lethean/
 
