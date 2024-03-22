@@ -1,6 +1,3 @@
-# This file is managed by Conan, contents will be overwritten.
-# To keep your changes, remove these comment lines, but the plugin won't be able to modify your requirements
-
 requirements:
   - "openssl/3.2.1"
   - "boost/1.84.0"

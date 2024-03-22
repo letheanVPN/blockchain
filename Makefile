@@ -67,6 +67,14 @@ ci-package-linux:
 	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet
 	@chmod +x lethean/lethean*
 
+ci-package-windows:
+	@rm -fr lethean && mkdir -p lethean
+	@cp -r build\\release\\src\\letheand.exe lethean\\letheand.exe
+	@cp -r build\\release\\src\\lethean-cli-wallet.exe lethean\\lethean-cli-wallet.exe
+
+ci-windows-amd64-release: static-release ci-package-windows ## Build lethean-windows-amd64-cli.tar.bz2
+	@tar -cjvf lethean-windows-amd64-cli.tar.bz2 lethean/
+
 ci-linux-amd64-release: static-release ci-package-linux ## Build lethean-linux-amd64-cli.tar.bz2
 	@tar -cjvf lethean-linux-amd64-cli.tar.bz2 lethean/
 
