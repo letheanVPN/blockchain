@@ -151,3 +151,4 @@ help: ## Show this help
 
 .PHONY: all release debug static static-release gui gui-release gui-static gui-release-static gui-debug test test-release test-debug clean tags  macos-gui ci-testnet ci-release
 .PHONY: ci-package-linux ci-linux-amd64-release ci-macos-amd64-release ci-macos-arm64-release ci-linux-amd64-testnet ci-macos-amd64-testnet ci-macos-arm64-testnet
+.PHONY: ci-package-windows ci-windows-amd64-release ci-windows-amd64-testnet
