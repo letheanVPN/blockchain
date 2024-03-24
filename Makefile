@@ -32,6 +32,7 @@ current_dir := $(dir $(abspath $(firstword $(MAKEFILE_LIST))))
 export CONAN_HOME = $(current_dir)$(build)
 
 conan_profile_linux = $(CONAN_HOME)/profiles/linux-amd64
+conan_profile_windows = $(CONAN_HOME)/profiles/windows-amd64
 conan_toolchain = -DCMAKE_TOOLCHAIN_FILE=./build/release/conan/build/Release/generators/conan_toolchain.cmake
 
 all: help
@@ -42,7 +43,7 @@ release: ## Build release non-static binaries
 
 release-testnet: ## Build testnet non-static binaries
 	$(eval command += $(cmake_release) $(cmake_testnet))
-	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+	$(call CMAKE,$(dir_release),$(command)) && "$(MAKE)"
 
 debug:
 	$(eval command += $(cmake_debug))
@@ -100,7 +101,14 @@ ci-linux-amd64-testnet: ## Build testnet-lethean-linux-amd64-cli.tar.bz2
 
 
 
-ci-windows-amd64-testnet: static-release-testnet ci-package-windows ## Build testnet-lethean-windows-amd64-cli.tar.bz2
+ci-windows-amd64-testnet: ## Build testnet-lethean-windows-amd64-cli.tar.bz2
+	conan install ./contrib/cmake -of=./build/release/conan --profile:build=$(conan_profile_windows) --profile:host=$(conan_profile_windows) --build=missing
+	(cd build/release && cmake ../../ -DCMAKE_BUILD_TYPE=Release $(conan_toolchain) $(cmake_static) $(cmake_testnet))
+	(cd build/release && cmake --build .)
+	@rm -fr lethean && mkdir -p lethean
+	@cp -r build/release/src/letheand lethean/letheand
+	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet
+	@chmod +x lethean/lethean*
 	@tar -cjvf testnet-lethean-windows-amd64-cli.tar.bz2 lethean/
 
 ci-macos-amd64-testnet: static-release-testnet ci-package-linux ## Build testnet-lethean-macos-amd64-cli.tar.bz2
