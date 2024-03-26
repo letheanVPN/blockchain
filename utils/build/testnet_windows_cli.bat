@@ -22,7 +22,7 @@ SET ACHIVE_NAME_PREFIX=%ACHIVE_NAME_PREFIX%testnet
 set BOOST_ROOT=%LOCAL_BOOST_PATH%
 set BOOST_LIBRARYDIR=%LOCAL_BOOST_LIB_PATH%
 
-
+pip install conan
 
 @echo "---------------- PREPARING BINARIES ---------------------------"
 @echo "---------------------------------------------------------------"
