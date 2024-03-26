@@ -9,6 +9,16 @@ curr_path=${BASH_SOURCE%/*}
 : "${CMAKE_OSX_SYSROOT:?CMAKE_OSX_SYSROOT should be set to macOS SDK path, e.g.: /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.13.sdk}"
 : "${OPENSSL_ROOT_DIR:?variable not set, see also macosx_build_config.command}"
 
+
+if [ $(conan --version &> /dev/null; echo $?) -eq 0 ]; then
+  echo "Conan is installed."
+elif [ $(pip list | grep -Fq "conan"; echo $?) -eq 0 ]; then
+  echo "Conan is installed (verified via pip)."
+else
+  echo "Conan does not appear to be installed. Installing..."
+  pip install conan  # Install Conan
+fi
+
 ARCHIVE_NAME_PREFIX=lethean-gui-bundle-macos-testnet-$(arch)
 
 rm -rf build; mkdir -p build/release; cd build/release;

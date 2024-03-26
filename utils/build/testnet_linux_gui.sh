@@ -2,6 +2,14 @@
 
 ARCHIVE_NAME_PREFIX=lethean-gui-bundle-linux-testnet-$(arch)
 
+if [ $(conan --version &> /dev/null; echo $?) -eq 0 ]; then
+  echo "Conan is installed."
+elif [ $(pip list | grep -Fq "conan"; echo $?) -eq 0 ]; then
+  echo "Conan is installed (verified via pip)."
+else
+  echo "Conan does not appear to be installed. Installing..."
+  pip install conan  # Install Conan
+fi
 
 prj_root=$(pwd)
 
