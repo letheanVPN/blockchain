@@ -50,9 +50,6 @@ MACRO(ENABLE_SHARED_PCH_EXECUTABLE target)
 ENDMACRO(ENABLE_SHARED_PCH_EXECUTABLE)
 #####  End of Precompiled Headers macros  ######
 
-
-
-
 file(GLOB_RECURSE PCH pch/*)
 file(GLOB_RECURSE COMMON common/*)
 file(GLOB_RECURSE CRYPTO crypto/*)
@@ -68,23 +65,6 @@ file(GLOB_RECURSE CONN_TOOL connectivity_tool/*)
 file(GLOB_RECURSE WALLET wallet/*)
 file(GLOB_RECURSE MINER miner/*)
 
-if(BUILD_GUI)
-  if(MSVC)
-    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h gui/qt-daemon/app.rc)
-  elseif(APPLE)
-    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h gui/qt-daemon/*.mm)
-  else()
-    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h)    
-  endif()
-  list(FILTER QTDAEMON EXCLUDE REGEX "node_modules")
-endif()
-# if(BUILD_GUI)
-#  if(APPLE)
-#    file(GLOB_RECURSE QTSERVER gui/*.cpp gui/*.h gui/*.mm)
-#  else()
-#    file(GLOB_RECURSE QTSERVER gui/*.cpp gui/*.h)
-#  endif()
-#endif()
 
 source_group(pch FILES ${PCH})
 source_group(common FILES ${COMMON})
@@ -98,11 +78,6 @@ source_group(stratum FILES ${STRATUM})
 source_group(lethean-cli-wallet FILES ${SIMPLEWALLET})
 source_group(connectivity-tool FILES ${CONN_TOOL})
 source_group(wallet FILES ${WALLET})
-
-if(BUILD_GUI)
-  source_group(qtserver FILES ${QTSERVER})
-endif()
-
 
 INIT_SHARED_PCH()
 
@@ -139,11 +114,6 @@ endif()
 if(NOT DISABLE_TOR)
   target_link_libraries(wallet tor-connect)
 endif()
-
-
-
-
-
 
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
   install(TARGETS wallet currency_core crypto common DESTINATION lib)
@@ -188,42 +158,3 @@ ENABLE_SHARED_PCH_EXECUTABLE(lethean-cli-wallet)
 set_property(TARGET common crypto currency_core rpc stratum wallet PROPERTY FOLDER "libs")
 set_property(TARGET daemon lethean-cli-wallet connectivity_tool PROPERTY FOLDER "prog")
 set_property(TARGET daemon PROPERTY OUTPUT_NAME "letheand")
-
-
-if(BUILD_GUI)
-
-  if(APPLE)
-    FIND_LIBRARY(COCOA_LIBRARY Cocoa)
-  endif()
-
-  set(AUTORCC ON)
-  set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-#  SET(MACOSX_BUNDLE_ICON_FILE app.icns)
-  qt5_add_resources (RCC_SOURCES gui/resources/files.qrc)
-  add_executable(Lethean WIN32 MACOSX_BUNDLE ${QTSERVER} ${RCC_SOURCES} )
-  ENABLE_SHARED_PCH(Lethean QTSERVER)
-  ENABLE_SHARED_PCH_EXECUTABLE(Lethean)
-  set_property(TARGET Lethean PROPERTY OUTPUT_NAME "lethean-gui-server")
-
-  QT5_USE_MODULES(Lethean WebEngineWidgets WebChannel WebSockets)
-  find_package(Qt5PrintSupport REQUIRED)
-
-  target_link_libraries(Lethean wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebSockets Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
-  if (UNIX AND NOT APPLE)
-	target_link_libraries(Lethean rt)
-  endif()
-
-  if(APPLE)
-    target_link_libraries(Lethean ${COCOA_LIBRARY})
-    set_property(TARGET Lethean PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
-  endif()
-  if(MSVC)
-    target_link_libraries(Lethean shlwapi.lib)
-  endif()
-
-  set_property(TARGET Lethean PROPERTY FOLDER "prog")
-
-  set(CMAKE_AUTOMOC OFF)
-
-endif()

@@ -21,6 +21,5 @@ class ConanApplication(ConanFile):
 
     def requirements(self):
         requirements = self.conan_data.get('requirements', [])
-        #self.requires("qt/5.15.13", options={"shared":True, "qtwebengine":True, "gui": True, "qtwebchannel": True, "qtlocation": True, "qtdeclarative": True})
         for requirement in requirements:
             self.requires(requirement)
