@@ -148,13 +148,13 @@ target_link_libraries(connectivity_tool currency_core crypto common zlibstatic e
 ENABLE_SHARED_PCH(connectivity_tool CONN_TOOL)
 ENABLE_SHARED_PCH_EXECUTABLE(connectivity_tool)
 
-add_executable(lethean-cli-wallet ${SIMPLEWALLET})
-add_dependencies(lethean-cli-wallet version)
-target_link_libraries(lethean-cli-wallet wallet rpc currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+add_executable(lethean-wallet ${SIMPLEWALLET})
+add_dependencies(lethean-wallet version)
+target_link_libraries(lethean-wallet wallet rpc currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 
-ENABLE_SHARED_PCH(lethean-cli-wallet SIMPLEWALLET)
-ENABLE_SHARED_PCH_EXECUTABLE(lethean-cli-wallet)
+ENABLE_SHARED_PCH(lethean-wallet SIMPLEWALLET)
+ENABLE_SHARED_PCH_EXECUTABLE(lethean-wallet)
 
 set_property(TARGET common crypto currency_core rpc stratum wallet PROPERTY FOLDER "libs")
-set_property(TARGET daemon lethean-cli-wallet connectivity_tool PROPERTY FOLDER "prog")
+set_property(TARGET daemon lethean-wallet connectivity_tool PROPERTY FOLDER "prog")
 set_property(TARGET daemon PROPERTY OUTPUT_NAME "letheand")

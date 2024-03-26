@@ -40,7 +40,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make -j2 connectivity_tool daemon simplewallet
+make -j2 connectivity_tool daemon lethean-wallet
 if [ $? -ne 0 ]; then
     echo "Failed to make binaries!"
     exit 1

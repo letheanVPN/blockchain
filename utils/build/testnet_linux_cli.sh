@@ -59,7 +59,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-make -j"$desired_jobs" daemon lethean-cli-wallet connectivity_tool
+make -j"$desired_jobs" daemon lethean-wallet connectivity_tool
 if [ $? -ne 0 ]; then
     echo "Failed to make!"
     exit 1

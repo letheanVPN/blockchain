@@ -210,35 +210,28 @@ jobs:
 #          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
 #      - name: Eat the Choco
 #        run: |
-#          choco install openssl --version 1.1.1.1500 -y
 #          choco install ccache -y
 #          choco install zip -y
+#      - name: Cache Conan
+#        id: github-cache-conan
+#        uses: actions/cache@v4
+#        env:
+#          cache-name: cache-conan-modules
+#        with:
+#          save-always: true
+#          path: ${{ github.workspace }}\build\p
+#          key: host-${{ runner.os }}-target-windows-${{ hashFiles('contrib/cmake/conanfile.py') }}
 #      - name: install msvc toolset
 #        uses: ilammy/msvc-dev-cmd@v1
-#      - name: Install boost
-#        uses: MarkusJx/install-boost@v2.4.1
-#        id: install-boost
-#        with:
-#          # REQUIRED: Specify the required boost version
-#          # A list of supported versions can be found here:
-#          # https://github.com/MarkusJx/prebuilt-boost/blob/main/versions-manifest.json
-#          boost_version: 1.80.0
-#          platform_version: 2022
-#          toolset: msvc
-#          link: static
+#
 #      - name: Set up Visual Studio shell
 #        uses: egor-tensin/vs-shell@v2
 #        with:
 #          arch: x64
 #      - name: build server
 #        env:
-#          QT_PREFIX_PATH: C:\ProgramData\chocolatey\lib\Qt5.11.2\5.11.2
-#          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-#          LOCAL_BOOST_PATH: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-#          OPENSSL_ROOT_DIR: "C:\\Program Files\\OpenSSL-Win64"
 #          CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
 #        run: |
-#          refreshenv
 #          ${{env.CCACHE_SETTINGS}}
 #          .\utils\build\testnet_windows_cli.bat
 #      - uses: actions/upload-artifact@v3

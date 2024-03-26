@@ -57,7 +57,7 @@ IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
 
-msbuild src/simplewallet.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
+msbuild src/lethean-wallet.vcxproj /p:SubSystem="CONSOLE,5.02"  /p:Configuration=Release /t:Build
 IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
@@ -85,7 +85,7 @@ cd src\release
 mkdir bunch
 
 copy /Y letheand.exe bunch
-copy /Y simplewallet.exe bunch
+copy /Y lethean-wallet.exe bunch
 copy /Y *.pdb bunch
 
 cd bunch
