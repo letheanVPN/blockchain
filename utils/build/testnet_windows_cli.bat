@@ -37,7 +37,7 @@ mkdir build
 @echo "---------------------------------------------------------------"
 
 cd %SOURCES_PATH%\build
-"C:\\Program Files\CMake\bin\cmake.exe" %TESTNET_DEF% -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=contrib/cmake/conan_provider.cmake -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BOOST_ROOT="%BOOST_ROOT%" -D BOOST_LIBRARYDIR="%LOCAL_BOOST_LIB_PATH%" -D BUILD_GUI=false -D STATIC=FALSE -G "Visual Studio 17 2022" -T host=x64 ..
+"C:\\Program Files\CMake\bin\cmake.exe" %TESTNET_DEF% -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=%SOURCES_PATH%contrib\cmake\conan_provider.cmake -D OPENSSL_ROOT_DIR="%OPENSSL_ROOT_DIR%" -D CMAKE_PREFIX_PATH="%QT_MSVC_PATH%" -D BOOST_ROOT="%BOOST_ROOT%" -D BOOST_LIBRARYDIR="%LOCAL_BOOST_LIB_PATH%" -D BUILD_GUI=false -D STATIC=FALSE -G "Visual Studio 17 2022" -T host=x64 ..
 IF %ERRORLEVEL% NEQ 0 (
   goto error
 )

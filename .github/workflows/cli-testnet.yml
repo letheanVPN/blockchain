@@ -17,7 +17,7 @@ env:
     ccache --set-config=compression=true
 
 jobs:
-  easy-compile:
+  compile:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -97,99 +97,99 @@ jobs:
           tag_name: canary
           prerelease: true
           files: '*ethean-${{ matrix.target }}-cli.*'
-  linux-amd64:
-    runs-on: ubuntu-20.04
-    env:
-      CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
-    steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          submodules: recursive
-      - uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/ccache
-          key: ccache-${{ runner.os }}-build-testnet-cli
-          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
-      - name: update apt
-        run: sudo apt update
-      - name: install dependencies
-        run: sudo apt-get install -y python-dev autotools-dev libboost-all-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
-      - name: build server
-        run: |
-          ${{env.CCACHE_SETTINGS}}
-          ./utils/build/testnet_linux_cli.sh
-      - name: Move Tarball
-        run: cd build/release && mv lethean-linux-cli-*.tar.bz2 ../../
-      - uses: actions/upload-artifact@v3
-        with:
-          name: lethean-linux-cli
-          if-no-files-found: error
-          path: lethean-linux-cli-*.tar.bz2
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: ${{ github.workspace }}/testnet-lethean-linux-cli-*.tar.bz2
-      - name: Release Tag
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: '*ethean-${{ matrix.target }}-cli.*'
-      - name: Release Branch
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/heads/iTw3')
-        with:
-          tag_name: canary
-          prerelease: true
-          files: '*ethean-${{ matrix.target }}-cli.*'
-  macos-amd64:
-    runs-on: macos-latest
-    env:
-      CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
-    steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.1
-        with:
-          access_token: ${{ github.token }}
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          submodules: recursive
-      - uses: actions/cache@v3
-        with:
-          path: ${{ github.workspace }}/ccache
-          key: ccache-${{ runner.os }}-build-testnet-cli
-          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
-      - name: install dependencies
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl boost icu4c ccache miniupnpc
-      - name: build server
-        env:
-          PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
-          OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
-          ZANO_BOOST_ROOT: "/opt/homebrew/opt/boost"
-          ZANO_BOOST_LIBS_PATH: "/opt/homebrew/opt/boost/lib"
-          CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk"
-        run: |
-          ${{env.CCACHE_SETTINGS}}
-          export LIBRARY_PATH=${LIBRARY_PATH}:/usr/local/opt/icu4c/lib
-          ./utils/build/testnet_mac_osx_cli.sh
-      - name: Move Tarball
-        run: cd build/release && mv lethean-macos-cli-*.tar.bz2 ../../
-      - uses: actions/upload-artifact@v3
-        with:
-          name: lethean-macos-cli
-          if-no-files-found: error
-          path: lethean-macos-cli-*.tar.bz2
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: ${{ github.workspace }}/lethean-macos-cli-*.tar.bz2
+#  linux-amd64:
+#    runs-on: ubuntu-20.04
+#    env:
+#      CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
+#    steps:
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.1
+#        with:
+#          access_token: ${{ github.token }}
+#      - uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#          submodules: recursive
+#      - uses: actions/cache@v3
+#        with:
+#          path: ${{ github.workspace }}/ccache
+#          key: ccache-${{ runner.os }}-build-testnet-cli
+#          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
+#      - name: update apt
+#        run: sudo apt update
+#      - name: install dependencies
+#        run: sudo apt-get install -y python-dev autotools-dev libboost-all-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+#      - name: build server
+#        run: |
+#          ${{env.CCACHE_SETTINGS}}
+#          ./utils/build/testnet_linux_cli.sh
+#      - name: Move Tarball
+#        run: cd build/release && mv lethean-linux-cli-*.tar.bz2 ../../
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: lethean-linux-cli
+#          if-no-files-found: error
+#          path: lethean-linux-cli-*.tar.bz2
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        if: startsWith(github.ref, 'refs/tags/')
+#        with:
+#          files: ${{ github.workspace }}/testnet-lethean-linux-cli-*.tar.bz2
+#      - name: Release Tag
+#        uses: softprops/action-gh-release@v1
+#        if: startsWith(github.ref, 'refs/tags/')
+#        with:
+#          files: '*ethean-${{ matrix.target }}-cli.*'
+#      - name: Release Branch
+#        uses: softprops/action-gh-release@v1
+#        if: startsWith(github.ref, 'refs/heads/iTw3')
+#        with:
+#          tag_name: canary
+#          prerelease: true
+#          files: '*ethean-${{ matrix.target }}-cli.*'
+#  macos-amd64:
+#    runs-on: macos-latest
+#    env:
+#      CCACHE_TEMPDIR: ${{ github.workspace }}/ccache
+#    steps:
+#      - name: Cancel Previous Runs
+#        uses: styfle/cancel-workflow-action@0.9.1
+#        with:
+#          access_token: ${{ github.token }}
+#      - uses: actions/checkout@v3
+#        with:
+#          fetch-depth: 0
+#          submodules: recursive
+#      - uses: actions/cache@v3
+#        with:
+#          path: ${{ github.workspace }}/ccache
+#          key: ccache-${{ runner.os }}-build-testnet-cli
+#          restore-keys: ccache-${{ runner.os }}-build-testnet-cli
+#      - name: install dependencies
+#        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl boost icu4c ccache miniupnpc
+#      - name: build server
+#        env:
+#          PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
+#          OPENSSL_ROOT_DIR: "/usr/local/opt/openssl@3"
+#          ZANO_BOOST_ROOT: "/opt/homebrew/opt/boost"
+#          ZANO_BOOST_LIBS_PATH: "/opt/homebrew/opt/boost/lib"
+#          CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk"
+#        run: |
+#          ${{env.CCACHE_SETTINGS}}
+#          export LIBRARY_PATH=${LIBRARY_PATH}:/usr/local/opt/icu4c/lib
+#          ./utils/build/testnet_mac_osx_cli.sh
+#      - name: Move Tarball
+#        run: cd build/release && mv lethean-macos-cli-*.tar.bz2 ../../
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: lethean-macos-cli
+#          if-no-files-found: error
+#          path: lethean-macos-cli-*.tar.bz2
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        if: startsWith(github.ref, 'refs/tags/')
+#        with:
+#          files: ${{ github.workspace }}/lethean-macos-cli-*.tar.bz2
   windows-amd64:
     runs-on: windows-latest
     env:
