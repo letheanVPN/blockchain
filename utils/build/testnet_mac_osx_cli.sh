@@ -23,7 +23,7 @@ ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}testnet
 
 rm -rf build; mkdir -p build/release; cd build/release;
 
-cmake $testnet_def -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=contrib/cmake/conan_provider.cmake -D OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR -D CMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT -D CMAKE_BUILD_TYPE=Release -D BOOST_ROOT="$ZANO_BOOST_ROOT" -D BOOST_LIBRARYDIR="$ZANO_BOOST_LIBS_PATH" ../..
+cmake $testnet_def -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES="${curr_path}"/contrib/cmake/conan_provider.cmake -D OPENSSL_ROOT_DIR=$OPENSSL_ROOT_DIR -D CMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT -D CMAKE_BUILD_TYPE=Release -D BOOST_ROOT="$ZANO_BOOST_ROOT" -D BOOST_LIBRARYDIR="$ZANO_BOOST_LIBS_PATH" ../..
 if [ $? -ne 0 ]; then
     echo "Failed to cmake"
     exit 1

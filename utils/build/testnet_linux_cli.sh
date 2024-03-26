@@ -27,6 +27,8 @@ else
   pip install conan  # Install Conan
 fi
 
+curr_path=$(pwd)
+
 # Get the number of available CPU threads
 num_threads=$(nproc)
 
@@ -47,7 +49,8 @@ echo "--------------------------------------------------"
 echo "Building...."
 
 rm -rf build; mkdir -p build/release; cd build/release;
-cmake $testnet_def -D STATIC=true -D ARCH=x86-64 -D CMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=contrib/cmake/conan_provider.cmake ../..
+
+cmake $testnet_def -D STATIC=true -D ARCH=x86-64 -D CMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES="${curr_path}"/contrib/cmake/conan_provider.cmake ../..
 if [ $? -ne 0 ]; then
     echo "Failed to run cmake"
     exit 1
