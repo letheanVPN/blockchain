@@ -159,7 +159,7 @@ test-debug:
 	$(call CMAKE,$(dir_debug),$(command)) && $(MAKE) && $(MAKE) test
 
 clean:
-	rm -rf build/release build/debug
+	rm -rf ./build/release/ ./build/debug/
 
 macos-gui:
 	bash ./utils/build/testnet_mac_osx_gui.sh
