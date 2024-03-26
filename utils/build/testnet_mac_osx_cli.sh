@@ -15,6 +15,14 @@ if [ -n "$build_prefix" ]; then
   build_prefix_label="$build_prefix "
 fi
 
+if [ $(conan --version &> /dev/null; echo $?) -eq 0 ]; then
+  echo "Conan is installed."
+elif [ $(pip list | grep -Fq "conan"; echo $?) -eq 0 ]; then
+  echo "Conan is installed (verified via pip)."
+else
+  echo "Conan does not appear to be installed. Installing..."
+  pip install conan  # Install Conan
+fi
 
 testnet_def="-D TESTNET=TRUE"
 testnet_label="testnet "
