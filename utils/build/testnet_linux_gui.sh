@@ -11,7 +11,7 @@ echo "--------------------------------------------------"
 echo "Building...."
 
 rm -rf build; mkdir -p build/release; cd build/release;
-cmake -D TESTNET=TRUE -D STATIC=true -D ARCH=x86-64 -D BUILD_GUI=TRUE -D CMAKE_BUILD_TYPE=Release ../..
+cmake -D TESTNET=TRUE -D STATIC=true -D ARCH=x86-64 -D BUILD_GUI=TRUE -D CMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=contrib/cmake/conan_provider.cmake ../..
 if [ $? -ne 0 ]; then
     echo "Failed to run cmake"
     exit 1

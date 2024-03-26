@@ -11,12 +11,28 @@
 # export QT_PREFIX_PATH=/home/user/Qt5.10.1/5.10.1/gcc_64
 # export OPENSSL_ROOT_DIR=/home/user/openssl
 
-ARCHIVE_NAME_PREFIX=lethean-linux-cli-x64-
+ARCHIVE_NAME_PREFIX=testnet-lethean-linux-amd64-cli
 
 if [ -n "$build_prefix" ]; then
   ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}${build_prefix}-
   build_prefix_label="$build_prefix "
 fi
+
+if [ $(conan --version &> /dev/null; echo $?) -eq 0 ]; then
+  echo "Conan is installed."
+elif [ $(pip list | grep -Fq "conan"; echo $?) -eq 0 ]; then
+  echo "Conan is installed (verified via pip)."
+else
+  echo "Conan does not appear to be installed. Installing..."
+  pip install conan  # Install Conan
+fi
+
+# Get the number of available CPU threads
+num_threads=$(nproc)
+
+# Calculate desired number of jobs, ensuring a minimum of 1
+desired_jobs=$((num_threads - 1))
+desired_jobs=$((desired_jobs > 0 ? desired_jobs : 1))
 
 
 testnet_def="-D TESTNET=TRUE"
@@ -31,13 +47,13 @@ echo "--------------------------------------------------"
 echo "Building...."
 
 rm -rf build; mkdir -p build/release; cd build/release;
-cmake $testnet_def -D STATIC=true -D ARCH=x86-64 -D CMAKE_BUILD_TYPE=Release ../..
+cmake $testnet_def -D STATIC=true -D ARCH=x86-64 -D CMAKE_BUILD_TYPE=Release -DCMAKE_PROJECT_TOP_LEVEL_INCLUDES=contrib/cmake/conan_provider.cmake ../..
 if [ $? -ne 0 ]; then
     echo "Failed to run cmake"
     exit 1
 fi
 
-make -j2 daemon lethean-cli-wallet connectivity_tool
+make -j"$desired_jobs" daemon lethean-cli-wallet connectivity_tool
 if [ $? -ne 0 ]; then
     echo "Failed to make!"
     exit 1
@@ -55,7 +71,7 @@ package_filename=${ARCHIVE_NAME_PREFIX}.tar.bz2
 
 rm -f ./$package_filename
 cd lethean
-tar -cjvf ../$package_filename *
+tar -cjvf ../../$package_filename *
 if [ $? -ne 0 ]; then
     echo "Failed to pack"
     exit 1
