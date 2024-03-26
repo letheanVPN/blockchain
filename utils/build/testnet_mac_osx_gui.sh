@@ -19,6 +19,10 @@ else
   pip install conan  # Install Conan
 fi
 
+# install conan user settings override
+conan config install contrib/cmake/settings_user.yml
+
+
 ARCHIVE_NAME_PREFIX=lethean-gui-bundle-macos-testnet-$(arch)
 
 rm -rf build; mkdir -p build/release; cd build/release;

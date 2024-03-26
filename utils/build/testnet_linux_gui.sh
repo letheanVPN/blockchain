@@ -11,6 +11,9 @@ else
   pip install conan  # Install Conan
 fi
 
+# install conan user settings override
+conan config install contrib/cmake/settings_user.yml
+
 prj_root=$(pwd)
 
 echo "---------------- BUILDING PROJECT ----------------"

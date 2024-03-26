@@ -27,6 +27,9 @@ else
   pip install conan  # Install Conan
 fi
 
+# install conan user settings override
+conan config install contrib/cmake/settings_user.yml
+
 curr_path=$(pwd)
 
 # Get the number of available CPU threads

@@ -24,6 +24,9 @@ else
   pip install conan  # Install Conan
 fi
 
+# install conan user settings override
+conan config install contrib/cmake/settings_user.yml
+
 testnet_def="-D TESTNET=TRUE"
 testnet_label="testnet "
 ARCHIVE_NAME_PREFIX=${ARCHIVE_NAME_PREFIX}testnet
