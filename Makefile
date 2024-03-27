@@ -68,13 +68,13 @@ static-release-testnet: ## Build testnet release static binaries
 ci-package-linux:
 	@rm -fr lethean && mkdir -p lethean
 	@cp -r build/release/src/letheand lethean/letheand
-	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet
+	@cp -r build/release/src/lethean-wallet lethean/lethean-wallet
 	@chmod +x lethean/lethean*
 
 ci-package-windows:
 	@rm -fr lethean && mkdir -p lethean
 	@cp -r build\\release\\src\\letheand.exe lethean\\letheand.exe
-	@cp -r build\\release\\src\\lethean-cli-wallet.exe lethean\\lethean-cli-wallet.exe
+	@cp -r build\\release\\src\\lethean-wallet.exe lethean\\lethean-wallet.exe
 
 ci-windows-amd64-release: static-release ci-package-windows ## Build lethean-windows-amd64-cli.tar.bz2
 	@tar -cjvf lethean-windows-amd64-cli.tar.bz2 lethean/
@@ -94,7 +94,7 @@ ci-linux-amd64-testnet: ## Build testnet-lethean-linux-amd64-cli.tar.bz2
 	(cd build/release && cmake --build .)
 	@rm -fr lethean && mkdir -p lethean
 	@cp -r build/release/src/letheand lethean/letheand
-	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet
+	@cp -r build/release/src/lethean-wallet lethean/lethean-wallet
 	@chmod +x lethean/lethean*
 	@tar -cjvf testnet-lethean-linux-amd64-cli.tar.bz2 lethean/
 
@@ -106,7 +106,7 @@ ci-windows-amd64-testnet: ## Build testnet-lethean-windows-amd64-cli.tar.bz2
 	(cd build/release && cmake --build .)
 	@rm -fr lethean && mkdir -p lethean
 	@cp -r build/release/src/letheand lethean/letheand
-	@cp -r build/release/src/lethean-cli-wallet lethean/lethean-cli-wallet
+	@cp -r build/release/src/lethean-wallet lethean/lethean-wallet
 	@chmod +x lethean/lethean*
 	@tar -cjvf testnet-lethean-windows-amd64-cli.tar.bz2 lethean/
 
