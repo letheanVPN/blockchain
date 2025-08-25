@@ -51,6 +51,11 @@ ENDMACRO(ENABLE_SHARED_PCH_EXECUTABLE)
 #####  End of Precompiled Headers macros  ######
 
 
+include_directories (${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/currency_core)
+include(../cmake/config-vars.cmake)
+include(../cmake/currency_configs/example.cmake)
+include(../cmake/check-config-vars.cmake)
+configure_file("currency_core/currency_config.h.in" "currency_core/currency_config.h")
 
 
 file(GLOB_RECURSE PCH pch/*)
