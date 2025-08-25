@@ -72,6 +72,7 @@ file(GLOB_RECURSE SIMPLEWALLET simplewallet/*)
 file(GLOB_RECURSE CONN_TOOL connectivity_tool/*)
 file(GLOB_RECURSE WALLET wallet/*)
 file(GLOB_RECURSE MINER miner/*)
+file(GLOB_RECURSE GENESIS_GENERATOR genesis_generator/*)
 
 if(BUILD_GUI)
   if(MSVC)
@@ -97,6 +98,7 @@ source_group(stratum FILES ${STRATUM})
 source_group(simplewallet FILES ${SIMPLEWALLET})
 source_group(connectivity-tool FILES ${CONN_TOOL})
 source_group(wallet FILES ${WALLET})
+source_group(genesis_generator FILES ${GENESIS_GENERATOR})
 
 if(BUILD_GUI)
   source_group(qtdaemon FILES ${QTDAEMON})
@@ -178,6 +180,20 @@ ENABLE_SHARED_PCH(stratum STRATUM)
 
 
 target_link_libraries(currency_core lmdb mdbx)
+
+set(GENERATE_FRESH_GENESIS OFF CACHE BOOL "Generate new genesis block")
+set(GENESIS_PREMINE_ADDRESS ZxCqy97skgi4X2pVU19qw9bmjPKm6Cw5y5atMZiCxRXA267yDerPxN2QhxwwPnc1wChmMbse2LVdoJtx2hWR4nd22pL3qmap5 CACHE STRING "Premine wallet address")
+set(GENESIS_PROOF wowmuchproof CACHE STRING "Genesis proof string")
+
+if (GENERATE_FRESH_GENESIS)
+	unset(GENERATE_FRESH_GENESIS CACHE)
+	add_executable(genesis_generator ${GENESIS_GENERATOR})
+	target_link_libraries(genesis_generator currency_core crypto common zlibstatic ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+	add_custom_command(TARGET genesis_generator POST_BUILD
+		COMMAND ${CMAKE_BINARY_DIR}/src/genesis_generator --address ${GENESIS_PREMINE_ADDRESS} --proof ${GENESIS_PROOF} --output ${CMAKE_SOURCE_DIR}/src/currency_core/
+		COMMENT "Generating genesis data in ${CMAKE_SOURCE_DIR}/src/currency_core/"
+	)
+endif()
 
 add_executable(daemon ${DAEMON} ${P2P} ${CURRENCY_PROTOCOL})
 add_dependencies(daemon version)

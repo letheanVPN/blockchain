@@ -26,8 +26,21 @@ endef
 build = build
 dir_debug = $(build)/debug
 dir_release = $(build)/release
+testnet = -DTESTNET=1
 
 all: release
+
+testnet-genesis-new:
+	$(eval command += $(cmake_release) $(testnet))
+	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
+	$(eval command += $(cmake_release) $(testnet))
+	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+
+genesis-new:
+	$(eval command += $(cmake_release))
+	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
+	$(eval command += $(cmake_release))
+	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
 
 release:
 	$(eval command += $(cmake_release))
