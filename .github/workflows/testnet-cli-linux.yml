@@ -37,6 +37,11 @@ jobs:
           path: ${{ github.workspace }}/build/boost_1_84_0
           key: ${{ runner.os }}-boost
 
+      - uses: actions/cache@v3
+        with:
+          path: ${{ github.workspace }}/build/ccache
+          key: ccache-testnet-cli-${{ runner.os }}
+
       - name: Build Boost :(
         if: steps.cache-boost.outputs.cache-hit != 'true'
         run: |
@@ -51,6 +56,7 @@ jobs:
         uses: threeal/cmake-action@v2.1.0
         env:
           BOOST_ROOT: ${{ github.workspace }}/build/boost_1_84_0
+          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
         with:
           build-dir: build/release
           options: |
