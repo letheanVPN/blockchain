@@ -51,7 +51,7 @@ jobs:
         env:
           BOOST_ROOT: ${{ github.workspace }}/build/boost_1_84_0
           CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
-          CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk"
+#          CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk"
         with:
           build-dir: build/release
           build-args: |
@@ -59,7 +59,6 @@ jobs:
           options: |
             TESTNET=TRUE
             CMAKE_BUILD_TYPE=Release
-            CMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
