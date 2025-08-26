@@ -32,50 +32,47 @@ jobs:
           choco install ccache -y
           choco install zip -y
 
-      - name: Cache Boost
-        id: cache-boost
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/build/boost_1_84_0
-          key: ${{ runner.os }}-boost
-
       - name: ccache caching
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
           key: ccache-testnet-cli-${{ runner.os }}
 
-      - name: Build Boost :(
-        if: steps.cache-boost.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p build && cd build
-          curl -OL https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.bz2
-          tar -xjf boost_1_84_0.tar.bz2
-          rm boost_1_84_0.tar.bz2 && cd boost_1_84_0
-          ./bootstrap.bat --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-          ./b2 
+      - name: Install boost
+        uses: MarkusJx/install-boost@v2
+        id: install-boost
+        with:
+          boost_version: 1.84.0
+          # OPTIONAL: Specify a custon install location
+          boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
+          # OPTIONAL: Specify a platform version
+          platform_version: 2022
+          # OPTIONAL: Specify a toolset
+          toolset: msvc
 
-#      - name: Build Project
-#        uses: threeal/cmake-action@v2.1.0
-#        env:
-#          BOOST_ROOT: ${{ github.workspace }}/build/boost_1_84_0
-#          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
-#        with:
-#          build-dir: build/release
-#          generator: Visual Studio 16 2019
-#          build-args: |
-#            -j2
-#          options: |
-#            STATIC=FALSE
-#            TESTNET=TRUE
-#            ARCH=x86-64
-#            CMAKE_BUILD_TYPE=Release
-#
-#      - name: Upload Binaries
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: testnet-cli-linux
-#          path: |
-#            ${{ github.workspace }}/build/release/src/Release/zanod
-#            ${{ github.workspace }}/build/release/src/Release/simplewallet
-#            ${{ github.workspace }}/build/release/src/Release/connectivity_tool
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
+        with:
+          build-dir: build/release
+          generator: Visual Studio 16 2019
+          build-args: |
+            -j2
+          options: |
+            STATIC=FALSE
+            TESTNET=TRUE
+            ARCH=x86-64
+            CMAKE_BUILD_TYPE=Release
+            Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
+            Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
+
+      - name: Upload Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: testnet-cli-linux
+          path: |
+            ${{ github.workspace }}/build/release/src/Release/zanod
+            ${{ github.workspace }}/build/release/src/Release/simplewallet
+            ${{ github.workspace }}/build/release/src/Release/connectivity_tool
