@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build-project:
     name: Build Project
-    runs-on: windows-latest
+    runs-on: macos-latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -27,17 +27,8 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Eat the Choco
-        run: |
-          choco install ccache -y
-          choco install zip -y
-
-      - name: Cache Boost
-        id: cache-boost
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/build/boost_1_84_0
-          key: ${{ runner.os }}-boost
+      - name: install dependencies
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl icu4c ccache miniupnpc
 
       - name: ccache caching
         uses: actions/cache@v4
@@ -55,27 +46,25 @@ jobs:
           ./bootstrap.bat --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2 
 
-#      - name: Build Project
-#        uses: threeal/cmake-action@v2.1.0
-#        env:
-#          BOOST_ROOT: ${{ github.workspace }}/build/boost_1_84_0
-#          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
-#        with:
-#          build-dir: build/release
-#          generator: Visual Studio 16 2019
-#          build-args: |
-#            -j2
-#          options: |
-#            STATIC=FALSE
-#            TESTNET=TRUE
-#            ARCH=x86-64
-#            CMAKE_BUILD_TYPE=Release
-#
-#      - name: Upload Binaries
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: testnet-cli-linux
-#          path: |
-#            ${{ github.workspace }}/build/release/src/Release/zanod
-#            ${{ github.workspace }}/build/release/src/Release/simplewallet
-#            ${{ github.workspace }}/build/release/src/Release/connectivity_tool
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        env:
+          BOOST_ROOT: ${{ github.workspace }}/build/boost_1_84_0
+          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
+          CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.2.sdk"
+        with:
+          build-dir: build/release
+          build-args: |
+            -j2
+          options: |
+            TESTNET=TRUE
+            CMAKE_BUILD_TYPE=Release
+            CMAKE_OSX_SYSROOT=$CMAKE_OSX_SYSROOT
+      - name: Upload Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: testnet-cli-linux
+          path: |
+            ${{ github.workspace }}/build/release/src/Release/zanod
+            ${{ github.workspace }}/build/release/src/Release/simplewallet
+            ${{ github.workspace }}/build/release/src/Release/connectivity_tool
