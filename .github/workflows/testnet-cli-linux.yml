@@ -57,3 +57,12 @@ jobs:
             STATIC=TRUE
             TESTNET=TRUE
             ARCH=x86-64
+            
+      - name: Upload Binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: testnet-cli-linux
+          path: |
+            ${{ github.workspace }}/build/src/Release/zanod
+            ${{ github.workspace }}/build/src/Release/simplewallet
+            ${{ github.workspace }}/build/src/Release/connectivity_tool
