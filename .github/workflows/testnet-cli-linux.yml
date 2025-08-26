@@ -15,7 +15,7 @@ jobs:
   build-project:
     name: Build Project
     runs-on: ubuntu-24.04
-    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.event.pull_request == null)
+    if: github.event_name == 'push' && github.ref != 'refs/heads/dev' || github.event_name == 'pull_request'
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
