@@ -15,13 +15,14 @@ jobs:
   build-project:
     name: Build Project
     runs-on: ubuntu-24.04
+    if: github.event_name == 'pull_request' || (github.event_name == 'push' && github.event.pull_request == null)
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           submodules: recursive
-          
+
       - name: install dependencies
         run: sudo apt-get install -y autotools-dev libboost-all-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
       - name: Build Project
