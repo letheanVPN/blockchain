@@ -1,12 +1,14 @@
 name: testnet-cli-linux
 
 on:
+  release:
+    types:
+      - published
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-  push:
-    paths-ignore:
-      - '**.md'
   pull_request:
+    branches:
+      - dev
     paths-ignore:
       - '**.md'
 env:
@@ -15,7 +17,6 @@ jobs:
   build-project:
     name: Build Project
     runs-on: ubuntu-24.04
-    if: github.event_name == 'push' && github.ref != 'refs/heads/dev' || github.event_name == 'pull_request'
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
