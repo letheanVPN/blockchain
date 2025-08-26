@@ -35,3 +35,7 @@ jobs:
         uses: threeal/cmake-action@v2.1.0
         with:
           build-dir: build/release
+          options: |
+            STATIC=TRUE
+            TESTNET=TRUE
+            ARCH=x86-64
