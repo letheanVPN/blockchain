@@ -70,6 +70,7 @@ jobs:
             STATIC=TRUE
             TESTNET=TRUE
             ARCH=x86-64
+            CMAKE_BUILD_TYPE=Release
             
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
