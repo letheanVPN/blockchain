@@ -37,6 +37,13 @@ jobs:
           path: ${{ github.workspace }}/build/boost_1_84_0
           key: ${{ runner.os }}-boost
 
+      - name: Cache OpenSSL
+        id: cache-openssl
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/openssl
+          key: ${{ runner.os }}-openssl
+
       - name: ccache caching
         uses: actions/cache@v4
         with:
@@ -53,11 +60,24 @@ jobs:
           ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
           ./b2 
 
+      - name: Build OpenSSL
+        if: steps.cache-openssl.outputs.cache-hit != 'true'
+        run: |
+          cd build
+          curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
+          echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar xaf openssl-1.1.1w.tar.gz
+          rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
+          ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
+          make && make test && make install && cd ..
+          rm -rf openssl-1.1.1w/
+          
+
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         env:
           BOOST_ROOT: ${{ github.workspace }}/build/boost_1_84_0
           CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
+          OPENSSL_ROOT_DIR: ${{ github.workspace }}/build/openssl
         with:
           build-dir: build/release
           build-args: |
