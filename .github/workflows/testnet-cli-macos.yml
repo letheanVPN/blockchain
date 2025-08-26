@@ -30,6 +30,13 @@ jobs:
       - name: install dependencies
         run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl icu4c ccache miniupnpc
 
+      - name: Cache Boost
+        id: cache-boost
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/boost_1_84_0
+          key: ${{ runner.os }}-boost
+
       - name: ccache caching
         uses: actions/cache@v4
         with:
