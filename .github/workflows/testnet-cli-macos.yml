@@ -51,7 +51,6 @@ jobs:
         env:
           BOOST_ROOT: ${{ github.workspace }}/build/boost_1_84_0
           CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
-#          CMAKE_OSX_SYSROOT: "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX15.4.sdk"
         with:
           build-dir: build/release
           build-args: |
@@ -64,6 +63,6 @@ jobs:
         with:
           name: testnet-cli-linux
           path: |
-            ${{ github.workspace }}/build/release/src/Release/zanod
-            ${{ github.workspace }}/build/release/src/Release/simplewallet
-            ${{ github.workspace }}/build/release/src/Release/connectivity_tool
+            ${{ github.workspace }}/build/release/src/zanod
+            ${{ github.workspace }}/build/release/src/simplewallet
+            ${{ github.workspace }}/build/release/src/connectivity_tool
