@@ -37,10 +37,17 @@ jobs:
           path: ${{ github.workspace }}/build/boost_1_84_0
           key: ${{ runner.os }}-boost
 
-      - uses: actions/cache@v3
+      - name: ccache caching
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
           key: ccache-testnet-cli-${{ runner.os }}
+
+      - name: compile cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/release
+          key: cmake-testnet-cli-${{ runner.os }}
 
       - name: Build Boost :(
         if: steps.cache-boost.outputs.cache-hit != 'true'
@@ -69,6 +76,9 @@ jobs:
         with:
           name: testnet-cli-linux
           path: |
-            ${{ github.workspace }}/build/src/Release/zanod
-            ${{ github.workspace }}/build/src/Release/simplewallet
-            ${{ github.workspace }}/build/src/Release/connectivity_tool
+            ${{ github.workspace }}/build/release/src/Release/zanod
+            ${{ github.workspace }}/build/release/src/Release/simplewallet
+            ${{ github.workspace }}/build/release/src/Release/connectivity_tool
+
+      - name: Clear Build Artifacts
+        run: rm -rf ${{ github.workspace }}/build/release/src/Release
