@@ -1,0 +1,27 @@
+name: testnet-cli-linux
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  push:
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+env:
+  ZANO_USE_SYSTEM_BOOST: true
+jobs:
+  build-project:
+    name: Build Project
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+
+      - name: install dependencies
+        run: sudo apt-get install -y python-dev autotools-dev libboost-all-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        with:
+          build-dir: build/release
