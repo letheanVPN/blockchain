@@ -1,4 +1,4 @@
-name: testnet-cli-macos
+name: testnet-cli-macos-intel
 
 on:
   release:
@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build-project:
     name: Build Project
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -28,27 +28,27 @@ jobs:
           submodules: recursive
 
       - name: install dependencies
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install openssl icu4c ccache miniupnpc
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache miniupnpc
 
       - name: Cache Boost
         id: cache-boost
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/boost_1_84_0
-          key: ${{ runner.os }}-boost
+          key: ${{ runner.os }}-intel-boost
 
       - name: Cache OpenSSL
         id: cache-openssl
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/openssl
-          key: ${{ runner.os }}-openssl
+          key: ${{ runner.os }}-intel-openssl
 
       - name: ccache caching
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
-          key: ccache-testnet-cli-${{ runner.os }}
+          key: ccache-testnet-cli-${{ runner.os }}-intel
 
       - name: Build Boost :(
         if: steps.cache-boost.outputs.cache-hit != 'true'
@@ -68,7 +68,7 @@ jobs:
           echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar -xjf openssl-1.1.1w.tar.gz
           rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
           ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
-          make && make test && make install && cd ..
+          make && make install && cd ..
           rm -rf openssl-1.1.1w/
           
 
@@ -88,7 +88,7 @@ jobs:
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: testnet-cli-linux
+          name: testnet-cli-macos-intel
           path: |
             ${{ github.workspace }}/build/release/src/zanod
             ${{ github.workspace }}/build/release/src/simplewallet
