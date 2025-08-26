@@ -56,7 +56,7 @@ jobs:
           build-dir: build/release
           generator: Visual Studio 17 2022
           build-args: |
-            -j2
+            -j4
           options: |
             STATIC=FALSE
             TESTNET=TRUE
@@ -70,6 +70,9 @@ jobs:
         with:
           name: testnet-cli-linux
           path: |
-            ${{ github.workspace }}/build/release/src/Release/zanod
-            ${{ github.workspace }}/build/release/src/Release/simplewallet
-            ${{ github.workspace }}/build/release/src/Release/connectivity_tool
+            ${{ github.workspace }}/build/release/src/Release/zanod.exe
+            ${{ github.workspace }}/build/release/src/Release/simplewallet.exe
+            ${{ github.workspace }}/build/release/src/Release/connectivity_tool.exe
+            ${{ github.workspace }}/build/release/src/zanod.exe
+            ${{ github.workspace }}/build/release/src/simplewallet.exe
+            ${{ github.workspace }}/build/release/src/connectivity_tool.exe
