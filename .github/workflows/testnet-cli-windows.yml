@@ -39,15 +39,13 @@ jobs:
           key: ccache-testnet-cli-${{ runner.os }}
 
       - name: Install boost
-        uses: MarkusJx/install-boost@v2
+        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
         id: install-boost
         with:
           boost_version: 1.84.0
-          # OPTIONAL: Specify a custon install location
+          link: static
           boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          # OPTIONAL: Specify a platform version
           platform_version: 2022
-          # OPTIONAL: Specify a toolset
           toolset: msvc
 
       - name: Build Project
@@ -61,7 +59,7 @@ jobs:
           build-args: |
             -j2
           options: |
-            STATIC=FALSE
+            STATIC=TRUE
             TESTNET=TRUE
             ARCH=x86-64
             CMAKE_BUILD_TYPE=Release
