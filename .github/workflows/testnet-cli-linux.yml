@@ -60,6 +60,8 @@ jobs:
           CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
         with:
           build-dir: build/release
+          build-args: |
+            -j2
           options: |
             STATIC=TRUE
             TESTNET=TRUE
