@@ -65,7 +65,7 @@ jobs:
         run: |
           cd build
           curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
-          echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar xaf openssl-1.1.1w.tar.gz
+          echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar -xjf openssl-1.1.1w.tar.gz
           rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
           ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
           make && make test && make install && cd ..
