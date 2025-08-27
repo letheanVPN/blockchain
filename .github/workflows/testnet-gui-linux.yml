@@ -51,12 +51,12 @@ jobs:
         with:
           dir: '${{ github.workspace }}/build/qt/'
           aqtversion: '==3.1.*'
-          version: '5.15.2'
+          version: '6.8.3'
           host: 'linux'
           target: 'desktop'
-          arch: 'gcc_64'
-          modules: 'qtwebengine'
-          cache: true
+          arch: 'linux_gcc_64'
+          modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
+
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
@@ -76,7 +76,7 @@ jobs:
             CMAKE_BUILD_TYPE=Release
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
-            CMAKE_PREFIX_PATH=${{ github.workspace }}/build/qt/Qt/5.15.2/gcc_64/bin
+#            CMAKE_PREFIX_PATH=${{ github.workspace }}/build/qt/Qt/5.15.2/gcc_64/bin
             
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
