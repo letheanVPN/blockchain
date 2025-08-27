@@ -11,5 +11,5 @@ on:
 
 jobs:
   build-windows-gui:
-    uses: .github/workflows/testnet-gui-windows.yml@${{ github.sha }}
+    uses: .github/workflows/testnet-gui-windows.yml@dev-cli-gui
     secrets: inherit
