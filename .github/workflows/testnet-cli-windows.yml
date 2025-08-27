@@ -69,7 +69,7 @@ jobs:
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: testnet-cli-linux
+          name: testnet-cli-windows
           path: |
             ${{ github.workspace }}/build/release/src/Release/zanod.exe
             ${{ github.workspace }}/build/release/src/Release/simplewallet.exe
