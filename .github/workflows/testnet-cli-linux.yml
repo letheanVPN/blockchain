@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build-project:
     name: Build Project
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -42,9 +42,9 @@ jobs:
         with:
           boost_version: 1.84.0
           boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-#          platform_version: 24.04
-#          toolset: gcc
-#          arch: x86
+          platform_version: 22.04
+          toolset: gcc
+          arch: x86
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
