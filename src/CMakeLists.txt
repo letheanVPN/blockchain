@@ -211,19 +211,18 @@ if(BUILD_GUI)
   ENABLE_SHARED_PCH_EXECUTABLE(Zano)
 	  
   #QT5_USE_MODULES(Zano WebEngineWidgets WebChannel)
-  find_package(Qt5PrintSupport REQUIRED)
 
-  target_link_libraries(Zano wallet rpc currency_core crypto common zlibstatic ethash Qt5::WebChannel Qt5::WebEngineWidgets Qt5::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+  target_link_libraries(Zano PUBLIC wallet rpc currency_core crypto common zlibstatic ethash Qt6::WebChannel Qt6::WebEngineWidgets Qt6::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto PRIVATE Qt6::Core5Compat)
   if (UNIX AND NOT APPLE)
-	target_link_libraries(Zano rt)
+    target_link_libraries(Zano PUBLIC rt)
   endif()
 
   if(APPLE)
-    target_link_libraries(Zano ${COCOA_LIBRARY})
+    target_link_libraries(Zano PUBLIC ${COCOA_LIBRARY})
     set_property(TARGET Zano PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
   endif()
   if(MSVC)
-    target_link_libraries(Zano shlwapi.lib)
+    target_link_libraries(Zano PUBLIC shlwapi.lib)
   endif()
 
   set_property(TARGET Zano PROPERTY FOLDER "prog")
