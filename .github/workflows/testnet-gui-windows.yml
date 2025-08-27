@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build-project:
     name: Build Project
-    runs-on: windows-2022
+    runs-on: windows-2019
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
