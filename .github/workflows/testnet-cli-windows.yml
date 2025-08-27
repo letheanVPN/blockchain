@@ -19,7 +19,7 @@ on:
 jobs:
   build-project:
     name: Build Project
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
