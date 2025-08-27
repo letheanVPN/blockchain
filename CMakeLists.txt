@@ -1,16 +1,15 @@
 cmake_minimum_required(VERSION 3.16)
 
 PROJECT(Zano)
-
+set(VERSION "1.0")
 
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")    
 message("OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")    
 message("OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")    
 
+list(INSERT CMAKE_MODULE_PATH 0
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-
-
-set(VERSION "1.0")
 
 if(POLICY CMP0043)
   cmake_policy(SET CMP0043 NEW)
@@ -21,7 +20,16 @@ endif()
 if(POLICY CMP0144)
   cmake_policy(SET CMP0144 NEW)
 endif()
+if(POLICY CMP0167)
+  cmake_policy(SET CMP0167 OLD)
+endif()
 
+option (USE_CCACHE "Use ccache if a usable instance is found" ON)
+if (USE_CCACHE)
+  include(FindCcache) # Has to be included after the project() macro, to be able to read the CXX variable.
+else()
+  message(STATUS "ccache deselected")
+endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -198,7 +206,7 @@ else()
   set(RELEASE_FLAGS "-Ofast -DNDEBUG -Wno-unused-variable")
 
   if(NOT APPLE AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
-    set(RELEASE_FLAGS "${RELEASE_FLAGS} -flto -g3")
+    set(RELEASE_FLAGS "${RELEASE_FLAGS} -flto=auto -g3")
   endif()
   #if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
   #  set(RELEASE_FLAGS "${RELEASE_FLAGS} -fno-fat-lto-objects")
