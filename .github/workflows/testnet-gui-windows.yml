@@ -19,7 +19,7 @@ concurrency:
 jobs:
   build-project:
     name: Build Project
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -31,6 +31,7 @@ jobs:
         run: |
           choco install ccache -y
           choco install zip -y
+          choco install qt5-default -y
 
       - name: ccache caching
         uses: actions/cache@v4
