@@ -55,7 +55,7 @@ jobs:
           version: '5.15.2'
           host: 'windows'
           target: 'desktop'
-          arch: 'win64_msvc2022_64'
+          arch: 'win64_msvc2019_64'
           modules: 'qtwebengine'
           cache: true
 
@@ -67,7 +67,7 @@ jobs:
           CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
         with:
           build-dir: build/release
-          generator: Visual Studio 17 2022
+          generator: Visual Studio 16 2019
           build-args: |
             -j4
             --config Release
@@ -78,16 +78,12 @@ jobs:
             CMAKE_BUILD_TYPE=Release
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
-            CMAKE_PREFIX_PATH=${{ github.workspace }}/build/qt/Qt/5.15.2/win64_msvc2022_64/bin
+            CMAKE_PREFIX_PATH=${{ github.workspace }}/build/qt/Qt/5.15.2/win64_msvc2019_64/bin
 
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
           name: testnet-cli-windows
           path: |
-            ${{ github.workspace }}/build/release/src/Release/zanod.exe
-            ${{ github.workspace }}/build/release/src/Release/simplewallet.exe
-            ${{ github.workspace }}/build/release/src/Release/connectivity_tool.exe
-            ${{ github.workspace }}/build/release/src/zanod.exe
-            ${{ github.workspace }}/build/release/src/simplewallet.exe
-            ${{ github.workspace }}/build/release/src/connectivity_tool.exe
+            ${{ github.workspace }}/build/release/src/Release/Zano.exe
+            ${{ github.workspace }}/build/release/src/Zano.exe
