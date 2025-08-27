@@ -82,6 +82,7 @@ jobs:
           build-dir: build/release
           build-args: |
             -j2
+            --config Release
           options: |
             TESTNET=TRUE
             CMAKE_BUILD_TYPE=Release

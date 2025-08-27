@@ -57,6 +57,7 @@ jobs:
           generator: Visual Studio 17 2022
           build-args: |
             -j4
+            --config Release
           options: |
             STATIC=FALSE
             TESTNET=TRUE

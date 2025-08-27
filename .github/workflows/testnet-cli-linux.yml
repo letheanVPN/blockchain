@@ -62,6 +62,7 @@ jobs:
           build-dir: build/release
           build-args: |
             -j2
+            --config Release
           options: |
             STATIC=TRUE
             TESTNET=TRUE
