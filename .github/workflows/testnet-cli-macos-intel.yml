@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build-project:
-    name: Build Project
+    name: Compile MacOS Intel CLI
     runs-on: macos-13
     steps:
       - name: Checkout Project

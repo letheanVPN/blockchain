@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build-project:
-    name: Build Project
+    name: Compile Linux GUI
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Project

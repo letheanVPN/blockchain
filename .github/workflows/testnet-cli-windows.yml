@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   build-project:
-    name: Build Project
+    name: Compile Windows CLI
     runs-on: windows-2022
     steps:
       - name: Checkout Project
