@@ -57,7 +57,7 @@ jobs:
           host: 'windows'
           target: 'desktop'
           arch: 'win64_msvc2022_64'
-          modules: 'qtwebengine'
+          modules: 'qt5compat qtwebengine'
           cache: true
 
 
