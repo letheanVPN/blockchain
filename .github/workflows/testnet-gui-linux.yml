@@ -70,7 +70,7 @@ jobs:
             --config Release
           options: |
             STATIC=TRUE
-            GUI=TRUE
+            BUILD_GUI=TRUE
             TESTNET=TRUE
             ARCH=x86-64
             CMAKE_BUILD_TYPE=Release
