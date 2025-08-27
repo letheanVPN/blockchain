@@ -53,10 +53,10 @@ jobs:
         with:
           dir: '${{ github.workspace }}/build/qt/'
           aqtversion: '==3.1.*'
-          version: '5.15.2'
+          version: '6.8.3'
           host: 'windows'
           target: 'desktop'
-          arch: 'win64_msvc2019_64'
+          arch: 'win64_msvc2022_64'
           modules: 'qtwebengine'
           cache: true
 
@@ -68,7 +68,7 @@ jobs:
           CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
         with:
           build-dir: build/release
-          generator: Visual Studio 16 2019
+          generator: Visual Studio 17 2022
           build-args: |
             -j4
             --config Release
@@ -77,6 +77,7 @@ jobs:
             TESTNET=TRUE
             ARCH=x86-64
             CMAKE_BUILD_TYPE=Release
+            BUILD_GUI=1
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
             CMAKE_PREFIX_PATH=${{ github.workspace }}/build/qt/Qt/5.15.2/win64_msvc2019_64/bin
