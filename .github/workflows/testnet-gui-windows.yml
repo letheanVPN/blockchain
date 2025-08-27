@@ -56,7 +56,7 @@ jobs:
           host: 'windows'
           target: 'desktop'
           arch: 'win64_msvc2022_64'
-          modules: 'qt5compat qtwebengine qtwebchannel'
+          modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
 
 
       - name: Build Project
