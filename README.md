@@ -11,16 +11,16 @@ Be sure to clone the repository properly:\
 
 
 ### Dependencies
-| component / version | minimum <br>(not recommended but may work) | recommended    | most recent of what we have ever tested |
-|--|--------------------------------------------|----------------|-----------------------------------------|
-| gcc (Linux) | 8.4.0                                      | 9.4.0          | 12.3.0                                  |
-| llvm/clang (Linux) | UNKNOWN                                    | 7.0.1          | 8.0.0                                   |
-| [MSVC](https://visualstudio.microsoft.com/downloads/) (Windows) | 2017 (15.9.30)                             | 2022 (17.11.5) | 2022 (17.12.3)                          |
-| [XCode](https://developer.apple.com/downloads/) (macOS) | 12.3                                       | 14.3           | 15.2                                    |
-| [CMake](https://cmake.org/download/) | 3.26.3                                     | 3.26.3         | 3.31.6                                  |
-| [Boost](https://www.boost.org/users/download/) | 1.75                                       | 1.84           | 1.84                                    |
+| component / version                                                                                 | minimum <br>(not recommended but may work) | recommended    | most recent of what we have ever tested |
+|-----------------------------------------------------------------------------------------------------|--------------------------------------------|----------------|-----------------------------------------|
+| gcc (Linux)                                                                                         | 8.4.0                                      | 9.4.0          | 12.3.0                                  |
+| llvm/clang (Linux)                                                                                  | UNKNOWN                                    | 7.0.1          | 8.0.0                                   |
+| [MSVC](https://visualstudio.microsoft.com/downloads/) (Windows)                                     | 2017 (15.9.30)                             | 2022 (17.11.5) | 2022 (17.12.3)                          |
+| [XCode](https://developer.apple.com/downloads/) (macOS)                                             | 12.3                                       | 14.3           | 15.2                                    |
+| [CMake](https://cmake.org/download/)                                                                | 3.26.3                                     | 3.26.3         | 3.31.6                                  |
+| [Boost](https://www.boost.org/users/download/)                                                      | 1.75                                       | 1.84           | 1.84                                    |
 | [OpenSSL](https://www.openssl.org/source/) [(win)](https://slproweb.com/products/Win32OpenSSL.html) | 1.1.1n                                     | 1.1.1w         | 3.4                                     | 
-| [Qt](https://download.qt.io/archive/qt/) (*only for GUI*) | 6.8.3                                      | 6.8.3          | 6.8.3                                   |
+| [Qt](https://download.qt.io/archive/qt/) (*only for GUI*)                                           | 6.8.3                                      | 6.8.3          | 6.8.3                                   |
 
 Note:\
 [*server version*] denotes steps required for building command-line tools (daemon, simplewallet, etc.).\
@@ -80,6 +80,7 @@ Recommended OS versions: Ubuntu 20.04, 22.04 LTS.
              qt.qt6.683.addons.qtpositioning.linux_gcc_64 \
              qt.qt6.683.addons.qtwebchannel.linux_gcc_64 \
              qt.qt6.683.addons.qtwebsockets.linux_gcc_64 \
+             qt.qt6.683.addons.qtwebengine.linux_gcc_64 \
              qt.qt6.683.addons.qtwebview.linux_gcc_64
           This will download the online installer and perform an unattended installation with the WebKit engine
 
