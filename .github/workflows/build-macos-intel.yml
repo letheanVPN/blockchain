@@ -54,7 +54,7 @@ jobs:
         with:
           boost_version: 1.84.0
           boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 14
+          platform_version: 13
           toolset: clang
 
       - name: Build OpenSSL
