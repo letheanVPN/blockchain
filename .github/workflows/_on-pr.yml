@@ -15,38 +15,67 @@ concurrency:
 
 
 jobs:
-  build-linux:
+  testnet-linux:
     name: Compile
     uses: ./.github/workflows/build-linux.yml
     with:
       chain-network: 'testnet'
       build-cli: true
       build-gui: true
-    secrets: inherit
-  build-windows:
+
+  testnet-windows:
     name: Compile
     uses: ./.github/workflows/build-windows.yml
     with:
       chain-network: 'testnet'
       build-cli: true
       build-gui: true
-    secrets: inherit
 
-  build-macos-arm64:
+  testnet-macos-arm64:
     name: Compile
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
       chain-network: 'testnet'
       build-cli: true
       build-gui: true
-    secrets: inherit
 
-  build-macos-intel:
+  testnet-macos-intel:
     name: Compile
     uses: ./.github/workflows/build-macos-intel.yml
     with:
       chain-network: 'testnet'
       build-cli: true
       build-gui: true
-    secrets: inherit
+
+  mainnet-linux:
+    name: Compile
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      chain-network: 'mainnet'
+      build-cli: true
+      build-gui: true
+
+  mainnet-windows:
+    name: Compile
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      chain-network: 'mainnet'
+      build-cli: true
+      build-gui: true
+
+  mainnet-macos-arm64:
+    name: Compile
+    uses: ./.github/workflows/build-macos-arm64.yml
+    with:
+      chain-network: 'mainnet'
+      build-cli: true
+      build-gui: true
+
+  mainnet-macos-intel:
+    name: Compile
+    uses: ./.github/workflows/build-macos-intel.yml
+    with:
+      chain-network: 'mainnet'
+      build-cli: true
+      build-gui: true
 
