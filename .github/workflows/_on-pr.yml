@@ -22,21 +22,24 @@ jobs:
       build-cli: true
       build-gui: true
     secrets: inherit
+  build-windows:
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      chain-network: 'testnet'
+      build-cli: true
+      build-gui: true
+    secrets: inherit
+
   build-macos-arm64-cli:
     uses: ./.github/workflows/testnet-cli-macos-arm64.yml
     secrets: inherit
   build-macos-intel-cli:
     uses: ./.github/workflows/testnet-cli-macos-intel.yml
     secrets: inherit
-  build-windows-cli:
-    uses: ./.github/workflows/testnet-cli-windows.yml
-    secrets: inherit
+
   build-macos-arm64-gui:
     uses: ./.github/workflows/testnet-gui-macos-arm64.yml
     secrets: inherit
   build-macos-intel-gui:
     uses: ./.github/workflows/testnet-gui-macos-intel.yml
-    secrets: inherit
-  build-windows-gui:
-    uses: ./.github/workflows/testnet-gui-windows.yml
     secrets: inherit
