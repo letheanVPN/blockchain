@@ -1,4 +1,4 @@
-name: ${{ inputs.chain-network }}-cli-windows
+name: build-windows
 
 on:
   workflow_call:

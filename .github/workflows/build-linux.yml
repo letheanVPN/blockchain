@@ -1,4 +1,4 @@
-name: ${{ inputs.chain-network }}-cli-linux
+name: build-linux
 
 on:
   workflow_call:
