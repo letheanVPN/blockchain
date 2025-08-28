@@ -56,6 +56,7 @@ jobs:
           boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
           platform_version: 13
           toolset: clang
+          arch: 'x86'
 
       - name: Build OpenSSL
         if: steps.cache-openssl.outputs.cache-hit != 'true'
