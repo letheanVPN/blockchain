@@ -22,7 +22,7 @@ on:
 jobs:
   build-cli:
     if: ${{ inputs.build-cli }}
-    name: Compile Windows CLI
+    name: Windows CLI
     runs-on: windows-2022
     steps:
       - name: Checkout Project
@@ -84,7 +84,7 @@ jobs:
 
   build-gui:
     if: ${{ inputs.build-gui }}
-    name: Compile Windows GUI
+    name: Windows GUI
     runs-on: windows-2022
     steps:
       - name: Checkout Project

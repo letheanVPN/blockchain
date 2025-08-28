@@ -1,4 +1,4 @@
-name: build-linux
+name: build-macos-intel
 
 on:
   workflow_call:
@@ -22,8 +22,8 @@ on:
 jobs:
   build-cli:
     if: ${{ inputs.build-cli }}
-    name: Linux CLI
-    runs-on: ubuntu-22.04
+    name: MacOS Intel CLI
+    runs-on: macos-14
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -32,13 +32,21 @@ jobs:
           submodules: recursive
 
       - name: install dependencies
-        run: sudo apt-get install -y autotools-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache miniupnpc
+
+      - name: Cache OpenSSL
+        id: cache-openssl
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/openssl
+          key: ${{ runner.os }}-intel-openssl
 
       - name: ccache caching
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-cli-${{ runner.os }}
+          key: ccache-${{ inputs.chain-network }}-cli-${{ runner.os }}-intel
+
 
       - name: Install boost
         uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
@@ -46,32 +54,42 @@ jobs:
         with:
           boost_version: 1.84.0
           boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 22.04
-          toolset: gcc
-          arch: x86
+          platform_version: 14
+          toolset: clang
+          arch: aarch64
+
+      - name: Build OpenSSL
+        if: steps.cache-openssl.outputs.cache-hit != 'true'
+        run: |
+          cd build
+          curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
+          echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar -xjf openssl-1.1.1w.tar.gz
+          rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
+          ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
+          make && make install && cd ..
+          rm -rf openssl-1.1.1w/
+          
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         env:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
           CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
+          OPENSSL_ROOT_DIR: ${{ github.workspace }}/build/openssl
         with:
           build-dir: build/release
           build-args: |
             -j2
             --config Release
           options: |
-            STATIC=TRUE
             TESTNET=${{ inputs.chain-network == 'testnet'}}
-            ARCH=x86-64
             CMAKE_BUILD_TYPE=Release
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
-
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.chain-network }}-cli-linux
+          name: ${{ inputs.chain-network }}-cli-macos-intel
           path: |
             ${{ github.workspace }}/build/release/src/zanod
             ${{ github.workspace }}/build/release/src/simplewallet
@@ -79,8 +97,8 @@ jobs:
 
   build-gui:
     if: ${{ inputs.build-gui }}
-    name: Linux GUI
-    runs-on: ubuntu-22.04
+    name: MacOS Intel GUI
+    runs-on: macos-13
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -89,13 +107,20 @@ jobs:
           submodules: recursive
 
       - name: install dependencies
-        run: sudo apt-get install -y autotools-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache miniupnpc
+
+      - name: Cache OpenSSL
+        id: cache-openssl
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/openssl
+          key: ${{ runner.os }}-arm-openssl
 
       - name: ccache caching
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-gui-${{ runner.os }}
+          key: ccache-${{ inputs.chain-network }}-gui-${{ runner.os }}-intel
 
       - name: Install boost
         uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
@@ -103,9 +128,8 @@ jobs:
         with:
           boost_version: 1.84.0
           boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 22.04
-          toolset: gcc
-          arch: x86
+          platform_version: 13
+          toolset: clang
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
@@ -113,26 +137,37 @@ jobs:
           dir: '${{ github.workspace }}/build/qt/'
           aqtversion: '==3.1.*'
           version: '6.8.3'
-          host: 'linux'
+          host: 'mac'
           target: 'desktop'
-          arch: 'linux_gcc_64'
+          arch: 'clang_64'
           modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
+
+      - name: Build OpenSSL
+        if: steps.cache-openssl.outputs.cache-hit != 'true'
+        run: |
+          cd build
+          curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
+          echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar -xjf openssl-1.1.1w.tar.gz
+          rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
+          ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
+          make && make install && cd ..
+          rm -rf openssl-1.1.1w/
+
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         env:
           BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
           CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
+          OPENSSL_ROOT_DIR: ${{ github.workspace }}/build/openssl
         with:
           build-dir: build/release
           build-args: |
             -j2
             --config Release
           options: |
-            STATIC=TRUE
-            BUILD_GUI=TRUE
             TESTNET=${{ inputs.chain-network == 'testnet'}}
-            ARCH=x86-64
+            BUILD_GUI=1
             CMAKE_BUILD_TYPE=Release
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
@@ -140,6 +175,6 @@ jobs:
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.chain-network }}-gui-linux
+          name: ${{ inputs.chain-network }}-gui-macos-intel
           path: |
             ${{ github.workspace }}/build/release/src/Zano
