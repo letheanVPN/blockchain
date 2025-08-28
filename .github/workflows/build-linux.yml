@@ -95,7 +95,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
-          key: ccache-testnet-gui-${{ runner.os }}
+          key: ccache-${{ inputs.chain-network }}-gui-${{ runner.os }}
 
       - name: Install boost
         uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
@@ -118,7 +118,6 @@ jobs:
           arch: 'linux_gcc_64'
           modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
 
-
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         env:
@@ -132,16 +131,15 @@ jobs:
           options: |
             STATIC=TRUE
             BUILD_GUI=TRUE
-            TESTNET=TRUE
+            TESTNET=${{ inputs.chain-network == 'testnet'}}
             ARCH=x86-64
             CMAKE_BUILD_TYPE=Release
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
-      #            CMAKE_PREFIX_PATH=${{ github.workspace }}/build/qt/Qt/5.15.2/gcc_64/bin
 
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: testnet-gui-linux
+          name: ${{ inputs.chain-network }}-gui-linux
           path: |
             ${{ github.workspace }}/build/release/src/Zano
