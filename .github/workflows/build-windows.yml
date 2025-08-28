@@ -1,4 +1,4 @@
-name: testnet-cli-windows
+name: ${{ inputs.chain-network }}-cli-windows
 
 on:
   workflow_call:
