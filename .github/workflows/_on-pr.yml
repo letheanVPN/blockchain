@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build-linux-cli:
     uses: ./.github/workflows/testnet-cli-linux.yml
+    with:
+      chain-network: 'testnet'
     secrets: inherit
   build-macos-arm64-cli:
     uses: ./.github/workflows/testnet-cli-macos-arm64.yml

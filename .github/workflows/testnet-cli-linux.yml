@@ -2,6 +2,12 @@ name: testnet-cli-linux
 
 on:
   workflow_call:
+    inputs:
+      chain-network:
+        description: "The network to use, can either be testnet, stagenet or mainnet"
+        default: testnet
+        required: false
+        type: string
 
 jobs:
   build-project:
@@ -21,7 +27,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
-          key: ccache-testnet-cli-${{ runner.os }}
+          key: ccache-${{ inputs.chain-network }}-cli-${{ runner.os }}
 
       - name: Install boost
         uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
@@ -45,16 +51,16 @@ jobs:
             --config Release
           options: |
             STATIC=TRUE
-            TESTNET=TRUE
+            TESTNET=${{ inputs.chain-network == 'testnet'}}
             ARCH=x86-64
             CMAKE_BUILD_TYPE=Release
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
-            
+
       - name: Upload Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: testnet-cli-linux
+          name: ${{ inputs.chain-network }}-cli-linux
           path: |
             ${{ github.workspace }}/build/release/src/zanod
             ${{ github.workspace }}/build/release/src/simplewallet
