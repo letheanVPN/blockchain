@@ -177,4 +177,4 @@ jobs:
         with:
           name: ${{ inputs.chain-network }}-gui-macos-intel
           path: |
-            ${{ github.workspace }}/build/release/src/Zano
+            ${{ github.workspace }}/build/release/src/Zano.app
