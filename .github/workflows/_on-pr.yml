@@ -15,10 +15,12 @@ concurrency:
 
 
 jobs:
-  build-linux-cli:
-    uses: ./.github/workflows/testnet-cli-linux.yml
+  build-linux:
+    uses: ./.github/workflows/build-linux.yml
     with:
       chain-network: 'testnet'
+      build-cli: 'true'
+      build-gui: 'true'
     secrets: inherit
   build-macos-arm64-cli:
     uses: ./.github/workflows/testnet-cli-macos-arm64.yml
@@ -28,9 +30,6 @@ jobs:
     secrets: inherit
   build-windows-cli:
     uses: ./.github/workflows/testnet-cli-windows.yml
-    secrets: inherit
-  build-linux-gui:
-    uses: ./.github/workflows/testnet-gui-linux.yml
     secrets: inherit
   build-macos-arm64-gui:
     uses: ./.github/workflows/testnet-gui-macos-arm64.yml
