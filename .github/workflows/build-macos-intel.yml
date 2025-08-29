@@ -76,7 +76,7 @@ jobs:
           echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar -xjf openssl-1.1.1w.tar.gz
           rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
           ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
-          make && make install && cd ..
+          make -j10 && make install_sw install_ssldirs && cd ..
           rm -rf openssl-1.1.1w/
           
 
@@ -89,7 +89,7 @@ jobs:
         with:
           build-dir: build/release
           build-args: |
-            -j2
+            -j10
             --config Release
           options: |
             TESTNET=${{ inputs.chain-network == 'testnet'}}
@@ -109,12 +109,8 @@ jobs:
 
       - name: Archive Release
         if: inputs.release
-        uses: thedoctor0/zip-release@0.7.5
-        with:
-          type: 'zip'
-          directory: '${{ github.workspace }}/build/release/src'
-          filename: '${{ inputs.chain-network }}-cli-macos-intel.zip'
-          exclusions: '*.git* /*node_modules/* .editorconfig'
+        working-directory: ${{ github.workspace }}/build/release/src
+        run: 7z a '${{ inputs.chain-network }}-cli-macos-intel.zip' 'connectivity_tool' 'simplewallet' 'zanod''
 
       - name: Make Release
         if: inputs.release
@@ -122,7 +118,7 @@ jobs:
         with:
           tag_name: canary-${{ github.ref }}
           prerelease: true
-          files: '${{ inputs.chain-network }}-cli-macos-intel.zip'
+          files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-cli-macos-intel.zip
 
   build-gui:
     if: ${{ inputs.build-gui }}
@@ -179,7 +175,7 @@ jobs:
           echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar -xjf openssl-1.1.1w.tar.gz
           rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
           ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
-          make && make install && cd ..
+          make -j10 && make install_sw install_ssldirs && cd ..
           rm -rf openssl-1.1.1w/
 
 
@@ -192,7 +188,7 @@ jobs:
         with:
           build-dir: build/release
           build-args: |
-            -j2
+            -j10
             --config Release
           options: |
             TESTNET=${{ inputs.chain-network == 'testnet'}}
@@ -211,12 +207,8 @@ jobs:
 
       - name: Archive Release
         if: inputs.release
-        uses: thedoctor0/zip-release@0.7.5
-        with:
-          type: 'zip'
-          directory: '${{ github.workspace }}/build/release/src'
-          filename: '${{ inputs.chain-network }}-gui-macos-intel.zip'
-          exclusions: '*.git* /*node_modules/* .editorconfig'
+        working-directory: ${{ github.workspace }}/build/release/src
+        run: 7z a '${{ inputs.chain-network }}-gui-macos-intel.zip' 'connectivity_tool' 'simplewallet' 'zanod'
 
       - name: Make Release
         if: inputs.release
@@ -224,4 +216,4 @@ jobs:
         with:
           tag_name: canary-${{ github.ref }}
           prerelease: true
-          files: '${{ inputs.chain-network }}-gui-macos-intel.zip'
+          files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-gui-macos-intel.zip

@@ -180,8 +180,6 @@ jobs:
           make -j5 && make install && cd ..
           rm -rf openssl-1.1.1w/
 
-
-
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
         env:
@@ -210,12 +208,8 @@ jobs:
 
       - name: Archive Release
         if: inputs.release
-        uses: thedoctor0/zip-release@0.7.5
-        with:
-          type: 'zip'
-          directory: '${{ github.workspace }}/build/release/src'
-          filename: ${{ inputs.chain-network }}-gui-macos-arm64.zip
-          custom: 'connectivity_tool simplewallet zanod'
+        working-directory: ${{ github.workspace }}/build/release/src
+        run: 7z a '${{ inputs.chain-network }}-gui-macos-arm64.zip' 'Zano.app'
 
       - name: Make Release
         if: inputs.release
