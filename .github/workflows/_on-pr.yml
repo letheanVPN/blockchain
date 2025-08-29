@@ -21,6 +21,7 @@ jobs:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
       build-cli: true
       build-gui: true
+      release: true
 
   build-windows:
     name: Compile
@@ -30,6 +31,7 @@ jobs:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
       build-cli: true
       build-gui: true
+      release: true
 
   build-macos-arm64:
     name: Compile
@@ -38,6 +40,7 @@ jobs:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
       build-cli: true
       build-gui: true
+      release: true
 
   build-macos-intel:
     name: Compile
@@ -47,3 +50,4 @@ jobs:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
       build-cli: true
       build-gui: true
+      release: true
