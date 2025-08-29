@@ -1,0 +1,73 @@
+name: Push Full Build
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  release:
+    types: [ published ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  determine-network:
+    runs-on: ubuntu-latest
+    outputs:
+      chain-network: ${{ steps.get_branch.outputs.chain_network }}
+    steps:
+      - name: Get release information from API
+        id: get_branch
+        run: |
+          # Use the GitHub CLI to get the release details by tag name
+          # The result is a JSON object
+          RELEASE_INFO=$(gh release view --json targetCommitish -t ${{ github.ref_name }})
+          
+          # Extract the target commitish (the source branch)
+          SOURCE_BRANCH=$(echo "$RELEASE_INFO" | jq -r '.targetCommitish')
+          
+          # Set the chain network based on the source branch
+          if [ "$SOURCE_BRANCH" == "dev" ]; then
+            echo "chain_network=testnet" >> $GITHUB_OUTPUT
+          else
+            echo "chain_network=mainnet" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "Source Branch: $SOURCE_BRANCH"
+          echo "Chain Network: ${{ steps.get_branch.outputs.chain_network }}"
+
+  build-linux:
+    name: Compile
+    needs: determine-network
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      chain-network: ${{ needs.determine-network.outputs.chain-network }}
+      build-cli: true
+      build-gui: true
+
+  build-windows:
+    name: Compile
+    needs: determine-network
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      chain-network: ${{ needs.determine-network.outputs.chain-network }}
+      build-cli: true
+      build-gui: true
+
+  build-macos-arm64:
+    name: Compile
+    needs: determine-network
+    uses: ./.github/workflows/build-macos-arm64.yml
+    with:
+      chain-network: ${{ needs.determine-network.outputs.chain-network }}
+      build-cli: true
+      build-gui: true
+
+  build-macos-intel:
+    name: Compile
+    needs: determine-network
+    uses: ./.github/workflows/build-macos-intel.yml
+    with:
+      chain-network: ${{ needs.determine-network.outputs.chain-network }}
+      build-cli: true
+      build-gui: true
