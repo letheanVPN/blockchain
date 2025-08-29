@@ -1,0 +1,81 @@
+name: Pull Request Check
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  pull_request_target:
+    branches:
+      - dev
+    paths-ignore:
+      - '**.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  testnet-linux:
+    name: Compile
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      chain-network: 'testnet'
+      build-cli: true
+      build-gui: true
+
+  testnet-windows:
+    name: Compile
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      chain-network: 'testnet'
+      build-cli: true
+      build-gui: true
+
+  testnet-macos-arm64:
+    name: Compile
+    uses: ./.github/workflows/build-macos-arm64.yml
+    with:
+      chain-network: 'testnet'
+      build-cli: true
+      build-gui: true
+
+  testnet-macos-intel:
+    name: Compile
+    uses: ./.github/workflows/build-macos-intel.yml
+    with:
+      chain-network: 'testnet'
+      build-cli: true
+      build-gui: true
+
+  mainnet-linux:
+    name: Compile
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      chain-network: 'mainnet'
+      build-cli: true
+      build-gui: true
+
+  mainnet-windows:
+    name: Compile
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      chain-network: 'mainnet'
+      build-cli: true
+      build-gui: true
+
+  mainnet-macos-arm64:
+    name: Compile
+    uses: ./.github/workflows/build-macos-arm64.yml
+    with:
+      chain-network: 'mainnet'
+      build-cli: true
+      build-gui: true
+
+  mainnet-macos-intel:
+    name: Compile
+    uses: ./.github/workflows/build-macos-intel.yml
+    with:
+      chain-network: 'mainnet'
+      build-cli: true
+      build-gui: true
+
