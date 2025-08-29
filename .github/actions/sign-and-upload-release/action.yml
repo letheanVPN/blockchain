@@ -32,7 +32,7 @@ runs:
       shell: bash
       run: |
         ARCH=${{ runner.arch }}
-        LOWERCASE_ARCH=${ARCH,,}
+        LOWERCASE_ARCH=$(echo "$ARCH" | tr '[:upper:]' '[:lower:]')
         FILENAME="${{ inputs.chain-network }}-${{ inputs.asset-type }}-${{ runner.os }}-${LOWERCASE_ARCH}"
         echo "key=$FILENAME" >> $GITHUB_OUTPUT
         
