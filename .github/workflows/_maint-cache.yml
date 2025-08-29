@@ -1,0 +1,14 @@
+name: Clear all Github actions caches on sundays
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+  workflow_dispatch:
+
+jobs:
+  my-job:
+    name: Delete all caches
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Clear caches
+        run: gh cache delete --all
