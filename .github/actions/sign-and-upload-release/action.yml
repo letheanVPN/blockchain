@@ -40,8 +40,7 @@ runs:
         # This is the correct way to pass a multi-line string in GITHUB_OUTPUT.
         echo "paths<<EOF" >> "$GITHUB_OUTPUT"
         # Iterate through each filename
-        IFS=$'\n'
-        for file in ${{ inputs.assets }}; do
+        echo "${{ inputs.assets }}" | while read -r file; do
           # Check if the file is a full path (starting with / or a Windows drive letter)
           if [[ "$file" == /* ]] || [[ "$file" == [A-Z]:\\* ]]; then
             FULL_PATH="$file"
