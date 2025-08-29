@@ -18,7 +18,8 @@ jobs:
   my-job:
     name: Delete all caches
     runs-on: ubuntu-24.04
-
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
       - name: Clear caches
         run: gh cache delete --all
