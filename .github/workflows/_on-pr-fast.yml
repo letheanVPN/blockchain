@@ -18,15 +18,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-env:
-  CHAIN_NETWORK: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-
 jobs:
   build-macos-arm64:
     name: Check
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
-      chain-network: ${{ env.CHAIN_NETWORK }}
+      chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
       build-cli: true
       build-gui: false
       artifacts: false
