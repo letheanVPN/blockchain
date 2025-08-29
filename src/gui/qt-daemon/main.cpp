@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   _set_FMA3_enable(0);
   #endif
   //mutex to let InnoSetup know about running instance
-  ::CreateMutex(NULL, FALSE, CURRENCY_NAME_BASE "_instance");
+  ::CreateMutex(NULL, FALSE, boost::winapi::LPCWSTR_(CURRENCY_NAME_BASE "_instance"));
   //::CreateMutex(NULL, FALSE, "Global\\" CURRENCY_NAME_BASE "_instance");
 #endif
 
