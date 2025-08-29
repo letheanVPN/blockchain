@@ -119,9 +119,10 @@ jobs:
         if: inputs.release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: canary-${{ github.ref }}
+          tag_name: canary-${{ github.ref_name }}
           prerelease: true
           files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-cli-macos-arm64.zip
+          target_commitish: ${{ github.ref }}
 
   build-gui:
     if: ${{ inputs.build-gui }}
@@ -218,6 +219,7 @@ jobs:
         if: inputs.release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: canary-${{ github.ref }}
+          tag_name: canary-${{ github.ref_name }}
           prerelease: true
+          target_commitish: ${{ github.ref }}
           files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-gui-macos-arm64.zip

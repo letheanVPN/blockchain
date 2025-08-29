@@ -180,5 +180,6 @@ jobs:
         with:
           tag_name: canary-${{ github.ref }}
           prerelease: true
+          target_commitish: ${{ github.ref }}
           files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-gui-linux.zip
 
