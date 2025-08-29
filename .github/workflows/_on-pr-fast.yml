@@ -10,12 +10,12 @@ on:
     paths-ignore:
       - '**.md'
 
-env:
-  CHAIN_NETWORK: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  CHAIN_NETWORK: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
 jobs:
   build-macos-arm64:
