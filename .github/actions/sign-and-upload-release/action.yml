@@ -32,8 +32,10 @@ runs:
       shell: bash
       run: |
         ARCH=${{ runner.arch }}
+        RUNNER_OS=${{ runner.os }}
         LOWERCASE_ARCH=$(echo "$ARCH" | tr '[:upper:]' '[:lower:]')
-        FILENAME="${{ inputs.chain-network }}-${{ inputs.asset-type }}-${{ runner.os }}-${LOWERCASE_ARCH}"
+        TARGET_OS=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
+        FILENAME="${{ inputs.chain-network }}-${{ inputs.asset-type }}-${TARGET_OS}-${LOWERCASE_ARCH}"
         echo "key=$FILENAME" >> $GITHUB_OUTPUT
         
         # Format the output to be a multi-line string.
@@ -56,7 +58,7 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.asset.outputs.key }}
-        path: ${{ steps.process-paths.outputs.paths }}
+        path: ${{ steps.asset.outputs.paths }}
 
     - name: Archive Release
       if: inputs.release
