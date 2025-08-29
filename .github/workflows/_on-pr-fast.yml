@@ -10,6 +10,9 @@ on:
     paths-ignore:
       - '**.md'
 
+env:
+  CHAIN_NETWORK: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -19,6 +22,6 @@ jobs:
     name: Compile
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
-      chain-network: ${{ env.CHAIN_NETWORK }}
+      chain-network: $CHAIN_NETWORK
       build-cli: true
       build-gui: false

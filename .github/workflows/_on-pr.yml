@@ -19,7 +19,7 @@ jobs:
     if: github.event.review.state == 'approved'
     uses: ./.github/workflows/build-linux.yml
     with:
-      chain-network: ${{ env.CHAIN_NETWORK }}
+      chain-network: $CHAIN_NETWORK
       build-cli: true
       build-gui: true
 
@@ -28,7 +28,7 @@ jobs:
     if: github.event.review.state == 'approved'
     uses: ./.github/workflows/build-windows.yml
     with:
-      chain-network: ${{ env.CHAIN_NETWORK }}
+      chain-network: $CHAIN_NETWORK
       build-cli: true
       build-gui: true
 
@@ -37,7 +37,7 @@ jobs:
     if: github.event.review.state == 'approved'
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
-      chain-network: ${{ env.CHAIN_NETWORK }}
+      chain-network: $CHAIN_NETWORK
       build-cli: true
       build-gui: true
 
@@ -46,6 +46,6 @@ jobs:
     if: github.event.review.state == 'approved'
     uses: ./.github/workflows/build-macos-intel.yml
     with:
-      chain-network: ${{ env.CHAIN_NETWORK }}
+      chain-network: $CHAIN_NETWORK
       build-cli: true
       build-gui: true
