@@ -19,7 +19,7 @@ env:
 jobs:
   build-linux:
     name: Compile
-    if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'commented'
     uses: ./.github/workflows/build-linux.yml
     with:
       chain-network: $CHAIN_NETWORK
@@ -28,7 +28,7 @@ jobs:
 
   build-windows:
     name: Compile
-    if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'commented'
     uses: ./.github/workflows/build-windows.yml
     with:
       chain-network: $CHAIN_NETWORK
@@ -45,7 +45,7 @@ jobs:
 
   build-macos-intel:
     name: Compile
-    if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'commented'
     uses: ./.github/workflows/build-macos-intel.yml
     with:
       chain-network: $CHAIN_NETWORK
