@@ -114,7 +114,7 @@ jobs:
           type: 'zip'
           directory: '${{ github.workspace }}/build/release/src'
           filename: '${{ inputs.chain-network }}-cli-macos-arm64.zip'
-          exclusions: '*.git* /*node_modules/* .editorconfig'
+          custom: 'connectivity_tool simplewallet zanod'
 
       - name: Make Release
         if: inputs.release
@@ -217,7 +217,7 @@ jobs:
           type: 'zip'
           directory: '${{ github.workspace }}/build/release/src'
           filename: ${{ inputs.chain-network }}-gui-macos-arm64.zip
-          exclusions: '*.git* /*node_modules/* .editorconfig'
+          custom: 'connectivity_tool simplewallet zanod'
 
       - name: Make Release
         if: inputs.release
