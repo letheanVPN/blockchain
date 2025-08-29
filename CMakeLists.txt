@@ -78,7 +78,7 @@ find_package(OpenSSL REQUIRED)
 
 
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
 endif()
 
 set(USE_PCH FALSE CACHE BOOL "Use shared precompiled headers")
@@ -289,10 +289,8 @@ elseif(NOT MSVC)
 endif()
 
 if(BUILD_GUI)
-  cmake_minimum_required(VERSION 3.1) # <-- this is important for Linux GUI build, don't touch it -- sowle
-  find_package(Qt5Widgets REQUIRED)  
-  find_package(Qt5WebEngineWidgets REQUIRED)  
-  find_package(Qt5WebChannel REQUIRED)  
+  find_package(Qt6 REQUIRED COMPONENTS Core5Compat Widgets WebEngineWidgets WebChannel PrintSupport)
+  message(STATUS "Found QT Packages")
 endif()
 
 set(COMMIT_ID_IN_VERSION ON CACHE BOOL "Include commit ID in version")
