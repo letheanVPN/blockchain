@@ -117,7 +117,6 @@ jobs:
       - name: Make Release
         if: inputs.release
         uses: softprops/action-gh-release@v1
-        working-directory:
         with:
           tag_name: canary-${{ github.ref }}
           prerelease: true
