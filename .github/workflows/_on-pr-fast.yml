@@ -23,8 +23,7 @@ env:
 
 jobs:
   build-macos-arm64:
-    if: github.event.pull_request.review_decision != 'pending'
-    name: Compile
+    name: Check
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
       chain-network: $CHAIN_NETWORK

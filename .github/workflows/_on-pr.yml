@@ -37,7 +37,6 @@ jobs:
 
   build-macos-arm64:
     name: Compile
-    if: github.event.review.state == 'approved' || github.event.review.state == 'pending'
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
       chain-network: $CHAIN_NETWORK
