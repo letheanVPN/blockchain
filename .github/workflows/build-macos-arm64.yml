@@ -45,18 +45,20 @@ jobs:
       - name: install dependencies
         run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache miniupnpc
 
+      - run: mkdir -p build/openssl
+      - run: mkdir -p build/ccache
       - name: Cache OpenSSL
         id: cache-openssl
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/openssl
-          key: ${{ runner.os }}-arm64-openssl
+          key: openssl-${{ runner.os }}-${{ runner.arch }}
 
       - name: ccache caching
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-cli-${{ runner.os }}-arm64
+          key: ccache-${{ inputs.chain-network }}-cli-${{ runner.os }}-${{ runner.arch }}
 
       - name: Install boost
         uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
