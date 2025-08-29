@@ -26,7 +26,7 @@ jobs:
     name: Check
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
-      chain-network: $CHAIN_NETWORK
+      chain-network: ${{ env.CHAIN_NETWORK }}
       build-cli: true
       build-gui: false
       artifacts: false
