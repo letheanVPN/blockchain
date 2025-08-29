@@ -30,3 +30,4 @@ jobs:
       build-cli: true
       build-gui: false
       artifacts: false
+      release: true

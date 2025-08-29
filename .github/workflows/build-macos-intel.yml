@@ -18,6 +18,16 @@ on:
         default: false
         required: false
         type: boolean
+      artifacts:
+        description: "Should the job upload artifacts"
+        default: true
+        required: false
+        type: boolean
+      release:
+        description: "Make a release"
+        default: false
+        required: false
+        type: boolean
 
 jobs:
   build-cli:
@@ -86,7 +96,9 @@ jobs:
             CMAKE_BUILD_TYPE=Release
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
-      - name: Upload Binaries
+            
+      - name: Upload Artifacts
+        if: inputs.artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.chain-network }}-cli-macos-intel
@@ -94,6 +106,23 @@ jobs:
             ${{ github.workspace }}/build/release/src/zanod
             ${{ github.workspace }}/build/release/src/simplewallet
             ${{ github.workspace }}/build/release/src/connectivity_tool
+
+      - name: Archive Release
+        if: inputs.release
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          directory: '${{ github.workspace }}/build/release/src'
+          filename: '${{ inputs.chain-network }}-cli-macos-intel.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
+
+      - name: Make Release
+        if: inputs.release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: canary-${{ github.ref }}
+          prerelease: true
+          files: '${{ inputs.chain-network }}-cli-macos-intel.zip'
 
   build-gui:
     if: ${{ inputs.build-gui }}
@@ -172,9 +201,27 @@ jobs:
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
 
-      - name: Upload Binaries
+      - name: Upload Artifacts
+        if: inputs.artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.chain-network }}-gui-macos-intel
           path: |
             ${{ github.workspace }}/build/release/src/Zano.app
+
+      - name: Archive Release
+        if: inputs.release
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          directory: '${{ github.workspace }}/build/release/src'
+          filename: '${{ inputs.chain-network }}-gui-macos-intel.zip'
+          exclusions: '*.git* /*node_modules/* .editorconfig'
+
+      - name: Make Release
+        if: inputs.release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: canary-${{ github.ref }}
+          prerelease: true
+          files: '${{ inputs.chain-network }}-gui-macos-intel.zip'
