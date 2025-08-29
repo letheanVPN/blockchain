@@ -34,7 +34,7 @@ jobs:
   build-cli:
     if: ${{ inputs.build-cli }}
     name: MacOS Arm64 CLI
-    runs-on: macos-15
+    runs-on: macos-15-xlarge
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -129,7 +129,7 @@ jobs:
   build-gui:
     if: ${{ inputs.build-gui }}
     name: MacOS Arm64 GUI
-    runs-on: macos-15
+    runs-on: macos-15-xlarge
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
