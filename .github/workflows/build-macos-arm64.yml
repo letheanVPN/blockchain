@@ -122,7 +122,7 @@ jobs:
           tag_name: canary-${{ github.ref_name }}
           prerelease: true
           files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-cli-macos-arm64.zip
-          target_commitish: ${{ github.ref }}
+          target_commitish: ${{ github.sha }}
 
   build-gui:
     if: ${{ inputs.build-gui }}
@@ -221,5 +221,5 @@ jobs:
         with:
           tag_name: canary-${{ github.ref_name }}
           prerelease: true
-          target_commitish: ${{ github.ref }}
+          target_commitish: ${{ github.sha }}
           files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-gui-macos-arm64.zip
