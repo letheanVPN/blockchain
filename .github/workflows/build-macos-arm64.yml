@@ -156,8 +156,9 @@ jobs:
         with:
           boost_version: 1.84.0
           boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 13
+          platform_version: 14
           toolset: clang
+          arch: aarch64
 
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
