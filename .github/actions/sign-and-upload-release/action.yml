@@ -1,0 +1,79 @@
+# .github/actions/sign-and-upload-release/action.yml
+name: 'Sign and Upload Release'
+description: 'Archives and uploads signed binaries to a GitHub release'
+inputs:
+  chain-network:
+    required: true
+    description: 'The chain network name to use in filenames'
+  assets:
+    description: 'A space-separated list of filenames to archive.'
+    required: false
+  asset-type:
+    required: true
+    description: 'The asset type: cli, gui, ANYTHING'
+  asset-directory:
+    required: true
+    description: 'The directory where the compiled files can be found'
+  artifacts:
+    required: true
+    description: 'Boolean flag to determine if artifacts should be uploaded'
+  release:
+    required: true
+    description: 'Boolean flag to determine if a release should be created'
+  release-tag:
+    required: true
+    description: 'The tag for the release'
+
+runs:
+  using: "composite"
+  steps:
+    - name: compute file name
+      id: asset
+      shell: bash
+      run: |
+        ARCH=${{ runner.arch }}
+        LOWERCASE_ARCH=${ARCH,,}
+        FILENAME="${{ inputs.chain-network }}-${{ inputs.asset-type }}-${{ runner.os }}-${LOWERCASE_ARCH}"
+        echo "key=$FILENAME" >> $GITHUB_OUTPUT
+        
+        # Format the output to be a multi-line string.
+        # This is the correct way to pass a multi-line string in GITHUB_OUTPUT.
+        echo "paths<<EOF" >> "$GITHUB_OUTPUT"
+        # Iterate through each filename
+        IFS=$'\n'
+        for file in ${{ inputs.assets }}; do
+          # Check if the file is a full path (starting with / or a Windows drive letter)
+          if [[ "$file" == /* ]] || [[ "$file" == [A-Z]:\\* ]]; then
+            FULL_PATH="$file"
+          else
+            FULL_PATH="${{ inputs.asset-directory }}/$file"
+          fi
+          echo "$FULL_PATH" >> "$GITHUB_OUTPUT"
+        done
+        echo "EOF" >> "$GITHUB_OUTPUT"
+
+    - name: Upload Artifacts
+      if: inputs.artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ steps.asset.outputs.key }}
+        path: ${{ steps.process-paths.outputs.paths }}
+
+    - name: Archive Release
+      if: inputs.release
+      shell: bash
+      working-directory: ${{ inputs.asset-directory }}
+      run: |
+        # Use a bash array for the 7z command. This is more robust than a direct loop.
+        read -ra FILES <<< "${{ inputs.assets }}"
+        # Use the array in the 7z command.
+        7z a '${{ steps.asset.outputs.key }}.zip' "${FILES[@]}"
+
+    - name: Make Release
+      if: inputs.release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: canary-${{ inputs.release-tag }}
+        prerelease: true
+        files: ${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip
+        target_commitish: ${{ github.sha }}

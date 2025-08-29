@@ -29,6 +29,10 @@ on:
         default: false
         required: false
         type: boolean
+      release-tag:
+        required: false
+        type: string
+        description: 'The tag for the release'
 
 jobs:
   build-cli:
@@ -81,7 +85,6 @@ jobs:
           ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
           make -j5 && make install_sw install_ssldirs && cd ..
           rm -rf openssl-1.1.1w/
-          
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
@@ -100,29 +103,22 @@ jobs:
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
 
-      - name: Upload Artifacts
-        if: inputs.artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.chain-network }}-cli-macos-arm64
-          path: |
-            ${{ github.workspace }}/build/release/src/zanod
-            ${{ github.workspace }}/build/release/src/simplewallet
-            ${{ github.workspace }}/build/release/src/connectivity_tool
 
-      - name: Archive Release
+      - name: Handle Artifacts
         if: inputs.release
-        working-directory: ${{ github.workspace }}/build/release/src
-        run: 7z a '${{ inputs.chain-network }}-cli-macos-arm64.zip' 'connectivity_tool' 'simplewallet' 'zanod'
-
-      - name: Make Release
-        if: inputs.release
-        uses: softprops/action-gh-release@v1
+        uses: ./.github/actions/sign-and-upload-release
         with:
-          tag_name: canary-${{ github.ref_name }}
-          prerelease: true
-          files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-cli-macos-arm64.zip
-          target_commitish: ${{ github.sha }}
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: canary-${{ github.ref_name }}
+          release: ${{ inputs.release }}
+          artifacts: ${{ inputs.artifacts }}
+          assets: |
+            zanod
+            simplewallet
+            connectivity_tool
+          asset-type: 'cli'
+          asset-directory: ${{ github.workspace }}/build/release/src
+
 
   build-gui:
     if: ${{ inputs.build-gui }}
