@@ -122,7 +122,7 @@ jobs:
         with:
           tag_name: canary-${{ github.ref }}
           prerelease: true
-          files: '${{ inputs.chain-network }}-cli-macos-arm64.zip'
+          files: ${{ inputs.chain-network }}-cli-macos-arm64.zip
 
   build-gui:
     if: ${{ inputs.build-gui }}
@@ -216,7 +216,7 @@ jobs:
         with:
           type: 'zip'
           directory: '${{ github.workspace }}/build/release/src'
-          filename: '${{ inputs.chain-network }}-gui-macos-arm64.zip'
+          filename: ${{ inputs.chain-network }}-gui-macos-arm64.zip
           exclusions: '*.git* /*node_modules/* .editorconfig'
 
       - name: Make Release
@@ -225,4 +225,4 @@ jobs:
         with:
           tag_name: canary-${{ github.ref }}
           prerelease: true
-          files: '${{ inputs.chain-network }}-gui-macos-arm64.zip'
+          files: ${{ inputs.chain-network }}-gui-macos-arm64.zip
