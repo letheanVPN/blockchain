@@ -78,7 +78,7 @@ find_package(OpenSSL REQUIRED)
 
 
 if(APPLE)
-  set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
+  set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
 endif()
 
 set(USE_PCH FALSE CACHE BOOL "Use shared precompiled headers")
