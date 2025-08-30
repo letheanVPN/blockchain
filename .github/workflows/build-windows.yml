@@ -86,7 +86,7 @@ jobs:
             simplewallet.exe
             connectivity_tool.exe
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/release/src
+          asset-directory: ${{ github.workspace }}/build/release/src/Release
 
   build-gui:
     if: ${{ inputs.build-gui }}
@@ -160,4 +160,4 @@ jobs:
           assets: |
             Zano.exe
           asset-type: 'gui'
-          asset-directory: ${{ github.workspace }}/build/release/src
+          asset-directory: ${{ github.workspace }}/build/release/src/Release
