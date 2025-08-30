@@ -26,7 +26,6 @@ inputs:
   static:
     description: 'Build statically.'
     required: false
-    default: 'false'
   generator:
     description: 'The CMake generator to use.'
     required: false
@@ -55,7 +54,7 @@ runs:
           --config ${{ inputs.build-type }}
           ${{ inputs.target && format('--target {0}', inputs.target) }}
         options: |
-          ${{ inputs.static == 'true' && 'STATIC:boolean=ON' }}
+          ${{ inputs.static && 'STATIC:boolean=ON' }}
           ${{ inputs.chain-network == 'testnet' && 'TESTNET:boolean=ON' }}
           ${{ inputs.arch && format('ARCH:string={0}', inputs.arch) }}
           CMAKE_BUILD_TYPE=${{ inputs.build-type }}
