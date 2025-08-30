@@ -18,11 +18,6 @@ on:
         default: false
         required: false
         type: boolean
-      artifacts:
-        description: "Should the job upload artifacts"
-        default: true
-        required: false
-        type: boolean
       release:
         description: "Make a release"
         default: false
@@ -93,18 +88,19 @@ jobs:
             ${{ github.workspace }}/build/release/src/simplewallet.exe
             ${{ github.workspace }}/build/release/src/connectivity_tool.exe
 
-      - name: Archive Release
+      - name: Handle Artifacts
         if: inputs.release
-        working-directory: ${{ github.workspace }}/build/release/src
-        run: 7z a '${{ inputs.chain-network }}-gui-windows.zip' 'connectivity_tool.exe' 'simplewallet.exe' 'zanod.exe'
-
-      - name: Make Release
-        if: inputs.release
-        uses: softprops/action-gh-release@v1
+        uses: ./.github/actions/sign-and-upload-release
         with:
-          tag_name: canary-${{ github.ref }}
-          prerelease: true
-          files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-cli-windows.zip
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: canary-${{ github.ref_name }}
+          release: ${{ inputs.release }}
+          assets: |
+            zanod.exe
+            simplewallet.exe
+            connectivity_tool.exe
+          asset-type: 'cli'
+          asset-directory: ${{ github.workspace }}/build/release/src
 
   build-gui:
     if: ${{ inputs.build-gui }}
@@ -169,24 +165,14 @@ jobs:
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
 
-      - name: Upload Artifacts
-        if: inputs.artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.chain-network }}-gui-windows
-          path: |
-            ${{ github.workspace }}/build/release/src/Release/Zano.exe
-            ${{ github.workspace }}/build/release/src/Zano.exe
-
-      - name: Archive Release
+      - name: Handle Artifacts
         if: inputs.release
-        working-directory: ${{ github.workspace }}/build/release/src
-        run: 7z a '${{ inputs.chain-network }}-gui-windows.zip' 'Zano.exe'
-
-      - name: Make Release
-        if: inputs.release
-        uses: softprops/action-gh-release@v1
+        uses: ./.github/actions/sign-and-upload-release
         with:
-          tag_name: canary-${{ github.ref }}
-          prerelease: true
-          files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-gui-windows.zip
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: canary-${{ github.ref_name }}
+          release: ${{ inputs.release }}
+          assets: |
+            Zano.exe
+          asset-type: 'gui'
+          asset-directory: ${{ github.workspace }}/build/release/src

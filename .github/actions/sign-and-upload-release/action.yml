@@ -14,9 +14,6 @@ inputs:
   asset-directory:
     required: true
     description: 'The directory where the compiled files can be found'
-  artifacts:
-    required: true
-    description: 'Boolean flag to determine if artifacts should be uploaded'
   release:
     required: true
     description: 'Boolean flag to determine if a release should be created'
@@ -58,7 +55,7 @@ runs:
         echo "EOF" >> "$GITHUB_OUTPUT"
 
     - name: Upload Artifacts
-      if: inputs.artifacts
+      if: inputs.release == false
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.asset.outputs.key }}

@@ -18,11 +18,6 @@ on:
         default: false
         required: false
         type: boolean
-      artifacts:
-        description: "Should the job upload artifacts"
-        default: true
-        required: false
-        type: boolean
       release:
         description: "Make a release"
         default: false
@@ -88,18 +83,19 @@ jobs:
             ${{ github.workspace }}/build/release/src/simplewallet
             ${{ github.workspace }}/build/release/src/connectivity_tool
 
-      - name: Archive Release
+      - name: Handle Artifacts
         if: inputs.release
-        working-directory: ${{ github.workspace }}/build/release/src
-        run: 7z a '${{ inputs.chain-network }}-cli-linux.zip' 'connectivity_tool' 'simplewallet' 'zanod'
-
-      - name: Make Release
-        if: inputs.release
-        uses: softprops/action-gh-release@v1
+        uses: ./.github/actions/sign-and-upload-release
         with:
-          tag_name: canary-${{ github.ref }}
-          prerelease: true
-          files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-cli-linux.zip
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: canary-${{ github.ref_name }}
+          release: ${{ inputs.release }}
+          assets: |
+            zanod
+            simplewallet
+            connectivity_tool
+          asset-type: 'cli'
+          asset-directory: ${{ github.workspace }}/build/release/src
 
   build-gui:
     if: ${{ inputs.build-gui }}
@@ -161,25 +157,14 @@ jobs:
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
 
-      - name: Upload Artifacts
-        if: inputs.artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.chain-network }}-gui-linux
-          path: |
-            ${{ github.workspace }}/build/release/src/Zano
-
-      - name: Archive Release
+      - name: Handle Artifacts
         if: inputs.release
-        working-directory: ${{ github.workspace }}/build/release/src
-        run: 7z a '${{ inputs.chain-network }}-gui-linux.zip' 'Zano'
-
-      - name: Make Release
-        if: inputs.release
-        uses: softprops/action-gh-release@v1
+        uses: ./.github/actions/sign-and-upload-release
         with:
-          tag_name: canary-${{ github.ref }}
-          prerelease: true
-          target_commitish: ${{ github.ref }}
-          files: ${{ github.workspace }}/build/release/src/${{ inputs.chain-network }}-gui-linux.zip
-
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: canary-${{ github.ref_name }}
+          release: ${{ inputs.release }}
+          assets: |
+            Zano
+          asset-type: 'gui'
+          asset-directory: ${{ github.workspace }}/build/release/src
