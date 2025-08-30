@@ -56,7 +56,7 @@ runs:
         echo "EOF" >> "$GITHUB_OUTPUT"
 
     - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v4.6.2
       with:
         name: ${{ steps.asset.outputs.key }}
         path: ${{ steps.asset.outputs.paths }}
@@ -73,7 +73,7 @@ runs:
 
     - name: Make Release
       if: inputs.release != 'false'
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2.0.4
       with:
         tag_name: ${{ inputs.chain-network }}-${{ inputs.release-tag }}
         prerelease: contains(inputs.chain-network, 'testnet')
