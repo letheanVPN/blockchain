@@ -23,7 +23,6 @@ inputs:
   build-gui:
     description: 'Set to true to enable building the GUI.'
     required: false
-    default: 'false'
   static:
     description: 'Build statically.'
     required: false
@@ -34,7 +33,6 @@ inputs:
   arch:
     description: 'The target architecture.'
     required: false
-    default: 'false'
 
 runs:
   using: "composite"
@@ -57,10 +55,10 @@ runs:
           --config ${{ inputs.build-type }}
           ${{ inputs.target && format('--target {0}', inputs.target) }}
         options: |
-          ${{ inputs.static == 'false' && 'STATIC:boolean=ON' }}
+          ${{ inputs.static == 'true' && 'STATIC:boolean=ON' }}
           ${{ inputs.chain-network == 'testnet' && 'TESTNET:boolean=ON' }}
-          ${{ inputs.arch != 'false' && format('ARCH:string={0}', inputs.arch) }}
+          ${{ inputs.arch && format('ARCH:string={0}', inputs.arch) }}
           CMAKE_BUILD_TYPE=${{ inputs.build-type }}
-          ${{ inputs.build-gui == 'true' && 'BUILD_GUI:boolean=ON' }}
+          ${{ inputs.build-gui && 'BUILD_GUI:boolean=ON' }}
           Boost_INCLUDE_DIR=${{ inputs.boost-root }}/include
           Boost_LIBRARY_DIRS=${{ inputs.boost-root }}/lib
