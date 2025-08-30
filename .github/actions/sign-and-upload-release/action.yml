@@ -43,7 +43,7 @@ runs:
         echo "paths<<EOF" >> "$GITHUB_OUTPUT"
         
         # Iterate through each filename
-        echo "${{ inputs.assets }}" | tr ' ' '\n' | while read -r file; do
+        echo "${{ inputs.assets }}" | tr -d '\n' | while read -r file; do
           # Check if the file is a full path (starting with / or a Windows drive letter)
           if [[ "$file" == /* ]] || [[ "$file" == [A-Z]:\\* ]]; then
             FULL_PATH="$file"
