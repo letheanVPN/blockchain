@@ -73,18 +73,7 @@ jobs:
             Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
 
-      - name: Upload Artifacts
-        if: inputs.artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ inputs.chain-network }}-cli-linux
-          path: |
-            ${{ github.workspace }}/build/release/src/zanod
-            ${{ github.workspace }}/build/release/src/simplewallet
-            ${{ github.workspace }}/build/release/src/connectivity_tool
-
       - name: Handle Artifacts
-        if: inputs.release
         uses: ./.github/actions/sign-and-upload-release
         with:
           chain-network: ${{ inputs.chain-network }}
@@ -158,7 +147,6 @@ jobs:
             Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
 
       - name: Handle Artifacts
-        if: inputs.release
         uses: ./.github/actions/sign-and-upload-release
         with:
           chain-network: ${{ inputs.chain-network }}
