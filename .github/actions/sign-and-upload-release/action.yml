@@ -49,7 +49,7 @@ runs:
           if [[ "$file" == /* ]] || [[ "$file" == [A-Z]:\\* ]]; then
             FULL_PATH="$file"
           else
-            FULL_PATH="${{ inputs.asset-directory }}${{ runner.os == 'Windows' && '\' || '/' }}$file"
+            FULL_PATH="${{ inputs.asset-directory }}${{ runner.os == 'Windows' && '\\' || '/' }}$file"
           fi
           echo "$FULL_PATH" >> "$GITHUB_OUTPUT"
         done
