@@ -76,7 +76,7 @@ runs:
             cp -r "$file" "$STAGING_DIR"
           fi
         done
-        7z a "${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip" -w"$STAGING_DIR" .
+        7z a -y "${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip" -w"$STAGING_DIR" .
 
     - name: Make Release
       if: inputs.release != 'false'
