@@ -19,6 +19,7 @@ inputs:
   target:
     description: 'The specific CMake target(s) to build.'
     required: false
+    default: 'false'
   build-gui:
     description: 'Set to true to enable building the GUI.'
     required: false
@@ -26,12 +27,15 @@ inputs:
   static:
     description: 'Build statically.'
     required: false
+    default: 'false'
   generator:
     description: 'The CMake generator to use.'
     required: false
+    default: 'false'
   arch:
     description: 'The target architecture.'
     required: false
+    default: 'false'
 
 runs:
   using: "composite"
