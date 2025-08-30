@@ -156,7 +156,7 @@ jobs:
         with:
           chain-network: ${{ inputs.chain-network }}
           release-tag: canary-${{ github.ref_name }}
-          release: ${{ inputs.release }}
+          release: "${{ inputs.release }}"
           assets: |
             Zano.exe
           asset-type: 'gui'

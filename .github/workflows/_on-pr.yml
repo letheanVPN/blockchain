@@ -15,7 +15,7 @@ concurrency:
 jobs:
   build-linux:
     name: Compile
-    #if: github.event.review.state == 'approved'
+    #if: github.event.review.state == 'approved' && !github.event.pull_request.draft
     uses: ./.github/workflows/build-linux.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
@@ -25,7 +25,7 @@ jobs:
 
   build-windows:
     name: Compile
-    #if: github.event.review.state == 'approved'
+    #if: github.event.review.state == 'approved' && !github.event.pull_request.draft
     uses: ./.github/workflows/build-windows.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
@@ -44,7 +44,7 @@ jobs:
 
   build-macos-intel:
     name: Compile
-    #if: github.event.review.state == 'approved'
+    #if: github.event.review.state == 'approved' && !github.event.pull_request.draft
     uses: ./.github/workflows/build-macos-intel.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
