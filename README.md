@@ -82,7 +82,7 @@ Recommended OS versions: Ubuntu 20.04, 22.04 LTS.
              qt.qt6.683.addons.qtwebsockets.linux_gcc_64 \
              qt.qt6.683.addons.qtwebengine.linux_gcc_64 \
              qt.qt6.683.addons.qtwebview.linux_gcc_64
-          This will download the online installer and perform an unattended installation with the WebKit engine
+          This will download the online installer and perform an unattended installation with the Chromium-based WebEngine
 
 
 6. Install OpenSSL
