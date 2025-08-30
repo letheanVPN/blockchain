@@ -75,7 +75,7 @@ runs:
       if: contains(inputs.release, 'true')
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: canary-${{ inputs.release-tag }}
+        tag_name: ${{ inputs.chain-network }}-${{ inputs.release-tag }}
         prerelease: true
         files: ${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip
         target_commitish: ${{ github.sha }}

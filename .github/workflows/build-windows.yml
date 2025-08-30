@@ -79,7 +79,7 @@ jobs:
         uses: ./.github/actions/sign-and-upload-release
         with:
           chain-network: ${{ inputs.chain-network }}
-          release-tag: canary-${{ github.ref_name }}
+          release-tag: ${{ github.ref_name }}
           release: "${{ inputs.release }}"
           assets: |
             zanod.exe
@@ -155,7 +155,7 @@ jobs:
         uses: ./.github/actions/sign-and-upload-release
         with:
           chain-network: ${{ inputs.chain-network }}
-          release-tag: canary-${{ github.ref_name }}
+          release-tag: ${{ github.ref_name }}
           release: "${{ inputs.release }}"
           assets: |
             Zano.exe
