@@ -33,7 +33,7 @@ jobs:
   build-cli:
     if: ${{ inputs.build-cli }}
     name: MacOS Arm64 CLI
-    runs-on: macos-15-xlarge
+    runs-on: macos-15
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -78,7 +78,7 @@ jobs:
           rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
           export MACOSX_DEPLOYMENT_TARGET=12.0
           ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
-          make -j5 && make install_sw install_ssldirs && cd ..
+          make -j3 && make install_sw install_ssldirs && cd ..
           rm -rf openssl-1.1.1w/
 
       - name: Build Project
@@ -90,7 +90,7 @@ jobs:
         with:
           build-dir: build/release
           build-args: |
-            -j5
+            -j3
             --config Release
           options: |
             TESTNET=${{ inputs.chain-network == 'testnet'}}
@@ -116,7 +116,7 @@ jobs:
   build-gui:
     if: ${{ inputs.build-gui }}
     name: MacOS Arm64 GUI
-    runs-on: macos-15-xlarge
+    runs-on: macos-15
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
