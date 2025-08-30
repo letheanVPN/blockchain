@@ -97,9 +97,11 @@ jobs:
         with:
           chain-network: ${{ inputs.chain-network }}
           release-tag: canary-${{ github.ref_name }}
-          release: ${{ inputs.release }}
+          release: "${{ inputs.release }}"
           assets: |
-            Zano
+            zanod
+            simplewallet
+            connectivity_tool
           asset-type: 'cli'
           asset-directory: ${{ github.workspace }}/build/release/src
 
@@ -186,8 +188,8 @@ jobs:
         with:
           chain-network: ${{ inputs.chain-network }}
           release-tag: canary-${{ github.ref_name }}
-          release: ${{ inputs.release }}
+          release: "${{ inputs.release }}"
           assets: |
-            Zano
+            Zano.app
           asset-type: 'gui'
           asset-directory: ${{ github.workspace }}/build/release/src
