@@ -66,8 +66,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.asset-directory }}
       run: |
-        # Use a bash array for the 7z command. This is more robust than a direct loop.
-        read -ra FILES <<< "${{ inputs.assets }}"
+        mapfile -t FILES < <(printf '%s' "${{ inputs.assets }}")
         # Use the array in the 7z command.
         7z a '${{ steps.asset.outputs.key }}.zip' "${FILES[@]}"
 
