@@ -72,7 +72,7 @@ runs:
 
     - name: Make Release
       if: inputs.release != 'false'
-      uses: softprops/action-gh-release@v2.0.4
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ inputs.chain-network }}-${{ inputs.release-tag }}
         prerelease: contains(inputs.chain-network, 'testnet')
