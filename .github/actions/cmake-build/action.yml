@@ -19,7 +19,7 @@ inputs:
   target:
     description: 'The specific CMake target(s) to build.'
     required: false
-    default: 'false'
+    default: ''
   build-gui:
     description: 'Set to true to enable building the GUI.'
     required: false

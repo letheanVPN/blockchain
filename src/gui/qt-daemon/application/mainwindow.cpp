@@ -617,7 +617,13 @@ void MainWindow::restore_pos(bool consider_showed)
   }
   else
   {
-    QPoint point = QGuiApplication::primaryScreen()->geometry().bottomRight();
+    QScreen* screen = QGuiApplication::primaryScreen();
+    if (!screen)
+    {
+      LOG_ERROR("No primary screen found, cannot restore window position.");
+      return;
+    }
+    QPoint point = screen->geometry().bottomRight();
     if (m_config.m_window_position.first + m_config.m_window_size.second > point.x() ||
       m_config.m_window_position.second + m_config.m_window_size.first > point.y()
       )

@@ -25,3 +25,4 @@ jobs:
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
       release: false
+      build-gui: false
