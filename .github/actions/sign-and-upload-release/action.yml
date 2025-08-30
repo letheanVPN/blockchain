@@ -61,7 +61,7 @@ runs:
         path: ${{ steps.asset.outputs.paths }}
 
     - name: Archive Release
-      if: inputs.release
+      if: inputs.release == true
       shell: bash
       working-directory: ${{ inputs.asset-directory }}
       run: |
@@ -71,7 +71,7 @@ runs:
         7z a '${{ steps.asset.outputs.key }}.zip' "${FILES[@]}"
 
     - name: Make Release
-      if: inputs.release
+      if: inputs.release == true
       uses: softprops/action-gh-release@v1
       with:
         tag_name: canary-${{ inputs.release-tag }}
