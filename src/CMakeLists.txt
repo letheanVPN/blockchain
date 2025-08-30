@@ -214,15 +214,15 @@ if(BUILD_GUI)
 
   target_link_libraries(Zano PUBLIC wallet rpc currency_core crypto common zlibstatic ethash Qt6::WebChannel Qt6::WebEngineWidgets Qt6::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto PRIVATE Qt6::Core5Compat)
   if (UNIX AND NOT APPLE)
-    target_link_libraries(Zano PUBLIC rt)
+    target_link_libraries(Zano PRIVATE rt)
   endif()
 
   if(APPLE)
-    target_link_libraries(Zano PUBLIC ${COCOA_LIBRARY})
+    target_link_libraries(Zano PRIVATE ${COCOA_LIBRARY})
     set_property(TARGET Zano PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
   endif()
   if(MSVC)
-    target_link_libraries(Zano PUBLIC shlwapi.lib)
+    target_link_libraries(Zano PRIVATE shlwapi.lib)
   endif()
 
   set_property(TARGET Zano PROPERTY FOLDER "prog")
