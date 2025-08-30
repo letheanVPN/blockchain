@@ -4,16 +4,16 @@ description: 'Archives and uploads signed binaries to a GitHub release'
 inputs:
   chain-network:
     required: true
-    description: 'The chain network name to use in filenames'
+    description: 'The chain network name to use in filenames, mainnet or testnet'
   assets:
-    description: 'A space-separated list of filenames to archive.'
+    description: 'A \n separated string list of filenames to archive; if asset is a abs path, it's respected'
     required: false
   asset-type:
     required: true
-    description: 'The asset type: cli, gui, ANYTHING'
+    description: 'The asset type: cli, gui, ANYTHING; used as a separator for different release packages for the same arch'
   asset-directory:
     required: true
-    description: 'The directory where the compiled files can be found'
+    description: 'The directory where 7z's working dir will be set'
   release:
     required: false
     default: "true"
