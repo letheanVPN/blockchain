@@ -75,7 +75,7 @@ jobs:
           build-type: 'Release'
           chain-network: ${{ inputs.chain-network }}
           boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'zanod simplewallet connectivity_tool'
+          target: 'daemon simplewallet connectivity_tool'
           static: 'false'
           generator: 'Visual Studio 17 2022'
           arch: 'x86-64'
@@ -104,7 +104,6 @@ jobs:
           boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
           target: 'Zano'
           build-gui: 'true'
-          static: 'false'
           generator: 'Visual Studio 17 2022'
           arch: 'x86-64'
 

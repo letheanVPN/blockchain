@@ -89,11 +89,11 @@ jobs:
         if: ${{ inputs.build-cli }}
         uses: ./.github/actions/cmake-build
         with:
-          jobs: '3'
+          jobs: '4'
           build-type: 'Release'
           chain-network: ${{ inputs.chain-network }}
           boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'zanod simplewallet connectivity_tool'
+          target: 'daemon simplewallet connectivity_tool'
 
       - name: CLI Artifacts
         if: ${{ inputs.build-cli }}
@@ -113,7 +113,7 @@ jobs:
         if: ${{ inputs.build-gui }}
         uses: ./.github/actions/cmake-build
         with:
-          jobs: '3'
+          jobs: '4'
           build-type: 'Release'
           chain-network: ${{ inputs.chain-network }}
           boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}

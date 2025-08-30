@@ -74,7 +74,7 @@ jobs:
           build-type: 'Release'
           chain-network: ${{ inputs.chain-network }}
           boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'zanod simplewallet connectivity_tool'
+          target: 'daemon simplewallet connectivity_tool'
           static: 'true'
           arch: 'x86-64'
 
