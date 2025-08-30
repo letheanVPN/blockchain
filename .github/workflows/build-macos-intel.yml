@@ -25,9 +25,8 @@ on:
         type: boolean
 
 jobs:
-  build-cli:
-    if: ${{ inputs.build-cli }}
-    name: MacOS Intel CLI
+  build:
+    name: MacOS Intel
     runs-on: macos-13
     steps:
       - name: Checkout Project
@@ -44,14 +43,13 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/openssl
-          key: ${{ runner.os }}-intel-openssl
+          key: openssl-${{ runner.os }}-intel
 
       - name: ccache caching
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-cli-${{ runner.os }}-intel
-
+          key: ccache-${{ inputs.chain-network }}-${{ runner.os }}-intel
 
       - name: Install boost
         uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
@@ -63,86 +61,8 @@ jobs:
           toolset: clang
           arch: 'x86'
 
-      - name: Build OpenSSL
-        if: steps.cache-openssl.outputs.cache-hit != 'true'
-        run: |
-          cd build
-          curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
-          echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar -xjf openssl-1.1.1w.tar.gz
-          rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
-          export MACOSX_DEPLOYMENT_TARGET=12.0
-          ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
-          make -j12 && make install_sw install_ssldirs && cd ..
-          rm -rf openssl-1.1.1w/
-          
-
-      - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
-          OPENSSL_ROOT_DIR: ${{ github.workspace }}/build/openssl
-        with:
-          build-dir: build/release
-          build-args: |
-            -j12
-            --config Release
-          options: |
-            TESTNET=${{ inputs.chain-network == 'testnet'}}
-            CMAKE_BUILD_TYPE=Release
-            Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
-            Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
-
-      - name: Handle Artifacts
-        uses: ./.github/actions/sign-and-upload-release
-        with:
-          chain-network: ${{ inputs.chain-network }}
-          release-tag: ${{ github.ref_name }}
-          release: "${{ inputs.release }}"
-          assets: |
-            zanod
-            simplewallet
-            connectivity_tool
-          asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/release/src
-
-  build-gui:
-    if: ${{ inputs.build-gui }}
-    name: MacOS Intel GUI
-    runs-on: macos-13
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: install dependencies
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache miniupnpc
-
-      - name: Cache OpenSSL
-        id: cache-openssl
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/build/openssl
-          key: ${{ runner.os }}-intel-openssl
-
-      - name: ccache caching
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-gui-${{ runner.os }}-intel
-
-      - name: Install boost
-        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
-        id: install-boost
-        with:
-          boost_version: 1.84.0
-          boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 13
-          toolset: clang
-
       - name: Install Qt
+        if: ${{ inputs.build-gui }}
         uses: jurplel/install-qt-action@v3
         with:
           dir: '${{ github.workspace }}/build/qt/'
@@ -162,29 +82,46 @@ jobs:
           rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
           export MACOSX_DEPLOYMENT_TARGET=12.0
           ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
-          make -j12 && make install_sw install_ssldirs && cd ..
+          make -j3 && make install_sw install_ssldirs && cd ..
           rm -rf openssl-1.1.1w/
 
-
-      - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
-          OPENSSL_ROOT_DIR: ${{ github.workspace }}/build/openssl
+      - name: Build CLI
+        if: ${{ inputs.build-cli }}
+        uses: ./.github/actions/cmake-build
         with:
-          build-dir: build/release
-          build-args: |
-            -j12
-            --config Release
-          options: |
-            TESTNET=${{ inputs.chain-network == 'testnet'}}
-            BUILD_GUI=1
-            CMAKE_BUILD_TYPE=Release
-            Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
-            Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
+          jobs: '3'
+          build-type: 'Release'
+          chain-network: ${{ inputs.chain-network }}
+          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          target: 'zanod simplewallet connectivity_tool'
 
-      - name: Handle Artifacts
+      - name: CLI Artifacts
+        if: ${{ inputs.build-cli }}
+        uses: ./.github/actions/sign-and-upload-release
+        with:
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: ${{ github.ref_name }}
+          release: "${{ inputs.release }}"
+          assets: |
+            zanod
+            simplewallet
+            connectivity_tool
+          asset-type: 'cli'
+          asset-directory: ${{ github.workspace }}/build/release/src
+
+      - name: Build GUI
+        if: ${{ inputs.build-gui }}
+        uses: ./.github/actions/cmake-build
+        with:
+          jobs: '3'
+          build-type: 'Release'
+          chain-network: ${{ inputs.chain-network }}
+          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          target: 'Zano'
+          build-gui: 'true'
+
+      - name: GUI Artifacts
+        if: ${{ inputs.build-gui }}
         uses: ./.github/actions/sign-and-upload-release
         with:
           chain-network: ${{ inputs.chain-network }}

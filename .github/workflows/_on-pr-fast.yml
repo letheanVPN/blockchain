@@ -1,4 +1,4 @@
-name: PR Fast Check
+name: PR Fast
 
 on:
   # Allows you to run this workflow manually from the Actions tab
@@ -20,7 +20,7 @@ concurrency:
 
 jobs:
   build-macos-arm64:
-    name: Check
+    name: Compile
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}

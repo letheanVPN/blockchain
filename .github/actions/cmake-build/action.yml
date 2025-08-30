@@ -23,6 +23,16 @@ inputs:
     description: 'Set to true to enable building the GUI.'
     required: false
     default: 'false'
+  static:
+    description: 'Build statically.'
+    required: false
+    default: 'false'
+  generator:
+    description: 'The CMake generator to use.'
+    required: false
+  arch:
+    description: 'The target architecture.'
+    required: false
 
 runs:
   using: "composite"
@@ -39,12 +49,15 @@ runs:
         BOOST_ROOT: ${{ inputs.boost-root }}
       with:
         build-dir: build/${{ steps.set_paths.outputs.build_dir_name }}
+        generator: ${{ inputs.generator }}
         build-args: |
           --parallel ${{ inputs.jobs }}
           --config ${{ inputs.build-type }}
           ${{ inputs.target && format('--target {0}', inputs.target) }}
         options: |
+          STATIC=${{ inputs.static }}
           TESTNET=${{ inputs.chain-network == 'testnet'}}
+          ARCH=${{ inputs.arch }}
           CMAKE_BUILD_TYPE=${{ inputs.build-type }}
           BUILD_GUI=${{ inputs.build-gui }}
           Boost_INCLUDE_DIR=${{ inputs.boost-root }}/include

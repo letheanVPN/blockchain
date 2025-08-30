@@ -25,9 +25,8 @@ on:
         type: boolean
 
 jobs:
-  build-cli:
-    if: ${{ inputs.build-cli }}
-    name: Linux CLI
+  build:
+    name: Linux
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Project
@@ -43,68 +42,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-cli-${{ runner.os }}
-
-      - name: Install boost
-        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
-        id: install-boost
-        with:
-          boost_version: 1.84.0
-          boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 22.04
-          toolset: gcc
-          arch: x86
-
-      - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
-        with:
-          build-dir: build/release
-          build-args: |
-            -j4
-            --config Release
-          options: |
-            STATIC=TRUE
-            TESTNET=${{ inputs.chain-network == 'testnet'}}
-            ARCH=x86-64
-            CMAKE_BUILD_TYPE=Release
-            Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
-            Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
-
-      - name: Handle Artifacts
-        uses: ./.github/actions/sign-and-upload-release
-        with:
-          chain-network: ${{ inputs.chain-network }}
-          release-tag: ${{ github.ref_name }}
-          release: "${{ inputs.release }}"
-          assets: |
-            zanod
-            simplewallet
-            connectivity_tool
-          asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/release/src
-
-  build-gui:
-    if: ${{ inputs.build-gui }}
-    name: Linux GUI
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout Project
-        uses: actions/checkout@v4.2.2
-        with:
-          fetch-depth: 0
-          submodules: recursive
-
-      - name: install dependencies
-        run: sudo apt-get install -y autotools-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
-
-      - name: ccache caching
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-gui-${{ runner.os }}
+          key: ccache-${{ inputs.chain-network }}-${{ runner.os }}
 
       - name: Install boost
         uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
@@ -117,6 +55,7 @@ jobs:
           arch: x86
 
       - name: Install Qt
+        if: ${{ inputs.build-gui }}
         uses: jurplel/install-qt-action@v3
         with:
           dir: '${{ github.workspace }}/build/qt/'
@@ -127,26 +66,47 @@ jobs:
           arch: 'linux_gcc_64'
           modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
 
-      - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
-        env:
-          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
+      - name: Build CLI
+        if: ${{ inputs.build-cli }}
+        uses: ./.github/actions/cmake-build
         with:
-          build-dir: build/release
-          build-args: |
-            -j4
-            --config Release
-          options: |
-            STATIC=TRUE
-            BUILD_GUI=TRUE
-            TESTNET=${{ inputs.chain-network == 'testnet'}}
-            ARCH=x86-64
-            CMAKE_BUILD_TYPE=Release
-            Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
-            Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
+          jobs: '4'
+          build-type: 'Release'
+          chain-network: ${{ inputs.chain-network }}
+          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          target: 'zanod simplewallet connectivity_tool'
+          static: 'true'
+          arch: 'x86-64'
 
-      - name: Handle Artifacts
+      - name: CLI Artifacts
+        if: ${{ inputs.build-cli }}
+        uses: ./.github/actions/sign-and-upload-release
+        with:
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: ${{ github.ref_name }}
+          release: "${{ inputs.release }}"
+          assets: |
+            zanod
+            simplewallet
+            connectivity_tool
+          asset-type: 'cli'
+          asset-directory: ${{ github.workspace }}/build/release/src
+
+      - name: Build GUI
+        if: ${{ inputs.build-gui }}
+        uses: ./.github/actions/cmake-build
+        with:
+          jobs: '4'
+          build-type: 'Release'
+          chain-network: ${{ inputs.chain-network }}
+          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          target: 'Zano'
+          build-gui: 'true'
+          static: 'true'
+          arch: 'x86-64'
+
+      - name: GUI Artifacts
+        if: ${{ inputs.build-gui }}
         uses: ./.github/actions/sign-and-upload-release
         with:
           chain-network: ${{ inputs.chain-network }}
