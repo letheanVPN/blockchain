@@ -1,0 +1,158 @@
+name: build-linux
+
+on:
+  workflow_call:
+    inputs:
+      chain-network:
+        description: "The network to use, can either be testnet, stagenet or mainnet"
+        default: testnet
+        required: false
+        type: string
+      build-cli:
+        description: "Should the CLI be built"
+        default: true
+        required: false
+        type: boolean
+      build-gui:
+        description: "Should the GUI be built"
+        default: false
+        required: false
+        type: boolean
+      release:
+        description: "Make a release"
+        default: false
+        required: false
+        type: boolean
+
+jobs:
+  build-cli:
+    if: ${{ inputs.build-cli }}
+    name: Linux CLI
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: install dependencies
+        run: sudo apt-get install -y autotools-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+
+      - name: ccache caching
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/ccache
+          key: ccache-${{ inputs.chain-network }}-cli-${{ runner.os }}
+
+      - name: Install boost
+        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
+        id: install-boost
+        with:
+          boost_version: 1.84.0
+          boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
+          platform_version: 22.04
+          toolset: gcc
+          arch: x86
+
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
+        with:
+          build-dir: build/release
+          build-args: |
+            -j4
+            --config Release
+          options: |
+            STATIC=TRUE
+            TESTNET=${{ inputs.chain-network == 'testnet'}}
+            ARCH=x86-64
+            CMAKE_BUILD_TYPE=Release
+            Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
+            Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
+
+      - name: Handle Artifacts
+        uses: ./.github/actions/sign-and-upload-release
+        with:
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: ${{ github.ref_name }}
+          release: "${{ inputs.release }}"
+          assets: |
+            zanod
+            simplewallet
+            connectivity_tool
+          asset-type: 'cli'
+          asset-directory: ${{ github.workspace }}/build/release/src
+
+  build-gui:
+    if: ${{ inputs.build-gui }}
+    name: Linux GUI
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: install dependencies
+        run: sudo apt-get install -y autotools-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+
+      - name: ccache caching
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/ccache
+          key: ccache-${{ inputs.chain-network }}-gui-${{ runner.os }}
+
+      - name: Install boost
+        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
+        id: install-boost
+        with:
+          boost_version: 1.84.0
+          boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
+          platform_version: 22.04
+          toolset: gcc
+          arch: x86
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          dir: '${{ github.workspace }}/build/qt/'
+          aqtversion: '==3.1.*'
+          version: '6.8.3'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'linux_gcc_64'
+          modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
+
+      - name: Build Project
+        uses: threeal/cmake-action@v2.1.0
+        env:
+          BOOST_ROOT: ${{ steps.install-boost.outputs.BOOST_ROOT }}
+          CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
+        with:
+          build-dir: build/release
+          build-args: |
+            -j4
+            --config Release
+          options: |
+            STATIC=TRUE
+            BUILD_GUI=TRUE
+            TESTNET=${{ inputs.chain-network == 'testnet'}}
+            ARCH=x86-64
+            CMAKE_BUILD_TYPE=Release
+            Boost_INCLUDE_DIR=${{steps.install-boost.outputs.BOOST_ROOT}}/include
+            Boost_LIBRARY_DIRS=${{steps.install-boost.outputs.BOOST_ROOT}}/lib
+
+      - name: Handle Artifacts
+        uses: ./.github/actions/sign-and-upload-release
+        with:
+          chain-network: ${{ inputs.chain-network }}
+          release-tag: ${{ github.ref_name }}
+          release: "${{ inputs.release }}"
+          assets: |
+            Zano
+          asset-type: 'gui'
+          asset-directory: ${{ github.workspace }}/build/release/src
