@@ -40,8 +40,9 @@ runs:
         # This is the correct way to pass a multi-line string in GITHUB_OUTPUT.
         echo "paths<<EOF" >> "$GITHUB_OUTPUT"
         
-        # Iterate through each filename
-        echo "${{ inputs.assets }}" | while read -r file; do
+        # Use a bash array to robustly handle filenames, even with spaces.
+        read -ra ASSET_FILES <<< "${{ inputs.assets }}"
+        for file in "${ASSET_FILES[@]}"; do
           if [[ -z "$file" ]]; then
             continue
           fi
