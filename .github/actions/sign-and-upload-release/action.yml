@@ -6,7 +6,7 @@ inputs:
     required: true
     description: 'The chain network name to use in filenames, mainnet or testnet'
   assets:
-    description: 'A \\n separated string list of filenames to archive; if asset is a abs path, it\'s respected'
+    description: "A \\n separated string list of filenames to archive; if asset is a abs path, it's respected"
     required: false
   asset-type:
     required: true

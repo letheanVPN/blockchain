@@ -54,10 +54,10 @@ runs:
           --config ${{ inputs.build-type }}
           ${{ inputs.target && format('--target {0}', inputs.target) }}
         options: |
-          ${{ inputs.static && 'STATIC:boolean=ON' }}
-          ${{ inputs.chain-network == 'testnet' && 'TESTNET:boolean=ON' }}
-          ${{ inputs.arch && format('ARCH:string={0}', inputs.arch) }}
+          ${{ inputs.static && 'STATIC=ON' }}
+          ${{ inputs.chain-network == 'testnet' && 'TESTNET=ON' }}
+          ${{ inputs.arch && format('ARCH={0}', inputs.arch) }}
           CMAKE_BUILD_TYPE=${{ inputs.build-type }}
-          ${{ inputs.build-gui && 'BUILD_GUI:boolean=ON' }}
+          ${{ inputs.build-gui && 'BUILD_GUI=ON' }}
           Boost_INCLUDE_DIR=${{ inputs.boost-root }}/include
           Boost_LIBRARY_DIRS=${{ inputs.boost-root }}/lib
