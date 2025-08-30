@@ -31,7 +31,6 @@ inputs:
   generator:
     description: 'The CMake generator to use.'
     required: false
-    default: 'false'
   arch:
     description: 'The target architecture.'
     required: false
