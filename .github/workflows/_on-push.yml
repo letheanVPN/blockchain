@@ -1,0 +1,39 @@
+name: Push Full Build
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  push:
+    branches:
+      - 'dev'
+      - 'main'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-linux:
+    name: Compile
+    uses: ./.github/workflows/build-linux.yml
+    with:
+      chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
+
+  build-windows:
+    name: Compile
+    uses: ./.github/workflows/build-windows.yml
+    with:
+      chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
+
+  build-macos-arm64:
+    name: Compile
+    uses: ./.github/workflows/build-macos-arm64.yml
+    with:
+      chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
+
+  build-macos-intel:
+    name: Compile
+    uses: ./.github/workflows/build-macos-intel.yml
+    with:
+      chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
+
