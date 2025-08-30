@@ -64,16 +64,14 @@ runs:
     - name: Archive Release
       if: inputs.release != 'false'
       shell: bash
-      working-directory: ${{ inputs.asset-directory }}
       run: |
-        FILES=()
-        while IFS= read -r file; do
+        STAGING_DIR=$(mktemp -d)
+        echo "${{ steps.asset.outputs.paths }}" | while read -r file; do
           if [[ -n "$file" ]]; then
-            FILES+=("$file")
+            cp -r "$file" "$STAGING_DIR"
           fi
-        done <<< "${{ inputs.assets }}"
-        # Use the array in the 7z command.
-        7z a '${{ steps.asset.outputs.key }}.zip' "${FILES[@]}"
+        done
+        7z a "${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip" -w"$STAGING_DIR" .
 
     - name: Make Release
       if: inputs.release != 'false'
