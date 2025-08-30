@@ -55,7 +55,6 @@ runs:
         echo "EOF" >> "$GITHUB_OUTPUT"
 
     - name: Upload Artifacts
-      if: inputs.release == false
       uses: actions/upload-artifact@v4
       with:
         name: ${{ steps.asset.outputs.key }}
