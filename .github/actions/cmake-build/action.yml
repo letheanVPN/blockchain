@@ -57,7 +57,7 @@ runs:
           ${{ inputs.static && format('STATIC={0}', inputs.static) }}
           ${{ inputs.chain-network == 'testnet' && format('TESTNET={0}', inputs.chain-network) }}
           ${{ inputs.arch && format('ARCH={0}', inputs.arch) }}
-          CMAKE_BUILD_TYPE=${{ inputs.build-type }}}
+          CMAKE_BUILD_TYPE=${{ inputs.build-type }}
           ${{ inputs.arch && format('BUILD_GUI={0}', inputs.build-gui) }}
           Boost_INCLUDE_DIR=${{ inputs.boost-root }}/include
           Boost_LIBRARY_DIRS=${{ inputs.boost-root }}/lib
