@@ -86,7 +86,7 @@ jobs:
             simplewallet.exe
             connectivity_tool.exe
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/release/src/Release
+          asset-directory: ${{ github.workspace }}\build\release\src\Release
 
   build-gui:
     if: ${{ inputs.build-gui }}
