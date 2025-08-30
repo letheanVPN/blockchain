@@ -18,7 +18,6 @@ jobs:
     uses: ./.github/workflows/build-linux.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-      build-cli: true
       build-gui: true
       release: true
 
@@ -27,7 +26,6 @@ jobs:
     uses: ./.github/workflows/build-windows.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-      build-cli: true
       build-gui: true
       release: true
 
@@ -36,7 +34,6 @@ jobs:
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-      build-cli: true
       build-gui: true
       release: true
 
@@ -45,6 +42,5 @@ jobs:
     uses: ./.github/workflows/build-macos-intel.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-      build-cli: true
       build-gui: true
       release: true

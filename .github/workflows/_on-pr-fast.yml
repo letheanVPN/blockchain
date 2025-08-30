@@ -24,6 +24,4 @@ jobs:
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-      build-cli: true
-      build-gui: false
       release: false
