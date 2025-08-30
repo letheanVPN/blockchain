@@ -55,9 +55,9 @@ runs:
           --config ${{ inputs.build-type }}
           ${{ inputs.target && format('--target {0}', inputs.target) }}
         options: |
-          STATIC=${{ inputs.static }}
+          ${{ inputs.static && format('STATIC={0}', inputs.static) }}
           TESTNET=${{ inputs.chain-network == 'testnet'}}
-          ARCH=${{ inputs.arch }}
+          ${{ inputs.arch && format('ARCH={0}', inputs.arch) }}
           CMAKE_BUILD_TYPE=${{ inputs.build-type }}
           BUILD_GUI=${{ inputs.build-gui }}
           Boost_INCLUDE_DIR=${{ inputs.boost-root }}/include
