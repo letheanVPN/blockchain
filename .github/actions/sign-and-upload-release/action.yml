@@ -49,7 +49,7 @@ runs:
           if [[ "$file" == /* ]] || [[ "$file" == [A-Z]:\\* ]]; then
             FULL_PATH="$file"
           else
-            FULL_PATH="${{ inputs.asset-directory }}/$file"
+            FULL_PATH="${{ inputs.asset-directory }}${{ runner.os == 'Windows' && '\\' || '/' }}$file"
           fi
           echo "$FULL_PATH" >> "$GITHUB_OUTPUT"
         done
@@ -77,5 +77,5 @@ runs:
       with:
         tag_name: ${{ inputs.chain-network }}-${{ inputs.release-tag }}
         prerelease: true
-        files: ${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip
+        files: ${{ inputs.asset-directory }}${{ runner.os == 'Windows' && '\\' || '/' }}${{ steps.asset.outputs.key }}.zip
         target_commitish: ${{ github.sha }}
