@@ -40,7 +40,7 @@ runs:
       with:
         build-dir: build/${{ steps.set_paths.outputs.build_dir_name }}
         build-args: |
-          --jobs ${{ inputs.jobs }}
+          --parallel ${{ inputs.jobs }}
           --config ${{ inputs.build-type }}
           ${{ inputs.target && format('--target {0}', inputs.target) }}
         options: |
