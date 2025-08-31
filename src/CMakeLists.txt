@@ -190,7 +190,7 @@ if (GENERATE_FRESH_GENESIS)
 	add_executable(genesis_generator ${GENESIS_GENERATOR})
 	target_link_libraries(genesis_generator currency_core crypto common zlibstatic ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 	add_custom_command(TARGET genesis_generator POST_BUILD
-		COMMAND ${CMAKE_BINARY_DIR}/src/genesis_generator --address ${GENESIS_PREMINE_ADDRESS} --proof ${GENESIS_PROOF} --output ${CMAKE_SOURCE_DIR}/src/currency_core/
+		COMMAND ${CMAKE_BINARY_DIR}/src/genesis_generator --address ${GENESIS_PREMINE_ADDRESS} --proof ${GENESIS_PROOF} --output ${CMAKE_SOURCE_DIR}/src/currency_core/generated/
 		COMMENT "Generating genesis data in ${CMAKE_SOURCE_DIR}/src/currency_core/"
 	)
 endif()

@@ -7,8 +7,8 @@
 namespace currency
 {
 #ifndef TESTNET
-#include "_genesis.cpp.gen"
+#include "generated/_genesis.cpp.gen"
 #else
-#include "_genesis_tn.cpp.gen"
+#include "generated/_genesis_tn.cpp.gen"
 #endif
 }
