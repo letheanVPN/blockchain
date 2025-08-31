@@ -32,6 +32,8 @@ all: release
 
 testnet-genesis-new:
 	$(eval command += $(cmake_release) $(testnet))
+	$(call CMAKE,$(dir_release),$(command) -DGENERATE_PREMINE_WALLET=1 -DPREMINE_WALLET_PASSWORD=12345678) && cmake --build ./src --target premine_wallet || true
+	$(eval command += $(cmake_release) $(testnet))
 	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
 	$(eval command += $(cmake_release) $(testnet))
 	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
