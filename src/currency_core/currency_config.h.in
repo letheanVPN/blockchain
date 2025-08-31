@@ -78,7 +78,7 @@
 #define DIFFICULTY_POW_TARGET                           @difficulty_pow_target@ // seconds
 #define DIFFICULTY_TOTAL_TARGET                         ((DIFFICULTY_POS_TARGET + DIFFICULTY_POW_TARGET) / 4)
 #define DIFFICULTY_WINDOW                               @difficulty_window@ // blocks
-#define DIFFICULTY_LAG                                  @difficulty_window@  // !!!
+#define DIFFICULTY_LAG                                  @difficulty_lag@  // !!!
 #define DIFFICULTY_CUT                                  @difficulty_cut@  // timestamps to cut after sorting
 #define DIFFICULTY_BLOCKS_COUNT                         (DIFFICULTY_WINDOW + DIFFICULTY_LAG)
 

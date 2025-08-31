@@ -1,6 +1,6 @@
 set(currency_display_decimal_point 12 CACHE STRING "CURRENCY_DISPLAY_DECIMAL_POINT" )
 set(coin 1000000000000 CACHE STRING "COIN" )
-set(base_reward_dust_threshold 1000000 CACHE STRING "BASE_REWARD_DUST_THRESHOL D")
+set(base_reward_dust_threshold 1000000 CACHE STRING "BASE_REWARD_DUST_THRESHOLD")
 set(default_dust_threshold 0 CACHE STRING "DEFAULT_DUST_THRESHOLD" )
 set(tx_default_fee 10000000000 CACHE STRING "TX_DEFAULT_FEE" )
 set(tx_minimum_fee 10000000000 CACHE STRING "TX_MINIMUM_FEE" )
