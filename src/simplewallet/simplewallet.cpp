@@ -634,6 +634,7 @@ bool simple_wallet::new_wallet(const string &wallet_file, const std::string& pas
     if (m_do_not_set_date)
       m_wallet->reset_creation_time(0);
 
+    epee::file_io_utils::save_string_to_file(wallet_file + ".address", m_wallet->get_account().get_public_address_str());
   }
   catch (const std::exception& e)
   {
