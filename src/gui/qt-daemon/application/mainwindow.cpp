@@ -8,6 +8,7 @@
 #include <QtWebEngineWidgets>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QScreen>
 
 #include "string_coding.h"
 #include "gui_utils.h"
@@ -616,7 +617,13 @@ void MainWindow::restore_pos(bool consider_showed)
   }
   else
   {
-    QPoint point = QApplication::desktop()->screenGeometry().bottomRight();
+    QScreen* screen = QGuiApplication::primaryScreen();
+    if (!screen)
+    {
+      LOG_ERROR("No primary screen found, cannot restore window position.");
+      return;
+    }
+    QPoint point = screen->geometry().bottomRight();
     if (m_config.m_window_position.first + m_config.m_window_size.second > point.x() ||
       m_config.m_window_position.second + m_config.m_window_size.first > point.y()
       )
@@ -1099,7 +1106,7 @@ bool MainWindow::update_tor_status(const view::current_action_status& opt)
   CATCH_ENTRY2(false);
 }
 
-bool MainWindow::nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+bool MainWindow::nativeEventFilter(const QByteArray &eventType, void *message, qintptr *result)
 {
   TRY_ENTRY();
 #ifdef WIN32

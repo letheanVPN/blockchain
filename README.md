@@ -11,16 +11,16 @@ Be sure to clone the repository properly:\
 
 
 ### Dependencies
-| component / version | minimum <br>(not recommended but may work) | recommended | most recent of what we have ever tested |
-|--|--|--|--|
-| gcc (Linux) | 8.4.0 | 9.4.0 | 12.3.0 |
-| llvm/clang (Linux) | UNKNOWN | 7.0.1 | 8.0.0 |
-| [MSVC](https://visualstudio.microsoft.com/downloads/) (Windows) | 2017 (15.9.30) | 2022 (17.11.5) | 2022 (17.12.3) |
-| [XCode](https://developer.apple.com/downloads/) (macOS) | 12.3 | 14.3 | 15.2 |
-| [CMake](https://cmake.org/download/) | 3.26.3 | 3.26.3 | 3.31.6 |
-| [Boost](https://www.boost.org/users/download/) | 1.75 | 1.84 | 1.84 |
-| [OpenSSL](https://www.openssl.org/source/) [(win)](https://slproweb.com/products/Win32OpenSSL.html) | 1.1.1n | 1.1.1w | 3.4 | 
-| [Qt](https://download.qt.io/archive/qt/) (*only for GUI*) | 5.8.0 | 5.15.2 | 5.15.2 |
+| component / version                                                                                 | minimum <br>(not recommended but may work) | recommended    | most recent of what we have ever tested |
+|-----------------------------------------------------------------------------------------------------|--------------------------------------------|----------------|-----------------------------------------|
+| gcc (Linux)                                                                                         | 8.4.0                                      | 9.4.0          | 12.3.0                                  |
+| llvm/clang (Linux)                                                                                  | UNKNOWN                                    | 7.0.1          | 8.0.0                                   |
+| [MSVC](https://visualstudio.microsoft.com/downloads/) (Windows)                                     | 2017 (15.9.30)                             | 2022 (17.11.5) | 2022 (17.12.3)                          |
+| [XCode](https://developer.apple.com/downloads/) (macOS)                                             | 12.3                                       | 14.3           | 15.2                                    |
+| [CMake](https://cmake.org/download/)                                                                | 3.26.3                                     | 3.26.3         | 3.31.6                                  |
+| [Boost](https://www.boost.org/users/download/)                                                      | 1.75                                       | 1.84           | 1.84                                    |
+| [OpenSSL](https://www.openssl.org/source/) [(win)](https://slproweb.com/products/Win32OpenSSL.html) | 1.1.1n                                     | 1.1.1w         | 3.4                                     | 
+| [Qt](https://download.qt.io/archive/qt/) (*only for GUI*)                                           | 6.8.3                                      | 6.8.3          | 6.8.3                                   |
 
 Note:\
 [*server version*] denotes steps required for building command-line tools (daemon, simplewallet, etc.).\
@@ -54,25 +54,35 @@ Recommended OS versions: Ubuntu 20.04, 22.04 LTS.
 
    In the following steps we assume that you cloned Zano into '~/zano' folder in your home directory. 
 
-4. Download and build Boost\
-    (Assuming you have cloned Zano into the 'zano' folder. If you used a different location for Zano, **edit line 4** accordingly.)
+   4. Download and build Boost\
+       (Assuming you have cloned Zano into the 'zano' folder. If you used a different location for Zano, **edit line 4** accordingly.)
 
-       curl -OL https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.bz2
-       echo "cc4b893acf645c9d4b698e9a0f08ca8846aa5d6c68275c14c3e7949c24109454  boost_1_84_0.tar.bz2" | shasum -c && tar -xjf boost_1_84_0.tar.bz2
-       rm boost_1_84_0.tar.bz2 && cd boost_1_84_0
-       ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
-       ./b2 && cd ..
-    Make sure that you see "The Boost C++ Libraries were successfully built!" message at the end.
+          curl -OL https://archives.boost.io/release/1.84.0/source/boost_1_84_0.tar.bz2
+          echo "cc4b893acf645c9d4b698e9a0f08ca8846aa5d6c68275c14c3e7949c24109454  boost_1_84_0.tar.bz2" | shasum -c && tar -xjf boost_1_84_0.tar.bz2
+          rm boost_1_84_0.tar.bz2 && cd boost_1_84_0
+          ./bootstrap.sh --with-libraries=system,filesystem,thread,date_time,chrono,regex,serialization,atomic,program_options,locale,timer,log
+          ./b2 && cd ..
+       Make sure that you see "The Boost C++ Libraries were successfully built!" message at the end.
 
-5. Install Qt\
-(*GUI version only, skip this step if you're building server version*)
+      5. Install Qt\
+      (*GUI version only, skip this step if you're building server version*)
 
-    [*GUI version*]
+          [*GUI version*]
 
-       curl -OL https://download.qt.io/new_archive/qt/5.11/5.11.2/qt-opensource-linux-x64-5.11.2.run
-       chmod +x qt-opensource-linux-x64-5.11.2.run
-       ./qt-opensource-linux-x64-5.11.2.run
-    Then follow the instructions in Wizard. Don't forget to tick the WebEngine module checkbox!
+             curl -L -O https://download.qt.io/official_releases/online_installers/qt-online-installer-linux-x64-online.run && 
+             chmod u+x qt-online-installer-linux-x64-online.run
+             ./qt-online-installer-linux-x64-online.run \
+             --accept-licenses \
+             --default-answer \
+             --confirm-command install \
+             qt.qt6.683.linux_gcc_64 \
+             qt.qt6.683.addons.qt5compat.linux_gcc_64 \
+             qt.qt6.683.addons.qtpositioning.linux_gcc_64 \
+             qt.qt6.683.addons.qtwebchannel.linux_gcc_64 \
+             qt.qt6.683.addons.qtwebsockets.linux_gcc_64 \
+             qt.qt6.683.addons.qtwebengine.linux_gcc_64 \
+             qt.qt6.683.addons.qtwebview.linux_gcc_64
+          This will download the online installer and perform an unattended installation with the Chromium-based WebEngine
 
 
 6. Install OpenSSL
