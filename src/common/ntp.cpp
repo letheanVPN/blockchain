@@ -11,7 +11,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <boost/asio/deadline_timer.hpp>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/udp.hpp>
 #include <boost/bind/bind.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
@@ -63,10 +63,10 @@ namespace
 class udp_blocking_client
 {
 public:
-  udp_blocking_client(const udp::endpoint& listen_endpoint, udp::socket& socket, boost::asio::io_service& io_service)
+  udp_blocking_client(const udp::endpoint& listen_endpoint, udp::socket& socket, boost::asio::io_context& io_context)
     : socket_(socket),
-      io_service_(io_service),
-      deadline_(io_service)
+      io_context_(io_context),
+      deadline_(io_context)
   {
     // No deadline is required until the first socket operation is started. We
     // set the deadline to positive infinity so that the actor takes no action
@@ -97,7 +97,7 @@ public:
         boost::bind(&udp_blocking_client::handle_receive, boost::placeholders::_1, boost::placeholders::_2, &ec, &length));
 
     // Block until the asynchronous operation has completed.
-    do io_service_.run_one(); while (ec == boost::asio::error::would_block);
+    do io_context_.run_one(); while (ec == boost::asio::error::would_block);
 
     return length;
   }
@@ -136,7 +136,7 @@ private:
   }
 
 private:
-  boost::asio::io_service& io_service_;
+  boost::asio::io_context& io_context_;
   udp::socket& socket_;
   deadline_timer deadline_;
 };
@@ -184,11 +184,10 @@ namespace tools
   {
     try
     {
-      boost::asio::io_service io_service;
-      boost::asio::ip::udp::resolver resolver(io_service);
-      boost::asio::ip::udp::resolver::query query(boost::asio::ip::udp::v4(), host_name, "ntp");
-      boost::asio::ip::udp::endpoint receiver_endpoint = *resolver.resolve(query);
-      boost::asio::ip::udp::socket socket(io_service);
+      boost::asio::io_context io_context;
+      boost::asio::ip::udp::resolver resolver(io_context);
+      boost::asio::ip::udp::endpoint receiver_endpoint = *resolver.resolve(boost::asio::ip::udp::v4(), host_name, "ntp").begin();
+      boost::asio::ip::udp::socket socket(io_context);
       socket.open(boost::asio::ip::udp::v4());
 
       ntp_packet packet_sent = AUTO_VAL_INIT(packet_sent);
@@ -204,7 +203,7 @@ namespace tools
       ntp_packet packet_received = AUTO_VAL_INIT(packet_received);
       boost::asio::ip::udp::endpoint sender_endpoint;
 
-      udp_blocking_client ubc(sender_endpoint, socket, io_service);
+      udp_blocking_client ubc(sender_endpoint, socket, io_context);
       boost::system::error_code ec;
       ubc.receive(boost::asio::buffer(&packet_received, sizeof packet_received), boost::posix_time::seconds(static_cast<long>(timeout_sec)), ec);
       if (ec)

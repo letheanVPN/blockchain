@@ -12,6 +12,7 @@
 
 using namespace epee;
 #include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
 //#include <boost/interprocess/ipc/message_queue.hpp>
 #include "p2p/p2p_protocol_defs.h"
 #include "common/command_line.h"
@@ -257,7 +258,7 @@ std::basic_string<CharT> buff_to_uint64_array(const std::basic_string<CharT>& s)
   {
     hexStream << (i == 0 ? "0x":",0x")<< hex << setw(16) << setfill('0') << parray[i];
   }
-  hexStream << "}," << ENDL << "{";
+  hexStream << "}," << ENDL << "{" << ENDL;
   uint8_t* ptail_array = (uint8_t*)&parray[count];
   for (size_t i = 0; i != rest_bytes; i++)
   {
@@ -1050,7 +1051,7 @@ bool process_archive(archive_processor_t& arch_processor, bool is_packing, const
     << "File " << (is_packing ? "packed" : "unpacked") << " from size " << sz << " to " << written_bytes << ENDL
     << "hash of the data is " << epee::string_tools::pod_to_hex(data_hash) << ENDL
     << ENDL
-    << " = { \"" << boost::filesystem::basename(path_target) << "\", \"" << epee::string_tools::pod_to_hex(data_hash) << "\", " << written_bytes << ", " << sz << " }" << ENDL;
+    << " = { \"" << boost::filesystem::path(path_target).stem().string() << "\", \"" << epee::string_tools::pod_to_hex(data_hash) << "\", " << written_bytes << ", " << sz << " }" << ENDL;
 
   return true;
 }

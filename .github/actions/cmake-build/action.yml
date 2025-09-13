@@ -7,7 +7,7 @@ inputs:
     required: true
   boost-root:
     description: 'The root directory of the Boost installation.'
-    required: true
+    required: false
   build-type:
     description: 'The CMake build type (e.g., Release, Debug).'
     required: false
@@ -25,6 +25,9 @@ inputs:
     required: false
   static:
     description: 'Build statically.'
+    required: false
+  system-deps:
+    description: 'Use system dependancies.'
     required: false
   generator:
     description: 'The CMake generator to use.'
@@ -44,8 +47,9 @@ runs:
       uses: threeal/cmake-action@v2.1.0
       env:
         CCACHE_TEMPDIR: ${{ github.workspace }}/build/ccache
-        OPENSSL_ROOT_DIR: ${{ github.workspace }}/build/openssl
         BOOST_ROOT: ${{ inputs.boost-root }}
+#        OPENSSL_ROOT_DIR: ${{ github.workspace }}/build/openssl
+
       with:
         build-dir: build/${{ steps.set_paths.outputs.build_dir_name }}
         generator: ${{ inputs.generator }}
@@ -59,5 +63,5 @@ runs:
           ${{ inputs.arch && format('ARCH={0}', inputs.arch) }}
           CMAKE_BUILD_TYPE=${{ inputs.build-type }}
           ${{ inputs.build-gui && 'BUILD_GUI=ON' }}
-          Boost_INCLUDE_DIR=${{ inputs.boost-root }}/include
-          Boost_LIBRARY_DIRS=${{ inputs.boost-root }}/lib
+          ${{ inputs.system-deps && 'USE_SYSTEM_DEPS=ON' }}
+          DISABLE_TOR=TRUE

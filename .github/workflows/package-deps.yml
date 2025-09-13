@@ -1,0 +1,33 @@
+name: Publish Pre-built Dependencies
+
+on:
+  workflow_run:
+    # This workflow is triggered by the completion of the builder workflow
+    workflows: ["Build All Pre-built Dependencies"]
+    types:
+      - completed
+
+jobs:
+  publish-release:
+    name: Publish all packaged dependencies to a release
+    runs-on: ubuntu-latest
+    # Only run if the build workflow succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Download all packaged artifacts
+        uses: actions/download-artifact@v4
+        with:
+          # Download all artifacts uploaded under this name from the triggering run
+          name: boost-packages
+          path: packages/ # Download all packages into this directory
+
+      - name: Upload artifacts to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: prebuilt-deps
+          name: "Pre-compiled Dependencies"
+          body: "This release contains pre-compiled dependency caches for CI and development."
+          prerelease: true
+          files: |
+            packages/*.tar.gz

@@ -66,7 +66,7 @@ namespace epee
     template<>
     struct socket_backend<true>
     {
-      socket_backend(boost::asio::io_service& _io_service): m_ssl_context(boost::asio::ssl::context::sslv23), m_socket(_io_service, m_ssl_context)
+      socket_backend(boost::asio::io_context& _io_context): m_ssl_context(boost::asio::ssl::context::sslv23), m_socket(_io_context, m_ssl_context)
       {
         // Create a context that uses the default paths for
         // finding CA certificates.
@@ -129,7 +129,7 @@ namespace epee
     template<>
     struct socket_backend<false>
     {
-      socket_backend(boost::asio::io_service& _io_service): m_socket(_io_service)
+      socket_backend(boost::asio::io_context& _io_context): m_socket(_io_context)
       {}
 
       boost::asio::ip::tcp::socket& get_socket()
@@ -164,7 +164,7 @@ namespace epee
     template<bool is_ssl>
     struct socket_backend_resetable
     {
-      socket_backend_resetable(boost::asio::io_service& _io_service) : mr_io_service(_io_service), m_pbackend(std::make_shared<socket_backend<is_ssl>>(_io_service))
+      socket_backend_resetable(boost::asio::io_context& _io_context) : mr_io_context(_io_context), m_pbackend(std::make_shared<socket_backend<is_ssl>>(_io_context))
       {}
 
       boost::asio::ip::tcp::socket& get_socket()
@@ -189,11 +189,11 @@ namespace epee
 
       void reset()
       {
-        m_pbackend = std::make_shared<socket_backend<is_ssl>>(mr_io_service);
+        m_pbackend = std::make_shared<socket_backend<is_ssl>>(mr_io_context);
       }
 
     private: 
-      boost::asio::io_service& mr_io_service;
+      boost::asio::io_context& mr_io_context;
       std::shared_ptr<socket_backend<is_ssl>> m_pbackend;
     };
 
@@ -223,10 +223,10 @@ namespace epee
 
     public:
       inline
-        blocked_mode_client_t() :m_sct_back(m_io_service),
+        blocked_mode_client_t() :m_sct_back(m_io_context),
         m_initialized(false),
         m_connected(false),
-        m_deadline(m_io_service),
+        m_deadline(m_io_context),
         m_shutdowned(0),
         m_connect_timeout{},
         m_reciev_timeout{}
@@ -239,7 +239,7 @@ namespace epee
         // No deadline is required until the first socket operation is started. We
         // set the deadline to positive infinity so that the actor takes no action
         // until a specific deadline is set.
-        m_deadline.expires_at(boost::posix_time::pos_infin);
+        m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
 
         // Start the persistent actor that checks for deadline expiry.
         check_deadline();
@@ -282,16 +282,15 @@ namespace epee
           m_sct_back.get_socket().close();
           // Get a list of endpoints corresponding to the server name.
 
-          m_sct_back.reset();
+          m_sct_back.reset(); // This creates a new socket
           //////////////////////////////////////////////////////////////////////////
 
-          boost::asio::ip::tcp::resolver resolver(m_io_service);
-          boost::asio::ip::tcp::resolver::query query(boost::asio::ip::tcp::v4(), addr, port);
-          boost::asio::ip::tcp::resolver::iterator iterator = resolver.resolve(query);
-          boost::asio::ip::tcp::resolver::iterator end;
-          if (iterator == end)
+          boost::asio::ip::tcp::resolver resolver(m_io_context);
+          boost::system::error_code resolve_ec;
+          auto results = resolver.resolve(boost::asio::ip::tcp::v4(), addr, port, resolve_ec);
+          if (resolve_ec || results.empty())
           {
-            LOG_ERROR("Failed to resolve " << addr);
+            LOG_ERROR("Failed to resolve " << addr << ": " << resolve_ec.message());
             return false;
           }
 
@@ -299,18 +298,21 @@ namespace epee
           m_sct_back.set_domain(addr);
 
           //boost::asio::ip::tcp::endpoint remote_endpoint(boost::asio::ip::address::from_string(addr.c_str()), port);
-          boost::asio::ip::tcp::endpoint remote_endpoint(*iterator);
+          boost::asio::ip::tcp::endpoint remote_endpoint = *results.begin();
 
 
           m_sct_back.get_socket().open(remote_endpoint.protocol());
           if (bind_ip != "0.0.0.0" && bind_ip != "0" && bind_ip != "")
           {
-            boost::asio::ip::tcp::endpoint local_endpoint(boost::asio::ip::address::from_string(addr.c_str()), 0);
+            boost::system::error_code bind_ec;
+            auto bind_addr = boost::asio::ip::make_address(bind_ip, bind_ec);
+            if (bind_ec) { LOG_ERROR("Failed to create bind address for " << bind_ip << ": " << bind_ec.message()); return false; }
+            boost::asio::ip::tcp::endpoint local_endpoint(bind_addr, 0);
             m_sct_back.get_socket().bind(local_endpoint);
           }
 
 
-          m_deadline.expires_from_now(boost::posix_time::milliseconds(m_connect_timeout));
+          m_deadline.expires_after(std::chrono::milliseconds(m_connect_timeout));
 
 
           boost::system::error_code ec = boost::asio::error::would_block;
@@ -319,14 +321,14 @@ namespace epee
           m_sct_back.get_socket().async_connect(remote_endpoint, boost::lambda::var(ec) = boost::lambda::_1);
           while (ec == boost::asio::error::would_block)
           {
-            m_io_service.run_one();
+            m_io_context.run_one();
           }
 
           if (!ec && m_sct_back.get_socket().is_open())
           {
             m_sct_back.on_after_connect();
             m_connected = true;       
-            m_deadline.expires_at(boost::posix_time::pos_infin);
+            m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
             LOG_PRINT_L1("Connected OK: " << addr << ":" << port);
             return true;
           }
@@ -385,7 +387,7 @@ namespace epee
 
         try
         {
-          m_deadline.expires_from_now(boost::posix_time::milliseconds(m_reciev_timeout));
+          m_deadline.expires_after(std::chrono::milliseconds(m_reciev_timeout));
 
           // Set up the variable that receives the result of the asynchronous
           // operation. The error code is set to would_block to signal that the
@@ -403,7 +405,7 @@ namespace epee
           // Block until the asynchronous operation has completed.
           while (ec == boost::asio::error::would_block)
           {
-            m_io_service.run_one();
+            m_io_context.run_one();
           }
 
           if (ec)
@@ -414,7 +416,7 @@ namespace epee
           }
           else
           {
-            m_deadline.expires_at(boost::posix_time::pos_infin);
+            m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
           }
         }
 
@@ -473,7 +475,7 @@ namespace epee
           }
           else
           {
-            m_deadline.expires_at(boost::posix_time::pos_infin);
+            m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
           }
         }
 
@@ -509,7 +511,7 @@ namespace epee
           // Set a deadline for the asynchronous operation. Since this function uses
           // a composed operation (async_read_until), the deadline applies to the
           // entire operation, rather than individual reads from the socket.
-          m_deadline.expires_from_now(boost::posix_time::milliseconds(m_reciev_timeout));
+          m_deadline.expires_after(std::chrono::milliseconds(m_reciev_timeout));
 
           // Set up the variable that receives the result of the asynchronous
           // operation. The error code is set to would_block to signal that the
@@ -535,7 +537,7 @@ namespace epee
           // Block until the asynchronous operation has completed.
           while (ec == boost::asio::error::would_block && !boost::interprocess::ipcdetail::atomic_read32(&m_shutdowned))
           {
-            m_io_service.run_one();
+            m_io_context.run_one();
           }
 
 
@@ -556,7 +558,7 @@ namespace epee
           else
           {
             LOG_PRINT_L4("READ ENDS: Success. bytes_tr: " << bytes_transfered);
-            m_deadline.expires_at(boost::posix_time::pos_infin);
+            m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
           }
 
           /*if(!bytes_transfered)
@@ -592,7 +594,7 @@ namespace epee
           // Set a deadline for the asynchronous operation. Since this function uses
           // a composed operation (async_read_until), the deadline applies to the
           // entire operation, rather than individual reads from the socket.
-          m_deadline.expires_from_now(boost::posix_time::milliseconds(m_reciev_timeout));
+          m_deadline.expires_after(std::chrono::milliseconds(m_reciev_timeout));
 
           // Set up the variable that receives the result of the asynchronous
           // operation. The error code is set to would_block to signal that the
@@ -619,7 +621,7 @@ namespace epee
           // Block until the asynchronous operation has completed.
           while (ec == boost::asio::error::would_block && !boost::interprocess::ipcdetail::atomic_read32(&m_shutdowned))
           {
-            m_io_service.run_one();
+            m_io_context.run_one();
           }
 
           if (ec)
@@ -630,7 +632,7 @@ namespace epee
           }
           else
           {
-            m_deadline.expires_at(boost::posix_time::pos_infin);
+            m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
           }
 
           if (bytes_transfered != buff.size())
@@ -675,9 +677,9 @@ namespace epee
       {
         m_connected = connected;
       }
-      boost::asio::io_service& get_io_service()
+      boost::asio::io_context& get_io_service()
       {
-        return m_io_service;
+        return m_io_context;
       }
 
       boost::asio::ip::tcp::socket& get_socket()
@@ -692,7 +694,7 @@ namespace epee
         // Check whether the deadline has passed. We compare the deadline against
         // the current time since a new asynchronous operation may have moved the
         // deadline before this actor had a chance to run.
-        if (m_deadline.expires_at() <= boost::asio::deadline_timer::traits_type::now())
+        if (m_deadline.expiry() <= boost::asio::steady_timer::clock_type::now())
         {
           // The deadline has passed. The socket is closed so that any outstanding
           // asynchronous operations are cancelled. This allows the blocked
@@ -703,7 +705,7 @@ namespace epee
 
           // There is no longer an active deadline. The expiry is set to positive
           // infinity so that the actor takes no action until a new deadline is set.
-          m_deadline.expires_at(boost::posix_time::pos_infin);
+          m_deadline.expires_at(boost::asio::steady_timer::time_point::max());
         }
 
         // Put the actor back to sleep.
@@ -713,13 +715,13 @@ namespace epee
 
 
     protected:
-      boost::asio::io_service m_io_service;
+      boost::asio::io_context m_io_context;
       socket_backend_resetable<is_ssl> m_sct_back;//socket_backend<is_ssl> m_sct_back;
       int m_connect_timeout;
       int m_reciev_timeout;
       bool m_initialized;
       bool m_connected;
-      boost::asio::deadline_timer m_deadline;
+      boost::asio::steady_timer m_deadline;
       volatile uint32_t m_shutdowned;
     };
 
@@ -731,13 +733,13 @@ namespace epee
     class async_blocked_mode_client_t : public blocked_mode_client_t<is_ssl>
     {
     public:
-      async_blocked_mode_client_t() :m_send_deadline(blocked_mode_client_t<is_ssl>::m_io_service)
+      async_blocked_mode_client_t() :m_send_deadline(blocked_mode_client_t<is_ssl>::m_io_context)
       {
 
         // No deadline is required until the first socket operation is started. We
         // set the deadline to positive infinity so that the actor takes no action
         // until a specific deadline is set.
-        m_send_deadline.expires_at(boost::posix_time::pos_infin);
+        m_send_deadline.expires_at(boost::asio::steady_timer::time_point::max());
 
         // Start the persistent actor that checks for deadline expiry.
         check_send_deadline();
@@ -792,7 +794,7 @@ namespace epee
           }
           else
           {
-            m_send_deadline.expires_at(boost::posix_time::pos_infin);
+            m_send_deadline.expires_at(boost::asio::steady_timer::time_point::max());
           }
         }
 
@@ -813,14 +815,14 @@ namespace epee
 
     private:
 
-      boost::asio::deadline_timer m_send_deadline;
+      boost::asio::steady_timer m_send_deadline;
 
       void check_send_deadline()
       {
         // Check whether the deadline has passed. We compare the deadline against
         // the current time since a new asynchronous operation may have moved the
         // deadline before this actor had a chance to run.
-        if (m_send_deadline.expires_at() <= boost::asio::deadline_timer::traits_type::now())
+        if (m_send_deadline.expiry() <= boost::asio::steady_timer::clock_type::now())
         {
           // The deadline has passed. The socket is closed so that any outstanding
           // asynchronous operations are cancelled. This allows the blocked
@@ -830,7 +832,7 @@ namespace epee
 
           // There is no longer an active deadline. The expiry is set to positive
           // infinity so that the actor takes no action until a new deadline is set.
-          m_send_deadline.expires_at(boost::posix_time::pos_infin);
+          m_send_deadline.expires_at(boost::asio::steady_timer::time_point::max());
         }
 
         // Put the actor back to sleep.

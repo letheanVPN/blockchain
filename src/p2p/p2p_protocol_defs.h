@@ -7,10 +7,13 @@
 #pragma once
 
 #include <boost/uuid/uuid.hpp>
+#include <type_traits>
 #include "serialization/keyvalue_serialization.h"
 #include "misc_language.h"
 #include "currency_core/currency_config.h"
 #include "crypto/crypto.h"
+
+MARK_AS_POD_C11(boost::uuids::uuid)
 
 namespace nodetool
 {
@@ -462,6 +465,3 @@ namespace nodetool
 #endif // #ifdef ALLOW_DEBUG_COMMANDS
     
 }
-
-
-

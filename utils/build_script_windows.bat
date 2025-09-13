@@ -49,7 +49,7 @@ IF %ERRORLEVEL% NEQ 0 (
   goto error
 )
 
-call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat" x86_amd64
+call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
 echo on
 cd %SOURCES_PATH%\build
 

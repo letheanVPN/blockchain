@@ -52,7 +52,7 @@ macro(set_source_files_compile_flags)
       else()
         set(_flags "${_flags} ${CMAKE_${_lang}_FLAGS}")
       endif()
-      # message(STATUS "Set (${file} ${_flags}")
+#       message(STATUS "Set (${file} ${_flags}")
       set_source_files_properties(${file} PROPERTIES COMPILE_FLAGS
         "${_flags}")
     endif()

@@ -18,7 +18,7 @@
 
 const uint64_t WALLET_GLOBAL_OUTPUT_INDEX_UNDEFINED = std::numeric_limits<uint64_t>::max();
 
-const boost::uuids::uuid RPC_INTERNAL_UI_CONTEXT = {0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 2, 1, 0, 0}; //Bender's nightmare 
+const boost::uuids::uuid RPC_INTERNAL_UI_CONTEXT = {{0, 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 2, 1, 0, 0}}; //Bender's nightmare 
 
 namespace tools
 {

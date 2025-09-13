@@ -1,57 +1,43 @@
+# This definition will be applied to all targets in this directory and subdirectories.
+# It is the most reliable way to disable Boost auto-linking across the entire project.
+if(USE_SYSTEM_DEPS AND WIN32)
+    add_compile_definitions(BOOST_ALL_NO_LIB)
+    # Brute-force add the OpenSSL include directory to all targets to fix propagation issues.
+    get_target_property(OPENSSL_INCLUDE_DIR OpenSSL::SSL INTERFACE_INCLUDE_DIRECTORIES)
+    if(OPENSSL_INCLUDE_DIR)
+        include_directories(SYSTEM ${OPENSSL_INCLUDE_DIR})
+    endif()
+endif()
+
 # if(POLICY CMP0043)
 #   cmake_policy(SET CMP0043 OLD)
 # endif()
 
-#####  Precompiled Headers  ######
 # define USE_PCH to YES for using precomiled headers
 # Windows: using custom-made shared PCH -- this is unusual case for MSVC... so mystery, such hack, many wow. See also: https://stackoverflow.com/questions/645747/sharing-precompiled-headers-between-projects-in-visual-studio/4170902#4170902
 # Linux: using CMake-enabled shared PCH (which appeared in CMake 3.16)
-MACRO(INIT_SHARED_PCH)
-  IF(USE_PCH)
-    MESSAGE( STATUS " ...... enabling precompiled headers, making new library: pch" )
-    add_library(pch ${PCH})
-    set(PCH_LIB_NAME pch)
-    IF(MSVC)
-      set_property(SOURCE "pch/stdafx.cpp" APPEND_STRING PROPERTY COMPILE_FLAGS " /Fo$(OutDir) /Z7 /Fd$(OutDir)vc$(PlatformToolsetVersion).pdb /Ycstdafx.h /Fp$(TargetDir)pch.pch")
-    ELSEIF(APPLE OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-      cmake_minimum_required(VERSION 3.16)
-      target_precompile_headers(pch PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/pch/stdafx.h")
-    ENDIF()
-  ENDIF(USE_PCH)
-ENDMACRO(INIT_SHARED_PCH)
+function(INIT_SHARED_PCH)
+  if(USE_PCH)
+    message(STATUS "...... enabling precompiled headers, creating 'pch' target")
+    # This target exists solely to generate the PCH file that other targets will reuse.
+    add_library(pch INTERFACE)
+    target_precompile_headers(pch INTERFACE "pch/stdafx.h")
+    set(PCH_LIB_NAME pch PARENT_SCOPE)
+  endif()
+endfunction()
 
-MACRO(ENABLE_SHARED_PCH target sources_var)
-  IF(USE_PCH)
-    IF(MSVC)
-      MESSAGE( STATUS " ...... enabling precompiled headers for: " ${sources_var} )
-      SET(precompiled_binary "$(TargetDir)pch.pch")
-      SET(precompiled_header "${CMAKE_CURRENT_SOURCE_DIR}/pch/stdafx.h")
-      SET(sources ${${sources_var}})
-      foreach(src ${sources})
-        if(NOT ${src} MATCHES "\\.rc$") # skip *.rc files
-          SET_SOURCE_FILES_PROPERTIES(${src}
-                                  PROPERTIES COMPILE_FLAGS "/Z7 /Fd$(OutDir)vc$(PlatformToolsetVersion).pdb /Yu\"${precompiled_header}\" /FI\"${precompiled_header}\" /Fp\"${precompiled_binary}\""
-                                             OBJECT_DEPENDS "${precompiled_binary}")
-        endif()
-      endforeach()
-    ELSEIF(APPLE OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-      MESSAGE( STATUS " ...... enabling precompiled headers for: " ${target} )
-      target_precompile_headers(${target} REUSE_FROM pch)
-    ENDIF()
-  ENDIF(USE_PCH)
-ENDMACRO(ENABLE_SHARED_PCH)
+function(ENABLE_SHARED_PCH target)
+  if(USE_PCH AND TARGET pch)
+    message(STATUS "...... enabling precompiled headers for: ${target}")
+    # Link against the 'pch' interface library. This automatically sets up
+    # the correct compiler flags to use the precompiled header.
+    target_link_libraries(${target} PRIVATE pch)
+  endif()
+endfunction()
 
-MACRO(ENABLE_SHARED_PCH_EXECUTABLE target)
-  IF(USE_PCH)
-    IF(MSVC)
-      SET_TARGET_PROPERTIES(${target} PROPERTIES LINK_FLAGS "$(OutDir)stdafx.obj")
-    ENDIF()
-  ENDIF(USE_PCH)
-ENDMACRO(ENABLE_SHARED_PCH_EXECUTABLE)
 #####  End of Precompiled Headers macros  ######
 
-
-
+option(BUILD_CONNECTIVITY_TOOL "Build the connectivity_tool utility" OFF)
 
 file(GLOB_RECURSE PCH pch/*)
 file(GLOB_RECURSE COMMON common/*)
@@ -64,7 +50,6 @@ file(GLOB_RECURSE P2P p2p/*)
 file(GLOB_RECURSE RPC rpc/*)
 file(GLOB_RECURSE STRATUM stratum/*)
 file(GLOB_RECURSE SIMPLEWALLET simplewallet/*)
-file(GLOB_RECURSE CONN_TOOL connectivity_tool/*)
 file(GLOB_RECURSE WALLET wallet/*)
 file(GLOB_RECURSE MINER miner/*)
 
@@ -74,7 +59,7 @@ if(BUILD_GUI)
   elseif(APPLE)
     file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h gui/qt-daemon/*.mm)
   else()
-    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h)    
+    file(GLOB_RECURSE QTDAEMON gui/qt-daemon/*.cpp gui/qt-daemon/*.h)
   endif()
   list(FILTER QTDAEMON EXCLUDE REGEX "node_modules")
 endif()
@@ -90,7 +75,6 @@ source_group(p2p FILES ${P2P})
 source_group(rpc FILES ${RPC})
 source_group(stratum FILES ${STRATUM})
 source_group(simplewallet FILES ${SIMPLEWALLET})
-source_group(connectivity-tool FILES ${CONN_TOOL})
 source_group(wallet FILES ${WALLET})
 
 if(BUILD_GUI)
@@ -100,9 +84,26 @@ endif()
 
 INIT_SHARED_PCH()
 
+# Create a list of Boost imported targets from the component list in sdk.cmake
+if(USE_SYSTEM_DEPS)
+    set(ZANO_BOOST_TARGETS "")
+    foreach(COMPONENT ${ZANO_BOOST_COMPONENTS})
+        list(APPEND ZANO_BOOST_TARGETS "Boost::${COMPONENT}")
+    endforeach()
+endif()
+
 add_library(common ${COMMON})
 add_dependencies(common version ${PCH_LIB_NAME})
-ENABLE_SHARED_PCH(common COMMON)
+
+# --- Modern Boost Linking ---
+if(USE_SYSTEM_DEPS)
+    target_link_libraries(common PUBLIC ${ZANO_BOOST_TARGETS})
+else()
+    add_dependencies(common build_sdk)
+    target_link_libraries(common PUBLIC Boost::headers)
+endif()
+
+ENABLE_SHARED_PCH(common)
 
 if(NOT MSVC AND NOT APPLE AND NOT CLANG)  # TODO(unassigned): do we really need the clang equivalent?
    target_compile_options(common PRIVATE -fno-var-tracking-assignments)
@@ -120,35 +121,31 @@ if(WIN32)
 endif()
 
 add_library(crypto ${CRYPTO})
+add_dependencies(crypto build_sdk)
 if(USE_BITCOIN_SECP256K1_FOR_ECDSA)
   add_dependencies(crypto secp256k1)
-  target_link_libraries(crypto secp256k1 ${BCRYPT_LIB})
+  target_link_libraries(crypto PUBLIC secp256k1 ${BCRYPT_LIB})
 else()
-  add_dependencies(crypto OpenSSL::Crypto)
-  target_link_libraries(crypto OpenSSL::Crypto ${BCRYPT_LIB})
+  target_link_libraries(crypto PUBLIC OpenSSL::SSL OpenSSL::Crypto ${BCRYPT_LIB})
 endif()
 
 add_library(currency_core ${CURRENCY_CORE})
-add_dependencies(currency_core version  ${PCH_LIB_NAME})
-ENABLE_SHARED_PCH(currency_core CURRENCY_CORE)
+add_dependencies(currency_core version ${PCH_LIB_NAME} build_sdk)
+target_link_libraries(currency_core PUBLIC common crypto lmdb mdbx)
+ENABLE_SHARED_PCH(currency_core)
 
 add_library(wallet  ${WALLET})
+add_dependencies(wallet version ${PCH_LIB_NAME} build_sdk)
 if(CMAKE_SYSTEM_NAME STREQUAL "Android" )
-  add_dependencies(wallet version ${PCH_LIB_NAME})
-  target_link_libraries(wallet currency_core crypto common zlibstatic ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} android log OpenSSL::SSL OpenSSL::Crypto)
+  target_link_libraries(wallet PUBLIC currency_core crypto common zlibstatic ${CMAKE_THREAD_LIBS_INIT} android log)
 else()
-  add_dependencies(wallet version ${PCH_LIB_NAME})
-  ENABLE_SHARED_PCH(wallet WALLET)
+  target_link_libraries(wallet PUBLIC currency_core common)
+  ENABLE_SHARED_PCH(wallet)
 endif()
 
 if(NOT DISABLE_TOR)
-  target_link_libraries(wallet tor-connect)
+  target_link_libraries(wallet PUBLIC tor-connect)
 endif()
-
-
-
-
-
 
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS")
   install(TARGETS wallet currency_core crypto common DESTINATION lib)
@@ -164,95 +161,57 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
 endif()
 
 add_library(rpc ${RPC})
-add_dependencies(rpc version ${PCH_LIB_NAME})
-ENABLE_SHARED_PCH(rpc RPC)
+add_dependencies(rpc version ${PCH_LIB_NAME} build_sdk)
+target_link_libraries(rpc PUBLIC common OpenSSL::SSL OpenSSL::Crypto)
+ENABLE_SHARED_PCH(rpc)
 
 add_library(stratum ${STRATUM})
-add_dependencies(stratum version ${PCH_LIB_NAME})
-ENABLE_SHARED_PCH(stratum STRATUM)
+add_dependencies(stratum version ${PCH_LIB_NAME} build_sdk)
+target_link_libraries(stratum PUBLIC common)
+ENABLE_SHARED_PCH(stratum)
 
-
-target_link_libraries(currency_core lmdb mdbx)
+# --- Executable Targets ---
 
 add_executable(daemon ${DAEMON} ${P2P} ${CURRENCY_PROTOCOL})
-add_dependencies(daemon version)
-target_link_libraries(daemon rpc stratum currency_core crypto common libminiupnpc-static zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
-ENABLE_SHARED_PCH(daemon DAEMON)
-ENABLE_SHARED_PCH_EXECUTABLE(daemon)
-                     
-add_executable(connectivity_tool ${CONN_TOOL})
-add_dependencies(connectivity_tool version)
-target_link_libraries(connectivity_tool currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
-ENABLE_SHARED_PCH(connectivity_tool CONN_TOOL)
-ENABLE_SHARED_PCH_EXECUTABLE(connectivity_tool)
+add_dependencies(daemon version build_sdk)
+if(USE_SYSTEM_DEPS)
+    target_link_libraries(daemon PRIVATE rpc stratum currency_core crypto common libminiupnpc-static zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${ZANO_BOOST_TARGETS})
+else()
+    target_link_libraries(daemon PRIVATE rpc stratum currency_core crypto common libminiupnpc-static zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT})
+endif()
+ENABLE_SHARED_PCH(daemon)
+
+if(BUILD_CONNECTIVITY_TOOL)
+  file(GLOB_RECURSE CONN_TOOL connectivity_tool/*)
+  source_group(connectivity-tool FILES ${CONN_TOOL})
+  add_executable(connectivity_tool ${CONN_TOOL})
+  add_dependencies(connectivity_tool version build_sdk)
+  if(USE_SYSTEM_DEPS)
+      target_link_libraries(connectivity_tool PRIVATE currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${ZANO_BOOST_TARGETS})
+  else()
+      target_link_libraries(connectivity_tool PRIVATE currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT})
+  endif()
+  ENABLE_SHARED_PCH(connectivity_tool)
+  set_property(TARGET connectivity_tool PROPERTY FOLDER "prog")
+endif()
 
 add_executable(simplewallet ${SIMPLEWALLET})
-add_dependencies(simplewallet version) 
-target_link_libraries(simplewallet wallet rpc currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
-
-ENABLE_SHARED_PCH(simplewallet SIMPLEWALLET)
-ENABLE_SHARED_PCH_EXECUTABLE(simplewallet)
-
-set_property(TARGET common crypto currency_core rpc stratum wallet PROPERTY FOLDER "libs")
-set_property(TARGET daemon simplewallet connectivity_tool PROPERTY FOLDER "prog")
-set_property(TARGET daemon PROPERTY OUTPUT_NAME "zanod")
-
-if(BUILD_GUI)
-
-  if(APPLE)
-    FIND_LIBRARY(COCOA_LIBRARY Cocoa)
-  endif()
-
-  set(CMAKE_AUTOMOC ON)
-  set(CMAKE_INCLUDE_CURRENT_DIR ON)
-  SET(MACOSX_BUNDLE_ICON_FILE app.icns)
-  add_executable(Zano WIN32 MACOSX_BUNDLE ${QTDAEMON} )
-  ENABLE_SHARED_PCH(Zano QTDAEMON)
-  ENABLE_SHARED_PCH_EXECUTABLE(Zano)
-	  
-  #QT5_USE_MODULES(Zano WebEngineWidgets WebChannel)
-
-  target_link_libraries(Zano PUBLIC wallet rpc currency_core crypto common zlibstatic ethash Qt6::WebChannel Qt6::WebEngineWidgets Qt6::PrintSupport ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto PRIVATE Qt6::Core5Compat)
-  if (UNIX AND NOT APPLE)
-    target_link_libraries(Zano PRIVATE rt)
-  endif()
-
-  if(APPLE)
-    target_link_libraries(Zano PRIVATE ${COCOA_LIBRARY})
-    set_property(TARGET Zano PROPERTY XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES)
-  endif()
-  if(MSVC)
-    target_link_libraries(Zano PRIVATE shlwapi.lib)
-  endif()
-
-  set_property(TARGET Zano PROPERTY FOLDER "prog")
-  set_target_properties(Zano PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/Info.plist.in)
-
-  set(HTML_DIR ${CMAKE_CURRENT_SOURCE_DIR}/gui/qt-daemon/layout/html)
-  set_target_properties(Zano PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--html-path=${HTML_DIR}")
-
-  set(CMAKE_AUTOMOC OFF)
-
-  # GUI convenience "bundle"
-#  set(GUI_DIR ${CMAKE_CURRENT_BINARY_DIR}/gui)
-#  set_target_properties(Zano PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${GUI_DIR})
-#  add_custom_command(TARGET Zano POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${HTML_DIR} ${GUI_DIR}/html)
+add_dependencies(simplewallet version build_sdk)
+if(USE_SYSTEM_DEPS)
+    target_link_libraries(simplewallet PRIVATE wallet rpc currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT} ${ZANO_BOOST_TARGETS})
+else()
+    target_link_libraries(simplewallet PRIVATE wallet rpc currency_core crypto common zlibstatic ethash ${CMAKE_THREAD_LIBS_INIT})
 endif()
+ENABLE_SHARED_PCH(simplewallet)
 
-if(APPLE)
-  set(SIMPLE_BUNDLE 1)
-endif()
+set_property(TARGET common PROPERTY FOLDER "libs")
+set_property(TARGET crypto PROPERTY FOLDER "libs")
+set_property(TARGET currency_core PROPERTY FOLDER "libs")
+set_property(TARGET rpc PROPERTY FOLDER "libs")
+set_property(TARGET stratum PROPERTY FOLDER "libs")
+set_property(TARGET wallet PROPERTY FOLDER "libs")
 
-if(SIMPLE_BUNDLE)
-  set(INSTALL_DIR "${CMAKE_BINARY_DIR}/hp-${VERSION}")
-  install(TARGETS daemon simplewallet connectivity_tool
-      RUNTIME DESTINATION "${INSTALL_DIR}" COMPONENT Runtime
-  )
+set_property(TARGET daemon PROPERTY FOLDER "prog")
+set_property(TARGET simplewallet PROPERTY FOLDER "prog")
 
-  install(FILES ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} DESTINATION "${INSTALL_DIR}/lib")
-
-  if(APPLE)
-    set(FIXUP_COMMAND ${CMAKE_SOURCE_DIR}/utils/macosx_fixup.sh " " ${INSTALL_DIR})
-    install(CODE "execute_process(COMMAND ${FIXUP_COMMAND})")
-  endif()
-endif()
+set_target_properties(daemon PROPERTIES OUTPUT_NAME "zanod")

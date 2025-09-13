@@ -1,0 +1,15 @@
+services:
+  mcp-cmake-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: lthn/mcp-cmake-server:latest
+    volumes:
+      - ../../../..:/workspace:rw
+    ports:
+      - "36908:36908"
+    command: >
+      --http 
+      --host 0.0.0.0 
+      --port 36908 
+      --working-dir /workspace/blockchain

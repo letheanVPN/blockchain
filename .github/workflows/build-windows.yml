@@ -13,11 +13,6 @@ on:
         default: true
         required: false
         type: boolean
-      build-gui:
-        description: "Should the GUI be built"
-        default: true
-        required: false
-        type: boolean
       release:
         description: "Make a release"
         default: true
@@ -34,38 +29,15 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-
-      - name: Eat the Choco
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          toolset: 14
+      - uses: ilammy/setup-nasm@v1
+      - name: Install Perl CPAN modules
+        shell: powershell
         run: |
-          choco install ccache -y
-          choco install zip -y
-
-      - name: ccache caching
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-${{ runner.os }}
-
-      - name: Install boost
-        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
-        id: install-boost
-        with:
-          boost_version: 1.84.0
-          boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 2022
-          toolset: msvc
-
-      - name: Install Qt
-        if: ${{ inputs.build-gui }}
-        uses: jurplel/install-qt-action@v3
-        with:
-          dir: '${{ github.workspace }}/build/qt/'
-          aqtversion: '==3.1.*'
-          version: '6.8.3'
-          host: 'windows'
-          target: 'desktop'
-          arch: 'win64_msvc2022_64'
-          modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
+          choco install -y boost-msvc-14.3
+          choco install -y openssl
 
       - name: Build CLI
         if: ${{ inputs.build-cli }}
@@ -74,11 +46,12 @@ jobs:
           jobs: '4'
           build-type: 'Release'
           chain-network: ${{ inputs.chain-network }}
-          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'daemon simplewallet connectivity_tool'
-          static: 'false'
+          target: 'daemon simplewallet'
+          static: 'true'
           generator: 'Visual Studio 17 2022'
           arch: 'x86-64'
+          system-deps: true
+
 
       - name: CLI Artifacts
         if: ${{ inputs.build-cli }}
@@ -90,31 +63,5 @@ jobs:
           assets: |
             zanod.exe
             simplewallet.exe
-            connectivity_tool.exe
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}\build\release\src\Release
-
-      - name: Build GUI
-        if: ${{ inputs.build-gui }}
-        uses: ./.github/actions/cmake-build
-        with:
-          jobs: '4'
-          build-type: 'Release'
-          chain-network: ${{ inputs.chain-network }}
-          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'Zano'
-          build-gui: 'true'
-          generator: 'Visual Studio 17 2022'
-          arch: 'x86-64'
-
-      - name: GUI Artifacts
-        if: ${{ inputs.build-gui }}
-        uses: ./.github/actions/sign-and-upload-release
-        with:
-          chain-network: ${{ inputs.chain-network }}
-          release-tag: ${{ github.ref_name }}
-          release: "${{ inputs.release }}"
-          assets: |
-            Zano.exe
-          asset-type: 'gui'
           asset-directory: ${{ github.workspace }}\build\release\src\Release

@@ -40,21 +40,15 @@ runs:
         # This is the correct way to pass a multi-line string in GITHUB_OUTPUT.
         echo "paths<<EOF" >> "$GITHUB_OUTPUT"
         
-        # Iterate through each filename
         echo "${{ inputs.assets }}" | while read -r file; do
           if [[ -z "$file" ]]; then
             continue
           fi
-          # Check if the file is an absolute path
-          if [[ "$file" == /* ]] || [[ "$file" =~ ^[a-zA-Z]: ]]; then
+          # Check if the file is a full path (starting with / or a Windows drive letter)
+          if [[ "$file" == /* ]] || [[ "$file" == [a-zA-Z]:* ]]; then
             FULL_PATH="$file"
           else
-            # It's a relative path, so join it with the asset directory
-            if [[ "${{ runner.os }}" == "Windows" ]]; then
-              FULL_PATH="${{ inputs.asset-directory }}\\$file"
-            else
-              FULL_PATH="${{ inputs.asset-directory }}/$file"
-            fi
+            FULL_PATH="${{ inputs.asset-directory }}${{ runner.os == 'Windows' && '\\' || '/' }}$file"
           fi
           echo "$FULL_PATH" >> "$GITHUB_OUTPUT"
         done
@@ -76,11 +70,12 @@ runs:
             cp -r "$file" "$STAGING_DIR"
           fi
         done
-        7z a -y "${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip" -w"$STAGING_DIR" .
+        7z a "${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip" -w"$STAGING_DIR" .
 
     - name: Make Release
       if: inputs.release != 'false'
       uses: softprops/action-gh-release@v2
+      continue-on-error: true
       with:
         tag_name: ${{ inputs.chain-network }}-${{ inputs.release-tag }}
         prerelease: contains(inputs.chain-network, 'testnet')

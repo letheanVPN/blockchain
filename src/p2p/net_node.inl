@@ -387,28 +387,25 @@ namespace nodetool
 
       std::string portstr = std::to_string(port);
 
-      io_service io_srv;
+      boost::asio::io_context io_srv;
       ip::tcp::resolver resolver(io_srv);
-      ip::tcp::resolver::query query(host, portstr);
       boost::system::error_code ec;
-      ip::tcp::resolver::iterator i = resolver.resolve(query, ec);
+      auto results = resolver.resolve(host, portstr, ec);
       CHECK_AND_NO_ASSERT_MES(!ec, false, "Failed to resolve host name '" << host << "': " << ec.message() << ':' << ec.value());
 
-      ip::tcp::resolver::iterator iend;
-      for (; i != iend; ++i)
+      for (const auto& endpoint : results)
       {
-        ip::tcp::endpoint endpoint = *i;
-        if (endpoint.address().is_v4())
+        if (endpoint.endpoint().address().is_v4())
         {
           nodetool::net_address na;
-          na.ip = boost::asio::detail::socket_ops::host_to_network_long(endpoint.address().to_v4().to_ulong());
-          na.port = endpoint.port();
+          na.ip = endpoint.endpoint().address().to_v4().to_uint();
+          na.port = endpoint.endpoint().port();
           nodes.push_back(na);
-          LOG_PRINT_L4("Added seed node: " << endpoint.address().to_v4().to_string(ec) << ':' << na.port);
+          LOG_PRINT_L4("Added seed node: " << endpoint.endpoint().address().to_v4().to_string() << ':' << na.port);
         }
         else
         {
-          LOG_PRINT_L2("IPv6 doesn't supported, skip '" << host << "' -> " << endpoint.address().to_v6().to_string(ec));
+          LOG_PRINT_L2("IPv6 doesn't supported, skip '" << host << "' -> " << endpoint.endpoint().address().to_v6().to_string());
         }
       }
 

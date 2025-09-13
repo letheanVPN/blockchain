@@ -28,7 +28,7 @@
 #ifndef _ABSTRACT_TCP_SERVER2_H_
 #define _ABSTRACT_TCP_SERVER2_H_
 
-#include <boost/asio.hpp>
+
 #include <string>
 #include <vector>
 #include <boost/noncopyable.hpp>
@@ -36,6 +36,9 @@
 #include <atomic>
 
 #include <boost/asio.hpp>
+#include <chrono>
+#include <boost/asio/post.hpp>
+#include <boost/asio/steady_timer.hpp>
 #include <boost/array.hpp>
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
@@ -73,8 +76,8 @@ class connection
       public i_service_endpoint {
   public:
   typedef typename t_protocol_handler::connection_context t_connection_context;
-  /// Construct a connection with the given io_service.
-  explicit connection(boost::asio::io_service& io_service,
+  /// Construct a connection with the given io_context.
+  explicit connection(boost::asio::io_context& io_context,
                       typename t_protocol_handler::config_type& config, volatile uint32_t& sock_count, i_connection_filter*& pfilter);
 
   virtual ~connection();
@@ -102,7 +105,7 @@ class connection
   virtual bool close();
   virtual bool call_run_once_service_io();
   virtual bool request_callback();
-  virtual boost::asio::io_service& get_io_service();
+  virtual boost::asio::io_context& get_io_service();
   virtual bool add_ref();
   virtual bool release();
   //------------------------------------------------------
@@ -116,7 +119,7 @@ class connection
   void handle_write(const boost::system::error_code& e, size_t cb);
 
   /// Strand to ensure the connection's handlers are not called concurrently.
-  boost::asio::io_service::strand strand_;
+  boost::asio::io_context::strand strand_;
 
   /// Socket for the connection.
   boost::asio::ip::tcp::socket socket_;
@@ -124,7 +127,7 @@ class connection
   /// Buffer for incoming data.
   boost::array<char, 8192> buffer_;
 
-  boost::asio::io_service& m_rio_service;
+  boost::asio::io_context& m_rio_service;
   t_connection_context context;
   volatile uint32_t m_want_close_connection;
   std::atomic<bool> m_was_shutdown;
@@ -153,7 +156,7 @@ class boosted_tcp_server
   /// Construct the server to listen on the specified TCP address and port, and
   /// serve up files from the given directory.
   boosted_tcp_server();
-  explicit boosted_tcp_server(boost::asio::io_service& external_io_service);
+  explicit boosted_tcp_server(boost::asio::io_context& external_io_service);
   ~boosted_tcp_server();
 
   bool init_server(uint32_t port, const std::string address = "0.0.0.0");
@@ -198,9 +201,9 @@ class boosted_tcp_server
     return m_port;
   }
 
-  boost::asio::io_service& get_io_service()
+  boost::asio::io_context& get_io_service()
   {
-    return io_service_;
+    return io_context_;
   }
 
   struct idle_callback_conext_base {
@@ -213,17 +216,17 @@ class boosted_tcp_server
       return true;
     }
 
-    idle_callback_conext_base(boost::asio::io_service& io_serice): m_timer(io_serice), 
+    idle_callback_conext_base(boost::asio::io_context& io_context): m_timer(io_context),
                                                                    m_period(0)
     {
     }
-    boost::asio::deadline_timer m_timer;
+    boost::asio::steady_timer m_timer;
     uint64_t m_period;
   };
 
   template<class t_handler>
   struct idle_callback_conext : public idle_callback_conext_base {
-    idle_callback_conext(boost::asio::io_service& io_serice, t_handler& h, uint64_t period)
+    idle_callback_conext(boost::asio::io_context& io_serice, t_handler& h, uint64_t period)
         : idle_callback_conext_base(io_serice),
           m_handler(h)
     {
@@ -240,9 +243,9 @@ class boosted_tcp_server
   template<class t_handler>
   bool add_idle_handler(t_handler t_callback, uint64_t timeout_ms)
   {
-    boost::shared_ptr<idle_callback_conext_base> ptr(new idle_callback_conext<t_handler>(io_service_, t_callback, timeout_ms));
+    boost::shared_ptr<idle_callback_conext_base> ptr(new idle_callback_conext<t_handler>(io_context_, t_callback, timeout_ms));
     //needed call handler here ?...
-    ptr->m_timer.expires_from_now(boost::posix_time::milliseconds(ptr->m_period));
+    ptr->m_timer.expires_after(std::chrono::milliseconds(ptr->m_period));
     ptr->m_timer.async_wait(boost::bind(&boosted_tcp_server<t_protocol_handler>::global_timer_handler, this, ptr));
     return true;
   }
@@ -265,17 +268,19 @@ class boosted_tcp_server
       return true;
     }
 
-    ptr->m_timer.expires_from_now(boost::posix_time::milliseconds(ptr->m_period));
+    ptr->m_timer.expires_after(std::chrono::milliseconds(ptr->m_period));
     ptr->m_timer.async_wait(boost::bind(&boosted_tcp_server<t_protocol_handler>::global_timer_handler, this, ptr));
     return true;
   }
 
   template<class t_handler>
-  bool async_call(t_handler t_callback)
+  void async_call(t_handler t_callback) noexcept
   {
-    io_service_.post(t_callback);
-    return true;
+    boost::asio::post(io_context_, std::move(t_callback));
   }
+
+  template<class t_handler>
+  void async_call(t_handler t_callback) const noexcept = delete;
 
   protected:
   typename t_protocol_handler::config_type m_config;
@@ -289,8 +294,8 @@ class boosted_tcp_server
   bool is_thread_worker();
 
   /// The io_service used to perform asynchronous operations.
-  std::unique_ptr<boost::asio::io_service> m_io_service_local_instance;
-  boost::asio::io_service& io_service_;
+  std::unique_ptr<boost::asio::io_context> m_io_context_local_instance;
+  boost::asio::io_context& io_context_;
 
   /// Acceptor used to listen for incoming connections.
   boost::asio::ip::tcp::acceptor acceptor_;

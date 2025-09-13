@@ -33,6 +33,9 @@
 #include <boost/interprocess/detail/atomic.hpp>
 #include <boost/smart_ptr/make_shared.hpp>
 
+#include <chrono>
+#include <boost/asio/steady_timer.hpp>
+
 #include "levin_base.h"
 #include "misc_language.h"
 #include "profile_tools.h"
@@ -159,7 +162,7 @@ public:
     {
       if(m_con.start_outer_call())
       {
-        m_timer.expires_from_now(boost::posix_time::milliseconds(timeout));
+        m_timer.expires_after(std::chrono::milliseconds(timeout));
         m_timer.async_wait([&con, command, cb](const boost::system::error_code& ec)
         {
           if(ec == boost::asio::error::operation_aborted)
@@ -177,7 +180,7 @@ public:
     {}
     callback_t m_cb;
     async_protocol_handler& m_con;
-    boost::asio::deadline_timer m_timer;
+    boost::asio::steady_timer m_timer;
     bool m_timer_started;
     std::atomic<bool> m_cancel_timer_called;
     bool m_timer_cancelled;
@@ -208,8 +211,7 @@ public:
       if(!m_cancel_timer_called)
       {
         m_cancel_timer_called = true;
-        boost::system::error_code ignored_ec;
-        m_timer_cancelled = 1 == m_timer.cancel(ignored_ec);
+        m_timer_cancelled = 1 == m_timer.cancel();
       }
       return m_timer_cancelled;
     }
@@ -903,7 +905,3 @@ bool async_protocol_handler_config<t_connection_context>::request_callback(boost
 
 #undef LOG_DEFAULT_CHANNEL 
 #define LOG_DEFAULT_CHANNEL NULL
-
-
-
-
