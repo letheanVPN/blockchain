@@ -26,12 +26,12 @@ if(POLICY CMP0167)
   cmake_policy(SET CMP0167 OLD)
 endif()
 
-option (USE_CCACHE "Use ccache if a usable instance is found" ON)
-if (USE_CCACHE)
-  include(FindCcache) # Has to be included after the project() macro, to be able to read the CXX variable.
-else()
-  message(STATUS "ccache deselected")
-endif()
+#option (USE_CCACHE "Use ccache if a usable instance is found" ON)
+#if (USE_CCACHE)
+#  include(FindCcache) # Has to be included after the project() macro, to be able to read the CXX variable.
+#else()
+#  message(STATUS "ccache deselected")
+#endif()
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
