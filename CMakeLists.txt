@@ -156,7 +156,7 @@ else()
   if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
     set(WARNINGS "${WARNINGS} -Wno-implicit-function-declaration -Wno-shift-count-overflow -Wno-error=mismatched-tags -Wno-error=null-conversion -Wno-overloaded-shift-op-parentheses -Wno-error=shift-count-overflow -Wno-error=tautological-constant-out-of-range-compare -Wno-error=unused-private-field -Wno-error=unneeded-internal-declaration")
   else()
-    set(WARNINGS "${WARNINGS} -Wno-error=write-strings -Wlogical-op -Wno-error=maybe-uninitialized")
+    set(WARNINGS "${WARNINGS} -Wno-error=write-strings -Wno-error=uninitialized")
   endif()
 
   # Since gcc 4.9 the LTO format is non-standard (slim), so we need the gcc-specific ar and ranlib binaries
@@ -204,7 +204,7 @@ else()
   else()
     set(DEBUG_FLAGS "-g3 -O0")
   endif()
-  set(RELEASE_FLAGS "-Ofast -DNDEBUG -Wno-unused-variable")
+  set(RELEASE_FLAGS "-O3 -ffast-math -DNDEBUG -Wno-unused-variable")
 
   if(NOT APPLE AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     set(RELEASE_FLAGS "${RELEASE_FLAGS} -flto=auto -g3")

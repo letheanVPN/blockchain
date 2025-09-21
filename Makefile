@@ -38,20 +38,20 @@ release: conan-profile-detect
 	@echo "Building profile: release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing
 	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/release --parallel $(nproc)
+	cmake --build build/release --parallel 3
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
-	cmake --build build/debug --parallel $(nproc)
+	cmake --build build/debug --parallel 3
 
 static: static-release
 static-release: conan-profile-detect
 	@echo "Building profile: release-static"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
 	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON
-	cmake --build build/release-static --parallel $(nproc)
+	cmake --build build/release-static --parallel 3
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
@@ -64,7 +64,7 @@ $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ --profile=cmake/profiles/$@ --build=missing
 	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/$@ --parallel $(nproc)
+	cmake --build build/$@ --parallel 2
 
 help:
 	@echo "Available targets:"
