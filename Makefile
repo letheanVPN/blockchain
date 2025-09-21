@@ -34,20 +34,20 @@ dir_release = $(build)/release
 
 all: help
 
-release:
+release: conan-profile-detect
 	@echo "Building profile: release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing
 	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 	cmake --build build/release --parallel $(nproc)
 
-debug:
+debug: conan-profile-detect
 	@echo "Building profile: debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
 	cmake --build build/debug --parallel $(nproc)
 
 static: static-release
-static-release:
+static-release: conan-profile-detect
 	@echo "Building profile: release-static"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
 	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON
