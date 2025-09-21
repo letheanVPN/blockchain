@@ -38,62 +38,9 @@ jobs:
       - name: install dependencies
         run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache miniupnpc
 
-      - name: Cache OpenSSL
-        id: cache-openssl
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/build/openssl
-          key: openssl-${{ runner.os }}-intel
 
-      - name: ccache caching
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-${{ runner.os }}-intel
-
-      - name: Install boost
-        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
-        id: install-boost
-        with:
-          boost_version: 1.84.0
-          boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 13
-          toolset: clang
-          arch: 'x86'
-
-      - name: Install Qt
-        if: ${{ inputs.build-gui }}
-        uses: jurplel/install-qt-action@v3
-        with:
-          dir: '${{ github.workspace }}/build/qt/'
-          aqtversion: '==3.1.*'
-          version: '6.8.3'
-          host: 'mac'
-          target: 'desktop'
-          arch: 'clang_64'
-          modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
-
-      - name: Build OpenSSL
-        if: steps.cache-openssl.outputs.cache-hit != 'true'
-        run: |
-          cd build
-          curl -OL https://www.openssl.org/source/openssl-1.1.1w.tar.gz
-          echo "cf3098950cb4d853ad95c0841f1f9c6d3dc102dccfcacd521d93925208b76ac8  openssl-1.1.1w.tar.gz" | shasum -c && tar -xjf openssl-1.1.1w.tar.gz
-          rm openssl-1.1.1w.tar.gz && cd openssl-1.1.1w
-          export MACOSX_DEPLOYMENT_TARGET=12.0
-          ./config --prefix=${{ github.workspace }}/build/openssl --openssldir=${{ github.workspace }}/build/openssl shared zlib
-          make -j3 && make install_sw install_ssldirs && cd ..
-          rm -rf openssl-1.1.1w/
-
-      - name: Build CLI
-        if: ${{ inputs.build-cli }}
-        uses: ./.github/actions/cmake-build
-        with:
-          jobs: '4'
-          build-type: 'Release'
-          chain-network: ${{ inputs.chain-network }}
-          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'daemon simplewallet connectivity_tool'
+      - name: Compile Release
+        run: make release
 
       - name: CLI Artifacts
         if: ${{ inputs.build-cli }}
@@ -109,25 +56,19 @@ jobs:
           asset-type: 'cli'
           asset-directory: ${{ github.workspace }}/build/release/src
 
-      - name: Build GUI
-        if: ${{ inputs.build-gui }}
-        uses: ./.github/actions/cmake-build
-        with:
-          jobs: '4'
-          build-type: 'Release'
-          chain-network: ${{ inputs.chain-network }}
-          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'Zano'
-          build-gui: 'true'
+      - name: Compile Static Release
+        run: make static
 
-      - name: GUI Artifacts
-        if: ${{ inputs.build-gui }}
+      - name: CLI Artifacts
+        if: ${{ inputs.build-cli }}
         uses: ./.github/actions/sign-and-upload-release
         with:
           chain-network: ${{ inputs.chain-network }}
           release-tag: ${{ github.ref_name }}
           release: "${{ inputs.release }}"
           assets: |
-            Zano.app
-          asset-type: 'gui'
-          asset-directory: ${{ github.workspace }}/build/release/src
+            zanod
+            simplewallet
+            connectivity_tool
+          asset-type: 'cli-static'
+          asset-directory: ${{ github.workspace }}/build/release-static/src

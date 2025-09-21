@@ -102,6 +102,7 @@ INIT_SHARED_PCH()
 
 add_library(common ${COMMON})
 add_dependencies(common version ${PCH_LIB_NAME})
+target_link_libraries(common PUBLIC ${Boost_LIBRARIES})
 ENABLE_SHARED_PCH(common COMMON)
 
 if(NOT MSVC AND NOT APPLE AND NOT CLANG)  # TODO(unassigned): do we really need the clang equivalent?

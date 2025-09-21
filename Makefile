@@ -9,6 +9,11 @@ ifneq (, $(findstring MINGW, $(system)))
   cmake_gen = -G 'MSYS Makefiles'
 endif
 
+PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
+SORTED_PROFILES := $(sort $(PROFILES))
+CONAN_CACHE := $(CURDIR)/build/sdk
+DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/cmake/profiles/default
+
 cmake = cmake $(cmake_gen)
 
 cmake_debug = $(cmake) -D CMAKE_BUILD_TYPE=Debug
@@ -27,38 +32,49 @@ build = build
 dir_debug = $(build)/debug
 dir_release = $(build)/release
 
-all: release
+all: help
 
 release:
-	$(eval command += $(cmake_release))
-	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+	@echo "Building profile: release"
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+	cmake --build build/release --parallel $(nproc)
 
 debug:
-	$(eval command += $(cmake_debug))
-	$(call CMAKE,$(dir_debug),$(command)) && $(MAKE)
+	@echo "Building profile: debug"
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
+	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
+	cmake --build build/debug --parallel $(nproc)
 
 static: static-release
 static-release:
-	$(eval command += $(cmake_release) $(cmake_static))
-	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+	@echo "Building profile: release-static"
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
+	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON
+	cmake --build build/release-static --parallel $(nproc)
 
-#
-# GUI
-#
+conan-profile-detect:
+	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
+		echo "Default conan profile not found. Detecting a new one..."; \
+		CONAN_HOME=$(CONAN_CACHE) conan profile detect --name=default --force; \
+	fi
 
-gui: gui-release
-gui-release:
-	$(eval command += $(cmake_release) $(cmake_gui))
-	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+# Rule for each profile
+$(PROFILES): conan-profile-detect
+	@echo "Building profile: $@"
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ --profile=cmake/profiles/$@ --build=missing
+	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+	cmake --build build/$@ --parallel $(nproc)
 
-gui-debug:
-	$(eval command += $(cmake_debug) $(cmake_gui))
-	$(call CMAKE,$(dir_debug),$(command)) && $(MAKE)
-
-gui-static: gui-release-static
-gui-release-static:
-	$(eval command += $(cmake_release) $(cmake_gui) $(cmake_static))
-	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+help:
+	@echo "Available targets:"
+	@printf "  %-22s %s\n" "all:" "Build all profiles"
+	@printf "  %-22s %s\n" "clean:" "Clean all build directories"
+	@printf "  %-22s %s\n" "release:" "Build release"
+	@printf "  %-22s %s\n" "static:" "Build static release"
+	@printf "  %-22s %s\n" "debug:" "Build debug"
+	@$(foreach profile,$(SORTED_PROFILES),printf "  %-22s %s\n" "make $(profile):" "Build the $(profile) profile";)
+	@printf "  %-22s %s\n" "help:" "Show this help message"
 
 #
 # Tests
@@ -79,4 +95,4 @@ clean:
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release debug static static-release gui gui-release gui-static gui-release-static gui-debug test test-release test-debug clean tags
+.PHONY: all release debug static static-release gui gui-release gui-static gui-release-static gui-debug test test-release test-debug clean tags conan-profile-detect $(PROFILES)
