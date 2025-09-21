@@ -16,7 +16,7 @@ inputs:
     description: "The directory where 7z's working dir will be set"
   release:
     required: false
-    default: "true"
+    default: "false"
     description: 'string flag to determine if a release should be created'
   release-tag:
     required: true
