@@ -43,8 +43,6 @@ jobs:
       - name: install dependencies
         run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache miniupnpc
 
-      - name: Install Conan
-        uses: conan-io/setup-conan@v1
 
       - name: Compile Release
         run: make release
@@ -57,9 +55,9 @@ jobs:
           release-tag: ${{ github.ref_name }}
           release: "${{ inputs.release }}"
           assets: |
-            ${{ github.workspace }}/build/release/src/zanod
-            ${{ github.workspace }}/build/release/src/simplewallet
-            ${{ github.workspace }}/build/release/src/connectivity_tool
+            zanod
+            simplewallet
+            connectivity_tool
           asset-type: 'cli'
           asset-directory: ${{ github.workspace }}/build/release/src
 
