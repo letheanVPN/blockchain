@@ -38,20 +38,20 @@ release: conan-profile-detect
 	@echo "Building profile: release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing
 	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/release --parallel 2
+	cmake --build build/release
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
-	cmake --build build/debug --parallel 2
+	cmake --build build/debug
 
 static: static-release
 static-release: conan-profile-detect
 	@echo "Building profile: release-static"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
 	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON
-	cmake --build build/release-static --parallel 2
+	cmake --build build/release-static
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
@@ -64,7 +64,7 @@ $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ --profile=cmake/profiles/$@ --build=missing
 	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/$@ --parallel 2
+	cmake --build build/$@
 
 help:
 	@echo "Available targets:"
@@ -85,14 +85,14 @@ test-release:
 	@echo "Building profile: test-release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-release --build=missing
 	cmake -S . -B build/test-release -DCMAKE_TOOLCHAIN_FILE=build/test-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D BUILD_TESTS=ON
-	cmake --build build/test-release --parallel 2
+	cmake --build build/test-release
 	$(MAKE) test
 
 test-debug:
 	@echo "Building profile: test-debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-debug --build=missing
 	cmake -S . -B build/test-debug -DCMAKE_TOOLCHAIN_FILE=build/test-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D BUILD_TESTS=ON
-	cmake --build build/test-debug --parallel 2
+	cmake --build build/test-debug
 	$(MAKE) test
 
 clean:
