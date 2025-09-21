@@ -52,9 +52,9 @@ jobs:
           release-tag: ${{ github.ref_name }}
           release: "${{ inputs.release }}"
           assets: |
-            ${{ github.workspace }}/build/release/src/zanod
-            ${{ github.workspace }}/build/release/src/simplewallet
-            ${{ github.workspace }}/build/release/src/connectivity_tool
+            zanod
+            simplewallet
+            connectivity_tool
           asset-type: 'cli'
           asset-directory: ${{ github.workspace }}/build/release/src
 
@@ -69,8 +69,8 @@ jobs:
           release-tag: ${{ github.ref_name }}
           release: "${{ inputs.release }}"
           assets: |
-            ${{ github.workspace }}/build/release-static/src/zanod
-            ${{ github.workspace }}/build/release-static/src/simplewallet
-            ${{ github.workspace }}/build/release-static/src/connectivity_tool
+            zanod
+            simplewallet
+            connectivity_tool
           asset-type: 'cli-static'
           asset-directory: ${{ github.workspace }}/build/release-static/src
