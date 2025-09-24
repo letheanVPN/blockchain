@@ -129,7 +129,9 @@ endif()
 
 
 add_definitions("/DBOOST_NO_CXX98_FUNCTION_BASE")
-
+if(WIN32)
+  add_definitions(-DBOOST_ALL_NO_LIB)
+endif()
 
 if(MSVC)
   add_definitions("/D_CRT_SECURE_NO_WARNINGS /D_WIN32_WINNT=0x0600 /DWIN32_LEAN_AND_MEAN /DGTEST_HAS_TR1_TUPLE=0")
@@ -229,6 +231,9 @@ endif()
 # Link Boost statically, consistent with previous setup
 if(MSVC OR STATIC)
   set(Boost_USE_STATIC_LIBS ON)
+  if (MSVC)
+    set(Boost_USE_MULTITHREADED ON)
+  endif ()
 endif()
 
 if(STATIC)

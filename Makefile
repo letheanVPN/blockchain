@@ -5,7 +5,7 @@
 
 # Define CMake generator
 
-ifeq ($(OS),Windows_NT)
+ifneq ($(OS),Windows_NT)
 system := $(shell uname)
 ifneq (, $(findstring MINGW, $(system)))
   cmake_gen = -G 'MSYS Makefiles'
@@ -40,7 +40,7 @@ release: conan-profile-detect
 	@echo "Building profile: release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
 	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/release --config=Release
+	cmake --build build/release --config=Release --parallel=8
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
@@ -53,7 +53,7 @@ static-release: conan-profile-detect
 	@echo "Building profile: release-static"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
 	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON
-	cmake --build build/release-static --config=Release
+	cmake --build build/release-static --config=Release --parallel=8
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \

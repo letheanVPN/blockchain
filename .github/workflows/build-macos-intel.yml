@@ -44,7 +44,7 @@ jobs:
           cache_packages: 'true'
 
       - name: Compile Release
-        run: make release
+        run: make mac_intel
 
       - name: CLI Artifacts
         if: ${{ inputs.build-cli }}
@@ -58,21 +58,4 @@ jobs:
             simplewallet
             connectivity_tool
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/release/src
-
-      - name: Compile Static Release
-        run: make static
-
-      - name: CLI Artifacts
-        if: ${{ inputs.build-cli }}
-        uses: ./.github/actions/sign-and-upload-release
-        with:
-          chain-network: ${{ inputs.chain-network }}
-          release-tag: ${{ github.ref_name }}
-          release: "${{ inputs.release }}"
-          assets: |
-            zanod
-            simplewallet
-            connectivity_tool
-          asset-type: 'cli-static'
-          asset-directory: ${{ github.workspace }}/build/release-static/src
+          asset-directory: ${{ github.workspace }}/build/mac_intel/src
