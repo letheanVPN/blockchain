@@ -4,3 +4,6 @@
 [submodule "contrib/bitcoin-secp256k1"]
 	path = contrib/bitcoin-secp256k1
 	url = https://github.com/bitcoin-core/secp256k1.git
+[submodule "contrib/tor-connect"]
+	path = contrib/tor-connect
+	url = https://github.com/hyle-team/tor-connect.git
