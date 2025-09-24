@@ -42,8 +42,8 @@ jobs:
       - name: Install Conan
         uses: conan-io/setup-conan@v1
         with:
-          cache_packages: 'true'
-
+          home: ${{ github.workspace }}/build/sdk
+          cache_packages: true
 
       - name: Compile Release
         run: make win_x86_64_msvc
