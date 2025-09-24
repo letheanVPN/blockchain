@@ -27,7 +27,7 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make msvc-194-amd64
+        run: make msvc-194-amd64-release
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
@@ -37,4 +37,4 @@ jobs:
             zanod.exe
             simplewallet.exe
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/msvc-194-amd64/src/Release
+          asset-directory: ${{ github.workspace }}/build/msvc-194-amd64-release/src/Release
