@@ -1,5 +1,6 @@
 name: build-linux
-
+permissions:
+  contents: read
 on:
   workflow_call:
     inputs:
