@@ -46,7 +46,7 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make win_x86_64_msvc
+        run: make msvc-194-amd64
 
       - name: CLI Artifacts
         if: ${{ inputs.build-cli }}
@@ -58,6 +58,5 @@ jobs:
           assets: |
             zanod.exe
             simplewallet.exe
-            connectivity_tool.exe
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/win_x86_64_msvc/src/Release
+          asset-directory: ${{ github.workspace }}/build/msvc-194-amd64/src/Release

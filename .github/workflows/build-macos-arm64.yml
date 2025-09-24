@@ -50,7 +50,7 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make mac_arm
+        run: make apple-clang-arm64-release
 
       - name: CLI Artifacts
         if: ${{ inputs.build-cli }}
@@ -62,6 +62,5 @@ jobs:
           assets: |
             zanod
             simplewallet
-            connectivity_tool
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/mac_arm/src
+          asset-directory: ${{ github.workspace }}/build/apple-clang-arm64-release/src
