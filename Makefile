@@ -67,7 +67,7 @@ $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ --profile=cmake/profiles/$@ --build=missing
 	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/$@ --config=Release --parallel=2
+	cmake --build build/$@ --config=Release --parallel=20
 
 help:
 	@echo "Available targets:"

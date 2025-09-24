@@ -45,7 +45,7 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make linux_x86_64
+        run: make gcc-linux-amd64-release
 
       - name: CLI Artifacts
         if: ${{ inputs.build-cli }}
@@ -57,6 +57,5 @@ jobs:
           assets: |
             zanod
             simplewallet
-            connectivity_tool
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/linux_x86_64/src
+          asset-directory: ${{ github.workspace }}/build/gcc-linux-amd64-release/src
