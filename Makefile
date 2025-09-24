@@ -4,11 +4,13 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # Define CMake generator
+
+ifeq ($(OS),Windows_NT)
 system := $(shell uname)
 ifneq (, $(findstring MINGW, $(system)))
   cmake_gen = -G 'MSYS Makefiles'
 endif
-
+endif
 PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
 SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
@@ -36,22 +38,22 @@ all: help
 
 release: conan-profile-detect
 	@echo "Building profile: release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
 	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/release
+	cmake --build build/release --config=Release
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
-	cmake --build build/debug
+	cmake --build build/debug --config=Debug
 
 static: static-release
 static-release: conan-profile-detect
 	@echo "Building profile: release-static"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
 	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON
-	cmake --build build/release-static
+	cmake --build build/release-static --config=Release
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
@@ -59,12 +61,13 @@ conan-profile-detect:
 		CONAN_HOME=$(CONAN_CACHE) conan profile detect --name=default --force; \
 	fi
 
+
 # Rule for each profile
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ --profile=cmake/profiles/$@ --build=missing
 	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/$@
+	cmake --build build/$@ --config=Release
 
 help:
 	@echo "Available targets:"
@@ -85,14 +88,14 @@ test-release:
 	@echo "Building profile: test-release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-release --build=missing
 	cmake -S . -B build/test-release -DCMAKE_TOOLCHAIN_FILE=build/test-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D BUILD_TESTS=ON
-	cmake --build build/test-release
+	cmake --build build/test-release --config=Release
 	$(MAKE) test
 
 test-debug:
 	@echo "Building profile: test-debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-debug --build=missing
 	cmake -S . -B build/test-debug -DCMAKE_TOOLCHAIN_FILE=build/test-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D BUILD_TESTS=ON
-	cmake --build build/test-debug
+	cmake --build build/test-debug --config=Debug
 	$(MAKE) test
 
 clean:
