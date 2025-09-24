@@ -40,20 +40,20 @@ release: conan-profile-detect
 	@echo "Building profile: release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
 	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/release --config=Release --parallel=8
+	cmake --build build/release --config=Release --parallel=2
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
-	cmake --build build/debug --config=Debug
+	cmake --build build/debug --config=Debug --parallel=2
 
 static: static-release
 static-release: conan-profile-detect
 	@echo "Building profile: release-static"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
 	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON
-	cmake --build build/release-static --config=Release --parallel=8
+	cmake --build build/release-static --config=Release --parallel=2
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
@@ -88,14 +88,14 @@ test-release:
 	@echo "Building profile: test-release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-release --build=missing
 	cmake -S . -B build/test-release -DCMAKE_TOOLCHAIN_FILE=build/test-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D BUILD_TESTS=ON
-	cmake --build build/test-release --config=Release
+	cmake --build build/test-release --config=Release --parallel=2
 	$(MAKE) test
 
 test-debug:
 	@echo "Building profile: test-debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-debug --build=missing
 	cmake -S . -B build/test-debug -DCMAKE_TOOLCHAIN_FILE=build/test-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D BUILD_TESTS=ON
-	cmake --build build/test-debug --config=Debug
+	cmake --build build/test-debug --config=Debug --parallel=2
 	$(MAKE) test
 
 clean:
