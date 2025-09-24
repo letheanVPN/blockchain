@@ -91,8 +91,11 @@ if(NOT USE_BITCOIN_SECP256K1_FOR_ECDSA)
   add_definitions(-DUSE_OPEN_SSL_FOR_ECDSA)
 endif()
 
+find_package(miniupnpc REQUIRED)
+find_package(ZLIB REQUIRED)
 
-include_directories(src contrib/eos_portable_archive contrib contrib/epee/include contrib/jwt-cpp/include ${OPENSSL_INCLUDE_DIR} "${CMAKE_BINARY_DIR}/version" "${CMAKE_BINARY_DIR}/contrib/zlib")
+
+include_directories(src contrib/eos_portable_archive ${ZLIB_INCLUDE_DIRS} contrib contrib/epee/include contrib/jwt-cpp/include  ${OPENSSL_INCLUDE_DIR} "${CMAKE_BINARY_DIR}/version")
 
 add_definitions(-DSTATICLIB)
 
@@ -126,6 +129,7 @@ endif()
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CLANG TRUE)
 endif()
+
 
 
 add_definitions("/DBOOST_NO_CXX98_FUNCTION_BASE")

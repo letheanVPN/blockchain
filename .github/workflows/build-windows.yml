@@ -1,5 +1,6 @@
 name: build-windows
-
+permissions:
+  contents: read
 on:
   workflow_call:
     inputs:
@@ -8,25 +9,10 @@ on:
         default: testnet
         required: false
         type: string
-      build-cli:
-        description: "Should the CLI be built"
-        default: true
-        required: false
-        type: boolean
-      build-gui:
-        description: "Should the GUI be built"
-        default: true
-        required: false
-        type: boolean
-      release:
-        description: "Make a release"
-        default: true
-        required: false
-        type: boolean
 
 jobs:
   build:
-    name: Windows
+    name: msvc-194-amd64-release
     runs-on: windows-2022
     steps:
       - name: Checkout Project
@@ -35,10 +21,6 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Eat the Choco
-        run: |
-          choco install ccache -y
-          choco install zip -y
       - name: Install Conan
         uses: conan-io/setup-conan@v1
         with:
@@ -46,17 +28,14 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make msvc-194-amd64
+        run: make msvc-194-amd64-release
 
       - name: CLI Artifacts
-        if: ${{ inputs.build-cli }}
-        uses: ./.github/actions/sign-and-upload-release
+        uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          release-tag: ${{ github.ref_name }}
-          release: "${{ inputs.release }}"
           assets: |
             zanod.exe
             simplewallet.exe
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/msvc-194-amd64/src/Release
+          asset-directory: ${{ github.workspace }}/build/msvc-194-amd64-release/src/Release

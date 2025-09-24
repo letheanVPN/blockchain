@@ -19,7 +19,7 @@ using namespace epee;
 #include "wrap_service.h"
 PUSH_VS_WARNINGS
 DISABLE_VS_WARNINGS(4244)
-#include "jwt-cpp/jwt.h"
+#include <jwt-cpp/jwt.h>
 POP_VS_WARNINGS
 #include "crypto/bitcoin/sha256_helper.h"
 

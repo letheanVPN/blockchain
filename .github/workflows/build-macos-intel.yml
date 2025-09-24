@@ -1,5 +1,6 @@
 name: build-macos-intel
-
+permissions:
+  contents: read
 on:
   workflow_call:
     inputs:
@@ -8,25 +9,10 @@ on:
         default: testnet
         required: false
         type: string
-      build-cli:
-        description: "Should the CLI be built"
-        default: true
-        required: false
-        type: boolean
-      build-gui:
-        description: "Should the GUI be built"
-        default: true
-        required: false
-        type: boolean
-      release:
-        description: "Make a release"
-        default: true
-        required: false
-        type: boolean
 
 jobs:
   build:
-    name: MacOS Intel
+    name: apple-clang-arm64-release
     runs-on: macos-13
     steps:
       - name: Checkout Project
@@ -34,9 +20,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-
-      - name: install dependencies
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install ccache miniupnpc
 
       - name: Install Conan
         uses: conan-io/setup-conan@v1
@@ -48,12 +31,9 @@ jobs:
         run: make apple-clang-arm64-release
 
       - name: CLI Artifacts
-        if: ${{ inputs.build-cli }}
-        uses: ./.github/actions/sign-and-upload-release
+        uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          release-tag: ${{ github.ref_name }}
-          release: "${{ inputs.release }}"
           assets: |
             zanod
             simplewallet
