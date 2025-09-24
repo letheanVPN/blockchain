@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(DISABLE_TOR TRUE CACHE BOOL "Disable TOR library(and related tor-connect submodule")
+set(DISABLE_TOR TRUE CACHE BOOL "Disable TOR library(and related tor-connect submodule)")
 
 PROJECT(Zano)
 set(VERSION "1.0")
@@ -274,8 +274,8 @@ if (NOT COMMIT_ID_IN_VERSION)
   configure_file("src/version.h.in" "version/version.h")
   add_custom_target(version ALL)
 elseif(DEFINED COMMIT)
-  string(REPLACE "." "\." VERSION_RE "${VERSION}")
-  if(NOT REFS MATCHES "(\(|, )tag: v${VERSION_RE}(\)|, )")
+  string(REPLACE "." "\\." VERSION_RE "${VERSION}")
+  if(NOT REFS MATCHES "(\\(|, )tag: v${VERSION_RE}(\\)|, )")
     set(VERSION "${VERSION}-g${COMMIT}")
   endif()
   configure_file("src/version.h.in" "version/version.h")
