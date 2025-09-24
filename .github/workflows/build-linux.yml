@@ -26,7 +26,7 @@ on:
 
 jobs:
   build:
-    name: Linux
+    name: gcc-linux-amd64-release
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Project

@@ -31,7 +31,7 @@ on:
 
 jobs:
   build-cli:
-    name: MacOS Arm64
+    name: apple-clang-arm64-release
     runs-on: macos-15
     steps:
       - name: Checkout Project
