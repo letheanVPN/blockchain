@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: msvc-194-amd64
+    name: msvc-194-amd64-release
     runs-on: windows-2022
     steps:
       - name: Checkout Project
