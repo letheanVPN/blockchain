@@ -1,5 +1,5 @@
-# .github/actions/sign-and-upload-release/action.yml
-name: 'Sign and Upload Release'
+# .github/actions/upload-artifacts/action.yml
+name: 'Upload Artifacts'
 description: 'Archives and uploads signed binaries to a GitHub release'
 inputs:
   chain-network:
@@ -14,13 +14,6 @@ inputs:
   asset-directory:
     required: true
     description: "The directory where 7z's working dir will be set"
-  release:
-    required: false
-    default: "false"
-    description: 'string flag to determine if a release should be created'
-  release-tag:
-    required: true
-    description: 'The tag for the release'
 
 runs:
   using: "composite"
@@ -65,24 +58,3 @@ runs:
       with:
         name: ${{ steps.asset.outputs.key }}
         path: ${{ steps.asset.outputs.paths }}
-
-#    - name: Archive Release
-#      if: inputs.release != 'false'
-#      shell: bash
-#      run: |
-#        STAGING_DIR=$(mktemp -d)
-#        echo "${{ steps.asset.outputs.paths }}" | while read -r file; do
-#          if [[ -n "$file" ]]; then
-#            cp -r "$file" "$STAGING_DIR"
-#          fi
-#        done
-#        7z a -y "${{ inputs.asset-directory }}/${{ steps.asset.outputs.key }}.zip" -w"$STAGING_DIR" .
-#
-#    - name: Make Release
-#      if: inputs.release != 'false'
-#      uses: softprops/action-gh-release@v2
-#      with:
-#        tag_name: ${{ inputs.chain-network }}-${{ inputs.release-tag }}
-#        prerelease: contains(inputs.chain-network, 'testnet')
-#        files: ${{ inputs.asset-directory }}${{ runner.os == 'Windows' && '\' || '/' }}${{ steps.asset.outputs.key }}.zip
-#        target_commitish: ${{ github.sha }}
