@@ -38,3 +38,6 @@ jobs:
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
+  build-docs:
+    name: Docs
+    uses: ./.github/workflows/build-docs.yml

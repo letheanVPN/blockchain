@@ -1,0 +1,36 @@
+name: docs
+permissions:
+  contents: read
+on:
+  workflow_call:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - uses: actions/cache@v4
+        with:
+          key: ${{ github.ref }}
+          path: .cache
+      - run: sudo apt-get install -y libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev pngquant
+      - run: pip install mkdocs-git-revision-date-localized-plugin cairosvg mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging]
+
+      - name: Build Offline Version
+        run: CI=true INSIDERS=false mkdocs build
+
+      - name: Zip Build
+        run: |
+          cd build/docs
+          zip -qq -r ../documentation.zip *
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: Documentation
+          path: build/documentation.zip
