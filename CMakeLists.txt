@@ -11,7 +11,7 @@ message("OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
 
 list(INSERT CMAKE_MODULE_PATH 0
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
+include(DocBuilder)
 
 if(POLICY CMP0043)
   cmake_policy(SET CMP0043 NEW)

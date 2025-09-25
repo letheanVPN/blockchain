@@ -1,3 +1,4 @@
+# Copyright (c) 2017-2025 Lethean https://lt.hn
 # Copyright (c) 2014-2019 Zano Project
 # Copyright (c) 2014 The Cryptonote developers
 # Distributed under the MIT/X11 software license, see the accompanying
@@ -53,36 +54,14 @@ CPU_CORES := $(or $(CPU_CORES),1)
 CPU_CORES := $(shell expr $(CPU_CORES) + 0 2>/dev/null || echo 1)
 CONAN_CPU_COUNT=$(CPU_CORES)
 
-ifneq ($(OS),Windows_NT)
-system := $(shell uname)
-ifneq (, $(findstring MINGW, $(system)))
-  cmake_gen = -G 'MSYS Makefiles'
-endif
-endif
 PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
 SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/cmake/profiles/default
 
-cmake = cmake $(cmake_gen)
-
-cmake_debug = $(cmake) -D CMAKE_BUILD_TYPE=Debug
-cmake_release = $(cmake) -D CMAKE_BUILD_TYPE=Release
-
-cmake_gui = -D BUILD_GUI=ON
-cmake_static = -D STATIC=ON
-cmake_tests = -D BUILD_TESTS=ON
-
-# Helper macro
-define CMAKE
-  mkdir -p $1 && cd $1 && $2 ../../
-endef
-
-build = build
-dir_debug = $(build)/debug
-dir_release = $(build)/release
-
 all: help
+
+
 
 release: conan-profile-detect
 	@echo "Building profile: release"
@@ -146,10 +125,24 @@ test-debug:
 	cmake --build build/test-debug --config=Debug --parallel=$(CPU_CORES)
 	$(MAKE) test
 
+configure:
+	@echo "Running Config: release"
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+docs: configure
+	@echo "Building Documentation"
+	cmake --build build/release --target=docs --config=Release --parallel=$(CPU_CORES)
+
+docs-dev: configure
+	@echo "Building Documentation"
+	cmake --build build/release --target=serve_docs --config=Release
+
+
 clean:
 	rm -rf build
 
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release debug static static-release gui gui-release gui-static gui-release-static gui-debug test test-release test-debug clean tags conan-profile-detect $(PROFILES)
+.PHONY: all release debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)
