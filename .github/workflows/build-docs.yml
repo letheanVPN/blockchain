@@ -10,6 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          submodules: recursive
           fetch-depth: 0
       - uses: actions/setup-python@v4
         with:
@@ -20,7 +21,7 @@ jobs:
         with:
           home: ${{ github.workspace }}/build/sdk
           cache_packages: true
-          
+
       - uses: actions/cache@v4
         with:
           key: ${{ github.ref }}
