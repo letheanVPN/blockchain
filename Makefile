@@ -61,14 +61,7 @@ DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/cmake/profiles/default
 
 all: help
 
-configure:
-	@echo "Running Config: release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
 
-docs: configure
-	@echo "Building Documentation"
-	cmake --build build/release --target=docs --config=Release --parallel=$(CPU_CORES)
 
 release: conan-profile-detect
 	@echo "Building profile: release"
@@ -132,10 +125,24 @@ test-debug:
 	cmake --build build/test-debug --config=Debug --parallel=$(CPU_CORES)
 	$(MAKE) test
 
+configure:
+	@echo "Running Config: release"
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+
+docs: configure
+	@echo "Building Documentation"
+	cmake --build build/release --target=docs --config=Release --parallel=$(CPU_CORES)
+
+docs-dev: configure
+	@echo "Building Documentation"
+	cmake --build build/release --target=serve_docs --config=Release
+
+
 clean:
 	rm -rf build
 
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release debug docs configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)
+.PHONY: all release debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)
