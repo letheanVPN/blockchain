@@ -31,7 +31,7 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make gcc-linux-amd64-release
+        run: make gcc-linux-amd64-release TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
