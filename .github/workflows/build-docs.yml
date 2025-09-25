@@ -22,7 +22,7 @@ jobs:
       - run: pip install mkdocs-git-revision-date-localized-plugin cairosvg mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging]
 
       - name: Build Offline Version
-        run: CI=true INSIDERS=false mkdocs build
+        run: make docs
 
       - name: Zip Build
         run: |
