@@ -1,17 +1,19 @@
-/*
-   BLAKE2 reference source code package - reference C implementations
-
-   Copyright 2012, Samuel Neves <sneves@dei.uc.pt>.  You may use this under the
-   terms of the CC0, the OpenSSL Licence, or the Apache Public License 2.0, at
-   your option.  The terms of these licenses can be found at:
-
-   - CC0 1.0 Universal : http://creativecommons.org/publicdomain/zero/1.0
-   - OpenSSL license   : https://www.openssl.org/source/license.html
-   - Apache 2.0        : http://www.apache.org/licenses/LICENSE-2.0
-
-   More information about the BLAKE2 hash function can be found at
-   https://blake2.net.
-*/
+// Copyright (c) 2014-2018 Zano Project
+// Copyright (c) 2014-2018 The Louisdor Project
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 #ifndef BLAKE2_IMPL_H
 #define BLAKE2_IMPL_H
 
