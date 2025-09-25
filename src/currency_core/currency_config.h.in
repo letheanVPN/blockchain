@@ -56,15 +56,15 @@
 #define CURRENCY_COINBASE_BLOB_RESERVED_SIZE            1100
 #define CURRENCY_MAX_TRANSACTION_BLOB_SIZE              (CURRENCY_BLOCK_GRANTED_FULL_REWARD_ZONE - CURRENCY_COINBASE_BLOB_RESERVED_SIZE*2) 
 #define CURRENCY_FREE_TX_MAX_BLOB_SIZE                  1024 // soft txpool-based limit for free-of-charge txs (such as BC_OFFERS_SERVICE_INSTRUCTION_DEL)
-#define CURRENCY_DISPLAY_DECIMAL_POINT                  12
+#define CURRENCY_DISPLAY_DECIMAL_POINT                  @currency_display_decimal_point@
 
 // COIN - number of smallest units in one coin
-#define COIN                                            ((uint64_t)1000000000000) // pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
-#define BASE_REWARD_DUST_THRESHOLD                      ((uint64_t)1000000) // pow(10, 6) - change this will cause hard-fork!
-#define DEFAULT_DUST_THRESHOLD                          ((uint64_t)0)
+#define COIN                                            ((uint64_t)@coin@) // pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
+#define BASE_REWARD_DUST_THRESHOLD                      ((uint64_t)@base_reward_dust_threshold@) // pow(10, 6) - change this will cause hard-fork!
+#define DEFAULT_DUST_THRESHOLD                          ((uint64_t)@default_dust_threshold@)
 
-#define TX_DEFAULT_FEE                                  ((uint64_t)10000000000) // .01
-#define TX_MINIMUM_FEE                                  ((uint64_t)10000000000) // .01
+#define TX_DEFAULT_FEE                                  ((uint64_t)@tx_default_fee@) // .01
+#define TX_MINIMUM_FEE                                  ((uint64_t)@tx_minimum_fee@) // .01
 
 #define CURRENCY_BLOCK_REWARD                           1000000000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
 
@@ -73,13 +73,13 @@
 #define CURRENCY_MINER_TX_MAX_OUTS                      CURRENCY_TX_MAX_ALLOWED_OUTS
 #define CURRENCY_TX_OUTS_RND_SPLIT_DIGITS_TO_KEEP       3
 
-#define DIFFICULTY_POW_STARTER                          1
-#define DIFFICULTY_POS_TARGET                           120 // seconds
-#define DIFFICULTY_POW_TARGET                           120 // seconds
+#define DIFFICULTY_POW_STARTER                          @difficulty_pow_starter@
+#define DIFFICULTY_POS_TARGET                           @difficulty_pos_target@ // seconds
+#define DIFFICULTY_POW_TARGET                           @difficulty_pow_target@ // seconds
 #define DIFFICULTY_TOTAL_TARGET                         ((DIFFICULTY_POS_TARGET + DIFFICULTY_POW_TARGET) / 4)
-#define DIFFICULTY_WINDOW                               720 // blocks
-#define DIFFICULTY_LAG                                  15  // !!!
-#define DIFFICULTY_CUT                                  60  // timestamps to cut after sorting
+#define DIFFICULTY_WINDOW                               @difficulty_window@ // blocks
+#define DIFFICULTY_LAG                                  @difficulty_lag@  // !!!
+#define DIFFICULTY_CUT                                  @difficulty_cut@  // timestamps to cut after sorting
 #define DIFFICULTY_BLOCKS_COUNT                         (DIFFICULTY_WINDOW + DIFFICULTY_LAG)
 
 #define CURRENCY_BLOCKS_PER_DAY                          ((60*60*24)/(DIFFICULTY_TOTAL_TARGET))
@@ -113,19 +113,19 @@
 
 
 #ifndef TESTNET
-#define P2P_DEFAULT_PORT                                11121
-#define RPC_DEFAULT_PORT                                11211
-#define STRATUM_DEFAULT_PORT                            11777
-#define P2P_NETWORK_ID_TESTNET_FLAG                     0
-#define P2P_MAINTAINERS_PUB_KEY                         "8f138bb73f6d663a3746a542770781a09579a7b84cb4125249e95530824ee607"
-#define DIFFICULTY_POS_STARTER                          1
-#else 
-#define P2P_DEFAULT_PORT                                (11211 + CURRENCY_FORMATION_VERSION)
-#define RPC_DEFAULT_PORT                                12111
-#define STRATUM_DEFAULT_PORT                            11888
-#define STRARUM_DEFAULT_PORT                            51113
+#define P2P_DEFAULT_PORT                                (36942 + CURRENCY_FORMATION_VERSION)
+#define RPC_DEFAULT_PORT                                36941
+#define STRATUM_DEFAULT_PORT                            36940
+//#define STRARUM_DEFAULT_PORT                            51113
 #define P2P_NETWORK_ID_TESTNET_FLAG                     1
 #define P2P_MAINTAINERS_PUB_KEY                         "aaa2d7aabc8d383fd53a3ae898697b28f236ceade6bafc1eecff413a6a02272a"
+#define DIFFICULTY_POS_STARTER                          1
+#else 
+#define P2P_DEFAULT_PORT                                @p2p_default_port@
+#define RPC_DEFAULT_PORT                                @rpc_default_port@
+#define STRATUM_DEFAULT_PORT                            @stratum_default_port@
+#define P2P_NETWORK_ID_TESTNET_FLAG                     0
+#define P2P_MAINTAINERS_PUB_KEY                         "@p2p_maintainers_pub_key@"
 #define DIFFICULTY_POS_STARTER                          1
 #endif
 
@@ -195,9 +195,9 @@
 
 
 
-#define CURRENCY_NAME_ABR                               "ZANO"
-#define CURRENCY_NAME_BASE                              "Zano"
-#define CURRENCY_NAME_SHORT_BASE                        "Zano"
+#define CURRENCY_NAME_ABR                               "@currency_name_abr@"
+#define CURRENCY_NAME_BASE                              "@currency_name_base@"
+#define CURRENCY_NAME_SHORT_BASE                        "@currency_name_short_base@"
 #ifndef TESTNET
 #define CURRENCY_NAME                                   CURRENCY_NAME_BASE
 #define CURRENCY_NAME_SHORT                             CURRENCY_NAME_SHORT_BASE
@@ -207,7 +207,7 @@
 #endif
 
 //premine
-#define PREMINE_AMOUNT                                  (17517203000000000000U) // 13827203.0 reserved for coinswap, 3690000.0 - premine  
+#define PREMINE_AMOUNT                                  (@premine_amount@U) // 13827203.0 reserved for coinswap, 3690000.0 - premine  
 
 //alias registration wallet
 #define ALIAS_REWARDS_ACCOUNT_SPEND_PUB_KEY             "0000000000000000000000000000000000000000000000000000000000000000" //burn alias money
@@ -317,7 +317,7 @@ static_assert(CURRENCY_MINER_TX_MAX_OUTS <= CURRENCY_TX_MAX_ALLOWED_OUTS, "Miner
 static_assert(PREMINE_AMOUNT / WALLET_MAX_ALLOWED_OUTPUT_AMOUNT < CURRENCY_MINER_TX_MAX_OUTS, "Premine can't be divided into reasonable number of outs");
 
 #define CURRENCY_RELAY_TXS_MAX_COUNT                    5
-
+// FIXME
 #ifndef TESTNET
   #define WALLET_ASSETS_WHITELIST_URL                     "https://api.zano.org/assets_whitelist.json"
 #else

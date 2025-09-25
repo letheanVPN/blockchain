@@ -47,6 +47,20 @@ ifeq ($(OS),Windows_NT)
     endif
 endif
 
+testnet-genesis-new:
+	$(eval command += $(cmake_release) $(testnet))
+	$(call CMAKE,$(dir_release),$(command) -DGENERATE_PREMINE_WALLET=1 -DPREMINE_WALLET_PASSWORD=12345678) && cmake --build ./src --target premine_wallet || true
+	$(eval command += $(cmake_release) $(testnet))
+	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
+	$(eval command += $(cmake_release) $(testnet))
+	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+
+genesis-new:
+	$(eval command += $(cmake_release))
+	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
+	$(eval command += $(cmake_release))
+	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+
 # -----------------------------------------------------------------
 # Safety net – ensure we always have a positive integer.
 # -----------------------------------------------------------------
@@ -54,14 +68,13 @@ CPU_CORES := $(or $(CPU_CORES),1)
 CPU_CORES := $(shell expr $(CPU_CORES) + 0 2>/dev/null || echo 1)
 CONAN_CPU_COUNT=$(CPU_CORES)
 
+
 PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
 SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/cmake/profiles/default
 
 all: help
-
-
 
 release: conan-profile-detect
 	@echo "Building profile: release"
