@@ -37,8 +37,6 @@ jobs:
         uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          assets: |
-            zanod
-            simplewallet
+          assets: lethean-*
           asset-type: 'cli'
           asset-directory: ${{ github.workspace }}/build/gcc-linux-amd64-release/src

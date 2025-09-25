@@ -34,8 +34,6 @@ jobs:
         uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          assets: |
-            zanod.exe
-            simplewallet.exe
+          assets: lethean-*
           asset-type: 'cli'
           asset-directory: ${{ github.workspace }}/build/msvc-194-amd64-release/src/Release

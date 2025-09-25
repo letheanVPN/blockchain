@@ -35,8 +35,6 @@ jobs:
         uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          assets: |
-            zanod
-            simplewallet
+          assets: lethean-*
           asset-type: 'cli'
           asset-directory: ${{ github.workspace }}/build/apple-clang-arm64-release/src

@@ -178,5 +178,14 @@ ENABLE_SHARED_PCH_EXECUTABLE(simplewallet)
 
 set_property(TARGET common crypto currency_core rpc stratum wallet PROPERTY FOLDER "libs")
 set_property(TARGET daemon simplewallet connectivity_tool PROPERTY FOLDER "prog")
-set_property(TARGET daemon PROPERTY OUTPUT_NAME "zanod")
+
+if (NOT TESTNET)
+  set_property(TARGET daemon PROPERTY OUTPUT_NAME "lethean-chain-node")
+  set_property(TARGET simplewallet PROPERTY OUTPUT_NAME "lethean-wallet-cli")
+  set_property(TARGET connectivity_tool PROPERTY OUTPUT_NAME "lethean-chain-tool")
+else ()
+  set_property(TARGET daemon PROPERTY OUTPUT_NAME "lethean-testnet-chain-node")
+  set_property(TARGET simplewallet PROPERTY OUTPUT_NAME "lethean-testnet-wallet-cli")
+  set_property(TARGET connectivity_tool PROPERTY OUTPUT_NAME "lethean-testnet-chain-tool")
+endif ()
 
