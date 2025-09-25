@@ -16,7 +16,7 @@ set(GENERATE_PREMINE_WALLET OFF CACHE BOOL "Generate premine wallet")
 set(PREMINE_WALLET_PASSWORD "" CACHE STRING "Premine wallet password")
 
 if (GENERATE_PREMINE_WALLET AND GENERATE_FRESH_GENESIS)
-    message(FATAL_ERROR "Genesis can be generatet together with premine wallet")
+    message(FATAL_ERROR "Genesis can not be generated together with premine wallet")
 endif()
 
 if (GENERATE_PREMINE_WALLET)
