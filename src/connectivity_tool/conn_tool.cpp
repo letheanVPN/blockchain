@@ -1050,7 +1050,7 @@ bool process_archive(archive_processor_t& arch_processor, bool is_packing, const
     << "File " << (is_packing ? "packed" : "unpacked") << " from size " << sz << " to " << written_bytes << ENDL
     << "hash of the data is " << epee::string_tools::pod_to_hex(data_hash) << ENDL
     << ENDL
-    << " = { \"" << boost::filesystem::basename(path_target) << "\", \"" << epee::string_tools::pod_to_hex(data_hash) << "\", " << written_bytes << ", " << sz << " }" << ENDL;
+    << " = { \"" << boost::filesystem::path(path_target).filename().string() << "\", \"" << epee::string_tools::pod_to_hex(data_hash) << "\", " << written_bytes << ", " << sz << " }" << ENDL;
 
   return true;
 }

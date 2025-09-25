@@ -1,5 +1,6 @@
 name: build-linux
-
+permissions:
+  contents: read
 on:
   workflow_call:
     inputs:
@@ -8,25 +9,10 @@ on:
         default: testnet
         required: false
         type: string
-      build-cli:
-        description: "Should the CLI be built"
-        default: true
-        required: false
-        type: boolean
-      build-gui:
-        description: "Should the GUI be built"
-        default: true
-        required: false
-        type: boolean
-      release:
-        description: "Make a release"
-        default: true
-        required: false
-        type: boolean
 
 jobs:
   build:
-    name: Linux
+    name: gcc-linux-amd64-release
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Project
@@ -36,83 +22,23 @@ jobs:
           submodules: recursive
 
       - name: install dependencies
-        run: sudo apt-get install -y autotools-dev libicu-dev libbz2-dev git screen checkinstall zlib1g-dev ccache miniupnpc
+        run: sudo apt-get install -y autotools-dev  git build-essential
 
-      - name: ccache caching
-        uses: actions/cache@v4
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
         with:
-          path: ${{ github.workspace }}/build/ccache
-          key: ccache-${{ inputs.chain-network }}-${{ runner.os }}
+          home: ${{ github.workspace }}/build/sdk
+          cache_packages: true
 
-      - name: Install boost
-        uses: MarkusJx/install-boost@6d8df42f57de83c5b326b5b83e7b35d650030103
-        id: install-boost
-        with:
-          boost_version: 1.84.0
-          boost_install_dir: ${{ github.workspace }}/build/boost_1_84_0
-          platform_version: 22.04
-          toolset: gcc
-          arch: x86
-
-      - name: Install Qt
-        if: ${{ inputs.build-gui }}
-        uses: jurplel/install-qt-action@v3
-        with:
-          dir: '${{ github.workspace }}/build/qt/'
-          aqtversion: '==3.1.*'
-          version: '6.8.3'
-          host: 'linux'
-          target: 'desktop'
-          arch: 'linux_gcc_64'
-          modules: 'qt5compat qtwebengine qtwebchannel qtpositioning'
-
-      - name: Build CLI
-        if: ${{ inputs.build-cli }}
-        uses: ./.github/actions/cmake-build
-        with:
-          jobs: '4'
-          build-type: 'Release'
-          chain-network: ${{ inputs.chain-network }}
-          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'daemon simplewallet connectivity_tool'
-          static: 'true'
-          arch: 'x86-64'
+      - name: Compile Release
+        run: make gcc-linux-amd64-release
 
       - name: CLI Artifacts
-        if: ${{ inputs.build-cli }}
-        uses: ./.github/actions/sign-and-upload-release
+        uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          release-tag: ${{ github.ref_name }}
-          release: "${{ inputs.release }}"
           assets: |
             zanod
             simplewallet
-            connectivity_tool
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/release/src
-
-      - name: Build GUI
-        if: ${{ inputs.build-gui }}
-        uses: ./.github/actions/cmake-build
-        with:
-          jobs: '4'
-          build-type: 'Release'
-          chain-network: ${{ inputs.chain-network }}
-          boost-root: ${{ steps.install-boost.outputs.BOOST_ROOT }}
-          target: 'Zano'
-          build-gui: 'true'
-          static: 'true'
-          arch: 'x86-64'
-
-      - name: GUI Artifacts
-        if: ${{ inputs.build-gui }}
-        uses: ./.github/actions/sign-and-upload-release
-        with:
-          chain-network: ${{ inputs.chain-network }}
-          release-tag: ${{ github.ref_name }}
-          release: "${{ inputs.release }}"
-          assets: |
-            Zano
-          asset-type: 'gui'
-          asset-directory: ${{ github.workspace }}/build/release/src
+          asset-directory: ${{ github.workspace }}/build/gcc-linux-amd64-release/src

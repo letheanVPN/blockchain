@@ -27,7 +27,7 @@
 
 #pragma once
 extern "C" { 
-#include "zlib/zlib.h"
+#include "zlib.h"
 }
 
 namespace epee 

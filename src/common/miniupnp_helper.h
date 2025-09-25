@@ -11,9 +11,9 @@
 #include <boost/thread.hpp>
 #include "include_base_utils.h"
 extern "C" {
-#include "miniupnp/miniupnpc/miniupnpc.h"
-#include "miniupnp/miniupnpc/upnpcommands.h"
-#include "miniupnp/miniupnpc/upnperrors.h"
+#include "miniupnpc/miniupnpc.h"
+#include "miniupnpc/upnpcommands.h"
+#include "miniupnpc/upnperrors.h"
 }
 
 #include "misc_language.h"
