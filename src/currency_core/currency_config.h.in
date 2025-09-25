@@ -1,8 +1,19 @@
-// Copyright (c) 2014-2025 Zano Project
+// Copyright (c) 2014-2018 Zano Project
 // Copyright (c) 2014-2018 The Louisdor Project
-// Copyright (c) 2012-2013 The Cryptonote developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 
 #pragma once
 
@@ -22,11 +33,11 @@
 #define CURRENCY_TX_MAX_ALLOWED_INPUTS                  256        // limited primarily by asset surjection proof
 #define CURRENCY_TX_MAX_ALLOWED_OUTS                    2000
 #define CURRENCY_TX_MIN_ALLOWED_OUTS                    2      // effective starting HF4 Zarcanum
-#define CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX           0xc5   // addresses start with 'Zx'
+#define CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX           @address_prefix@  // addresses start with 'Zx'
 #define CURRENCY_PUBLIC_INTEG_ADDRESS_BASE58_PREFIX     0x3678 // integrated addresses start with 'iZ'
-#define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  0x36f8 // integrated addresses start with 'iZ' (new format)
-#define CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX 0x98c8 // auditable addresses start with 'aZx'
-#define CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX 0x8a49 // auditable integrated addresses start with 'aiZX'
+#define CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX  @address_prefix_integrated@ // integrated addresses start with 'iZ' (new format)
+#define CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX @address_prefix_auditable@ // auditable addresses start with 'aZx'
+#define CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX  @address_prefix_auditable_integrated@ // auditable integrated addresses start with 'aiZX'
 #define CURRENCY_MINED_MONEY_UNLOCK_WINDOW              10
 #define CURRENT_TRANSACTION_VERSION                     3
 #define TRANSACTION_VERSION_INITAL                      0
@@ -66,7 +77,7 @@
 #define TX_DEFAULT_FEE                                  ((uint64_t)@tx_default_fee@) // .01
 #define TX_MINIMUM_FEE                                  ((uint64_t)@tx_minimum_fee@) // .01
 
-#define CURRENCY_BLOCK_REWARD                           1000000000000 // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
+#define CURRENCY_BLOCK_REWARD                           @currency_block_reward@ // 1.0 coin == pow(10, CURRENCY_DISPLAY_DECIMAL_POINT)
 
 
 #define WALLET_MAX_ALLOWED_OUTPUT_AMOUNT                ((uint64_t)0xffffffffffffffffLL)
@@ -113,12 +124,12 @@
 
 
 #ifndef TESTNET
-#define P2P_DEFAULT_PORT                                (36942 + CURRENCY_FORMATION_VERSION)
-#define RPC_DEFAULT_PORT                                36941
-#define STRATUM_DEFAULT_PORT                            36940
-//#define STRARUM_DEFAULT_PORT                            51113
+#define P2P_DEFAULT_PORT                                @p2p_default_port@
+#define RPC_DEFAULT_PORT                                @rpc_default_port@
+#define STRATUM_DEFAULT_PORT                            @stratum_default_port@
+
 #define P2P_NETWORK_ID_TESTNET_FLAG                     1
-#define P2P_MAINTAINERS_PUB_KEY                         "aaa2d7aabc8d383fd53a3ae898697b28f236ceade6bafc1eecff413a6a02272a"
+#define P2P_MAINTAINERS_PUB_KEY                         "@p2p_maintainers_pub_key@"
 #define DIFFICULTY_POS_STARTER                          1
 #else 
 #define P2P_DEFAULT_PORT                                @p2p_default_port@

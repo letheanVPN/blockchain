@@ -27,4 +27,7 @@ check_defined_vars(
 		currency_name_abr
 		currency_name_base
 		currency_name_short_base
+		address_prefix_integrated
+		address_prefix_auditable
+		address_prefix_auditable_integrated
 )
