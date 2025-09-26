@@ -36,7 +36,7 @@ if (GENERATE_PREMINE_WALLET)
 
     # Generate wallet
     add_custom_command(TARGET premine_wallet POST_BUILD
-            COMMAND echo ${PREMINE_WALLET_PASSWORD} | ${CMAKE_BINARY_DIR}/src/simplewallet --generate-new-wallet ${CMAKE_SOURCE_DIR}/premine_wallet/premine_wallet
+            COMMAND echo ${PREMINE_WALLET_PASSWORD} | ${CMAKE_BINARY_DIR}/src/lethean-wallet-cli --generate-new-wallet ${CMAKE_SOURCE_DIR}/premine_wallet/premine_wallet
             COMMENT "Generating premine wallet in ${CMAKE_SOURCE_DIR}/premine_wallet"
     )
 
