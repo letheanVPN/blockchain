@@ -165,7 +165,7 @@ namespace currency
 
   struct COMMAND_RPC_GET_ASSETS_LIST
   {
-    DOC_COMMAND("Return list of assets registered in Zano blockchain");
+    DOC_COMMAND("Return list of assets registered in Lethean blockchain");
 
     struct request
     {
@@ -185,7 +185,7 @@ namespace currency
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(status)                     DOC_DSCR("Status code of operation, OK if success")     DOC_EXMP(API_RETURN_CODE_OK)     DOC_END
-        KV_SERIALIZE(assets)                     DOC_DSCR("List of assets registered in Zano blockchain")     DOC_EXMP_AUTO(1)     DOC_END
+        KV_SERIALIZE(assets)                     DOC_DSCR("List of assets registered in Lethean blockchain")     DOC_EXMP_AUTO(1)     DOC_END
       END_KV_SERIALIZE_MAP()
     };
   };
@@ -466,7 +466,7 @@ namespace currency
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(payment_id) DOC_DSCR("Hex-encoded Payment ID to be associated with the this address. If empty then wallet would generate new payment id using system random library") DOC_EXMP("1dfe5a88ff9effb3")  DOC_END
-        KV_SERIALIZE(regular_address) DOC_DSCR("Zano wallet address to be used as a base for integrated address") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7")  DOC_END
+        KV_SERIALIZE(regular_address) DOC_DSCR("Lethean wallet address to be used as a base for integrated address") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7")  DOC_END
       END_KV_SERIALIZE_MAP()
     };
 

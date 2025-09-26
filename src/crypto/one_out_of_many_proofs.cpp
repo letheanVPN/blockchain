@@ -43,7 +43,7 @@ namespace crypto
     {
       precalculated_generators.resize(mn_max * 2);
 
-      scalar_t hash_buf[2] = { hash_helper_t::hs("Zano BGE generator"), 0 };
+      scalar_t hash_buf[2] = { hash_helper_t::hs("Lethean BGE generator"), 0 };
 
       for(size_t i = 0; i < precalculated_generators.size(); ++i)
       {

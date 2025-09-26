@@ -2,7 +2,7 @@
 
 include_directories (${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/currency_core)
 include(${CMAKE_SOURCE_DIR}/cmake/config-vars.cmake)
-include(${CMAKE_SOURCE_DIR}/cmake/currency_configs/example.cmake)
+#include(${CMAKE_SOURCE_DIR}/cmake/currency_configs/example.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/check-config-vars.cmake)
 configure_file("currency_core/currency_config.h.in" "currency_core/currency_config.h")
 

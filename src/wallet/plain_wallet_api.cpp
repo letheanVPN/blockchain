@@ -31,7 +31,7 @@
 #include "static_helpers.h"
 #include "wallet_helpers.h"
 
-#define ANDROID_PACKAGE_NAME    "com.zano_mobile"
+#define ANDROID_PACKAGE_NAME    "com.lethean.mobile"
 
 #define LOGS_FOLDER             "logs"
 
@@ -440,7 +440,7 @@ namespace plain_wallet
   {
     const std::string src_folder_path = get_bundle_working_dir();
     boost::system::error_code ec;
-    const std::string full_target_path = target_dir + "/Zano_export" + std::to_string(epee::misc_utils::get_tick_count());
+    const std::string full_target_path = target_dir + "/Lethean_export" + std::to_string(epee::misc_utils::get_tick_count());
     boost::filesystem::create_directory(full_target_path, ec);
     if (ec)
     {

@@ -1620,13 +1620,13 @@ namespace currency
     if (!get_account_address_and_payment_id_from_str(addr, payment_id_from_provided_addr, req.regular_address))
     {
       error_resp.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
-      error_resp.message = std::string("invalid address provided: \'") + req.regular_address + "\', Zano address expected";
+      error_resp.message = std::string("invalid address provided: \'") + req.regular_address + "\', Lethean address expected";
       return false;
     }
     if (payment_id_from_provided_addr.size())
     {
       error_resp.code = WALLET_RPC_ERROR_CODE_WRONG_ADDRESS;
-      error_resp.message = std::string("invalid address provided: \'") + req.regular_address + "\', Zano address expected be regular and NOT integrated address";
+      error_resp.message = std::string("invalid address provided: \'") + req.regular_address + "\', Lethean address expected be regular and NOT integrated address";
       return false;
     }
 

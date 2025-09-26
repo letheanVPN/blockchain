@@ -24,7 +24,7 @@
 #include "wallet2.h"
 #include "common/command_line.h"
 
-#define ZANO_ACCESS_TOKEN "Zano-Access-Token"
+#define ZANO_ACCESS_TOKEN "Lethean-Access-Token"
 
 namespace tools
 {

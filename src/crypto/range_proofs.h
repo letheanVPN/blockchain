@@ -90,7 +90,7 @@ namespace crypto
 
     static const scalar_t& get_initial_transcript()
     {
-      static scalar_t value = hash_helper_t::hs("Zano BP+ initial transcript");
+      static scalar_t value = hash_helper_t::hs("Lethean BP+ initial transcript");
       return value;
     }
 
@@ -121,7 +121,7 @@ namespace crypto
       static bool calculated = false;
       if (!calculated)
       {
-        scalar_t hash_buf[2] = { hash_helper_t::hs("Zano BP+ generator"), 0 };
+        scalar_t hash_buf[2] = { hash_helper_t::hs("Lethean BP+ generator"), 0 };
         for (size_t i = 0; i < 2 * c_bpp_mn_max; ++i)
         {
           hash_buf[1].m_u64[0] = i;

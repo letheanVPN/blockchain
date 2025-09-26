@@ -54,12 +54,12 @@ namespace bc_services
       KV_SERIALIZE_CUSTOM_N(amount_target, std::string, bc_services::transform_amount_to_string, bc_services::transform_string_to_amount, "at")  DOC_DSCR("Smount of other currency or goods") DOC_EXMP("10000000") DOC_END
       KV_SERIALIZE_N(bonus, "b")                   DOC_DSCR("Bonus associated with the offer") DOC_EXMP("") DOC_END
       KV_SERIALIZE_N(target, "t")                  DOC_DSCR("Target:  currency / goods") DOC_EXMP("USDT") DOC_END
-      KV_SERIALIZE_N(primary, "p")                 DOC_DSCR("Currency for goods") DOC_EXMP("ZANO") DOC_END
+      KV_SERIALIZE_N(primary, "p")                 DOC_DSCR("Currency for goods") DOC_EXMP("LTHN") DOC_END
       KV_SERIALIZE_N(location_country, "lco")      DOC_DSCR("Country of the offer location") DOC_EXMP("Montenegro") DOC_END
       KV_SERIALIZE_N(location_city, "lci")         DOC_DSCR("City of the offer location") DOC_EXMP("Kolasin") DOC_END
       KV_SERIALIZE_N(contacts, "cnt")              DOC_DSCR("Contacts related to the offer") DOC_EXMP("Ranko +38211111111") DOC_END
       KV_SERIALIZE_N(comment, "com")               DOC_DSCR("Comment associated with the offer") DOC_EXMP("Dobr dan") DOC_END
-      KV_SERIALIZE_N(payment_types, "pt")          DOC_DSCR("Types of payment accepted for the offer") DOC_EXMP("zano") DOC_END
+      KV_SERIALIZE_N(payment_types, "pt")          DOC_DSCR("Types of payment accepted for the offer") DOC_EXMP("lethean") DOC_END
       KV_SERIALIZE_N(deal_option, "do")            DOC_DSCR("Deal option for the offer") DOC_EXMP("full amount, by parts") DOC_END
       KV_SERIALIZE_N(category, "cat")              DOC_DSCR("Category of the offer") DOC_EXMP("") DOC_END
       KV_SERIALIZE_N(expiration_time, "et")        DOC_DSCR("Expiration time of the offer") DOC_EXMP(0) DOC_END

@@ -308,7 +308,7 @@ simple_wallet::simple_wallet()
   m_cmd_binder.set_handler("incoming_counts", boost::bind(&simple_wallet::show_incoming_transfers_counts, this, ph::_1), "incoming_transfers counts");
   m_cmd_binder.set_handler("list_recent_transfers", boost::bind(&simple_wallet::list_recent_transfers, this, ph::_1), "list_recent_transfers [offset] [count] - Show recent maximum 1000 transfers, offset default = 0, count default = 100 ");
   m_cmd_binder.set_handler("export_recent_transfers", boost::bind(&simple_wallet::export_recent_transfers, this, ph::_1), "list_recent_transfers_tx - Write recent transfer in json to wallet_recent_transfers.txt");
-  m_cmd_binder.set_handler("list_outputs", boost::bind(&simple_wallet::list_outputs, this, ph::_1), "list_outputs [spent|unspent] [ticker=ZANO] [unknown] - Lists all the outputs. The result may be filtered by spent status, asset ticker or unknown asset ids.");
+  m_cmd_binder.set_handler("list_outputs", boost::bind(&simple_wallet::list_outputs, this, ph::_1), "list_outputs [spent|unspent] [ticker=LTHN] [unknown] - Lists all the outputs. The result may be filtered by spent status, asset ticker or unknown asset ids.");
   m_cmd_binder.set_handler("lo", boost::bind(&simple_wallet::list_outputs, this, ph::_1), "alias for list_outputs");
   m_cmd_binder.set_handler("dump_transfers", boost::bind(&simple_wallet::dump_transfers, this, ph::_1), "dump_transfers - Write  transfers in json to dump_transfers.txt");
   m_cmd_binder.set_handler("dump_keyimages", boost::bind(&simple_wallet::dump_key_images, this, ph::_1), "dump_keyimages - Write  key_images in json to dump_key_images.txt");
@@ -708,7 +708,7 @@ bool simple_wallet::restore_wallet(const std::string& wallet_file, const std::st
     "Your wallet has been restored.\n" <<
     "To start synchronizing with the daemon use \"refresh\" command.\n" <<
     "Use \"help\" command to see the list of available commands.\n" <<
-    "Always use \"exit\" command when closing simplewallet to save\n" <<
+    "Always use \"exit\" command when closing your wallet to save\n" <<
     "current session's state. Otherwise, you will possibly need to synchronize \n" <<
     "your wallet again. Your wallet keys is NOT under risk anyway.\n" <<
     "**********************************************************************";
@@ -903,7 +903,7 @@ std::string print_money_trailing_zeros_replaced_with_spaces(uint64_t amount, siz
 //----------------------------------------------------------------------------------------------------
 std::string simple_wallet::get_token_info_string(const crypto::public_key& asset_id, uint64_t& decimal_points)
 {
-  std::string token_info = "ZANO";
+  std::string token_info = "LTHN";
   decimal_points = CURRENCY_DISPLAY_DECIMAL_POINT;
   if (asset_id != currency::native_coin_asset_id)
   {
@@ -1607,6 +1607,7 @@ bool simple_wallet::validate_wrap_status(uint64_t amount)
 
   currency::void_struct req = AUTO_VAL_INIT(req);
   currency::rpc_get_wrap_info_response res = AUTO_VAL_INIT(res);
+  return false; //@todo remove manual bock - Snider 2025
   bool r = epee::net_utils::invoke_http_json_remote_command2("http://wrapped.zano.org/api2/get_wrap_info", req, res, http_client, 10000);
   if (!r)
   {
@@ -1618,7 +1619,7 @@ bool simple_wallet::validate_wrap_status(uint64_t amount)
   if (amount <= zano_needed_for_wrap)
   {
     fail_msg_writer() << "Too small amount to cover ERC20 fee. ERC20 cost is: " 
-      << print_money(zano_needed_for_wrap) << " Zano" <<
+      << print_money(zano_needed_for_wrap) << " Lethean" <<
       "($" << res.tx_cost.usd_needed_for_erc20 << ")";
     return false;
   }
@@ -1626,11 +1627,11 @@ bool simple_wallet::validate_wrap_status(uint64_t amount)
   if (amount > unwrapped_coins_left)
   {
     fail_msg_writer() << "Amount is bigger than ERC20 tokens left available: "
-      << print_money(unwrapped_coins_left) << " wZano";
+      << print_money(unwrapped_coins_left) << " wLTHN";
     return false;
   }
   
-  success_msg_writer(false) << "You'll receive estimate " << print_money(amount - zano_needed_for_wrap) << " wZano (" << print_money(zano_needed_for_wrap)<< " Zano will be used to cover ERC20 fee)";
+  success_msg_writer(false) << "You'll receive estimate " << print_money(amount - zano_needed_for_wrap) << " wLTHN (" << print_money(zano_needed_for_wrap)<< " Lethean will be used to cover ERC20 fee)";
   success_msg_writer(false) << "Proceed? (yes/no)";
   while (true)
   {
@@ -1740,7 +1741,7 @@ bool simple_wallet::transfer_impl(const std::vector<std::string> &args_, uint64_
     {
 
       success_msg_writer(false) << "Address " << local_args[i] << " recognized as wrapped address, creating wrapping transaction.";
-      success_msg_writer(false) << "This transaction will create wZano (\"Wrapped Zano\") which will be sent to the specified address on the Ethereum network.";
+      success_msg_writer(false) << "This transaction will create wLTHN (\"Wrapped Lethean\") which will be sent to the specified address on the Ethereum network.";
 
       if (!validate_wrap_status(de.amount))
       {
@@ -1799,13 +1800,13 @@ bool simple_wallet::transfer_impl(const std::vector<std::string> &args_, uint64_
   if (!m_wallet->is_watch_only())
   {
     if(wrapped_transaction)
-      success_msg_writer(true) << "Transaction successfully sent to wZano custody wallet, id: " << get_transaction_hash(tx) << ", " << get_object_blobsize(tx) << " bytes";
+      success_msg_writer(true) << "Transaction successfully sent to wLTHN custody wallet, id: " << get_transaction_hash(tx) << ", " << get_object_blobsize(tx) << " bytes";
     else
       success_msg_writer(true) << "Transaction successfully sent, id: " << get_transaction_hash(tx) << ", " << get_object_blobsize(tx) << " bytes";
   }
   else
   {
-    success_msg_writer(true) << "Transaction prepared for signing and saved into \"zano_tx_unsigned\" file, use full wallet to sign transfer and then use \"submit_transfer\" on this wallet to broadcast the transaction to the network";
+    success_msg_writer(true) << R"(Transaction prepared for signing and saved into "lethean_tx_unsigned" file, use full wallet to sign transfer and then use "submit_transfer" on this wallet to broadcast the transaction to the network)";
   }  
   SIMPLE_WALLET_CATCH_TRY_ENTRY()
 
@@ -2783,7 +2784,7 @@ bool simple_wallet::sweep_below(const std::vector<std::string> &args)
   size_t outs_total = 0, outs_swept = 0;
   uint64_t amount_total = 0, amount_swept = 0;
   currency::transaction result_tx = AUTO_VAL_INIT(result_tx);
-  std::string filename = "zano_tx_unsigned";
+  std::string filename = "lethean_tx_unsigned";
   m_wallet->sweep_below(fake_outs_count, addr, amount, payment_id, fee, outs_total, amount_total, outs_swept, amount_swept, &result_tx, &filename);
 
   success_msg_writer(false) << outs_swept << " outputs (" << print_money_brief(amount_swept) << " coins) of " << outs_total << " total (" << print_money_brief(amount_total)
@@ -2838,12 +2839,12 @@ bool simple_wallet::sweep_bare_outs(const std::vector<std::string> &args)
     uint64_t unlocked_balance = 0;
     uint64_t balance = m_wallet->balance(unlocked_balance);
     if (balance < COIN)
-      success_msg_writer(false) << "Looks like it's not enough coins to perform this operation. Transferring " << print_money_brief(TX_MINIMUM_FEE) << " ZANO or more to this wallet may help.";
+      success_msg_writer(false) << "Looks like it's not enough coins to perform this operation. Transferring " << print_money_brief(TX_MINIMUM_FEE) << " LTHN or more to this wallet may help.";
     else if (unlocked_balance < COIN)
       success_msg_writer(false) << "Not enough spendable outputs to perform this operation. Please, try again later.";
     else
     {
-      success_msg_writer(false) << "This operation couldn't be performed for some reason. Please, copy simplewallet's log file and ask for support. Nothing was done.";
+      success_msg_writer(false) << "This operation couldn't be performed for some reason. Please, copy wallet's log file and ask for support. Nothing was done.";
       LOG_PRINT_L0("strange situation: balance: " << print_money_brief(balance) << ", unlocked_balance: " << print_money_brief(unlocked_balance) << " but get_bare_unspent_outputs_stats returned empty result");
     }
     return true;
@@ -3374,14 +3375,14 @@ int main(int argc, char* argv[])
 
     if (command_line::get_arg(vm, command_line::arg_help))
     {
-      success_msg_writer() << "Usage: simplewallet [--wallet-file=<file>|--generate-new[-auditable]-wallet=<file>] [--daemon-address=<host>:<port>] [<COMMAND>]";
+      success_msg_writer() << "Usage: lethean-wallet-cli [--wallet-file=<file>|--generate-new[-auditable]-wallet=<file>] [--daemon-address=<host>:<port>] [<COMMAND>]";
       success_msg_writer() << desc_all << '\n' << sw->get_commands_str();
       exit_requested = true;
       return true;
     }
     else if (command_line::get_arg(vm, command_line::arg_version))
     {
-      success_msg_writer() << CURRENCY_NAME << " simplewallet v" << PROJECT_VERSION_LONG;
+      success_msg_writer() << CURRENCY_NAME << " Wallet v" << PROJECT_VERSION_LONG;
       exit_requested = true;
       return true;
     }
@@ -3408,7 +3409,7 @@ int main(int argc, char* argv[])
   log_dir = log_file_path.has_parent_path() ? log_file_path.parent_path().string() : log_space::log_singletone::get_default_log_folder();
   log_space::log_singletone::add_logger(LOGGER_FILE, log_file_path.filename().string().c_str(), log_dir.c_str(), LOG_LEVEL_4);
   LOG_PRINT_L0(ENDL << ENDL);
-  message_writer(epee::log_space::console_color_white, true, std::string(), LOG_LEVEL_0) << CURRENCY_NAME << " simplewallet v" << PROJECT_VERSION_LONG;
+  message_writer(epee::log_space::console_color_white, true, std::string(), LOG_LEVEL_0) << CURRENCY_NAME << " Wallet v" << PROJECT_VERSION_LONG;
 
   if (command_line::has_arg(vm, command_line::arg_log_level))
   {
