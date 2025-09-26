@@ -10,10 +10,11 @@ set(currency_display_decimal_point 12 CACHE STRING "CURRENCY_DISPLAY_DECIMAL_POI
 set(currency_name_abr "LTHN" CACHE STRING "CURRENCY_NAME_ABR" )
 set(currency_name_base "Lethean" CACHE STRING "CURRENCY_NAME_BASE" )
 set(currency_name_short_base "Lethean" CACHE STRING "CURRENCY_NAME_SHORT_BASE" )
-set(address_prefix 0x73f7 CACHE STRING "CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX" ) # addresses start with 'iT'
-set(address_prefix_integrated 0x6af7 CACHE STRING "CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX" ) # integrated addresses start with 'iTH'
-set(address_prefix_auditable 0xdeaf7  CACHE STRING "CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX" ) # auditable addresses start with 'iTHn'
-set(address_prefix_auditable_integrated 0x7eaf7  CACHE STRING "CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX" ) # auditable integrated addresses start with 'iTHa'
+# prefix is 'iT', non auditable wallets then use 'H', auditable wallets use 'h'; 'N' is a base addr, 'n' is a sub address,
+set(address_prefix 0x1eaf7 CACHE STRING "CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX" ) # addresses start with 'iTHN'
+set(address_prefix_integrated 0xdeaf7 CACHE STRING "CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX" ) # integrated addresses start with 'iTHn'
+set(address_prefix_auditable 0x3ceff7 CACHE STRING "CURRENCY_PUBLIC_AUDITABLE_ADDRESS_BASE58_PREFIX" ) # auditable addresses start with 'iThN'
+set(address_prefix_auditable_integrated 0x8b077 CACHE STRING "CURRENCY_PUBLIC_AUDITABLE_INTEG_ADDRESS_BASE58_PREFIX" ) # auditable integrated addresses start with 'iThn'
 set(base_reward_dust_threshold 1000000 CACHE STRING "BASE_REWARD_DUST_THRESHOLD")
 set(default_dust_threshold 0 CACHE STRING "DEFAULT_DUST_THRESHOLD" )
 set(difficulty_pow_starter 1 CACHE STRING "DIFFICULTY_POW_STARTER" )
