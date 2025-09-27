@@ -3,6 +3,11 @@ permissions:
   contents: read
 on:
   workflow_call:
+    secrets:
+      DOCKERHUB_USERNAME:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
     inputs:
       chain-network:
         description: "The network to use, can either be testnet, stagenet or mainnet"

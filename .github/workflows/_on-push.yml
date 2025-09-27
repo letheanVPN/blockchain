@@ -44,6 +44,7 @@ jobs:
     uses: ./.github/workflows/build-docker.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
+    secrets: inherit
 
   build-docs:
     name: Docs
