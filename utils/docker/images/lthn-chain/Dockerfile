@@ -10,6 +10,7 @@ ARG BUILD_TARGET=gcc-linux-x86_64
 ARG BUILD_FOLDER=build/release
 ARG BUILD_TYPE=Release
 ARG BUILD_TESTNET=1
+ARG USE_CUSTOM_PROFILE=0
 
 
 ENV CONAN_HOME=/root/sdk
@@ -41,7 +42,18 @@ WORKDIR /code
 
 RUN conan profile detect --name=default --force
 
-RUN conan install . --output-folder=${BUILD_FOLDER} --build=missing -s build_type=${BUILD_TYPE} -pr:h=/code/cmake/profiles/$BUILD_TARGET
+#RUN conan install . --output-folder=${BUILD_FOLDER} --build=missing -s build_type=${BUILD_TYPE} -pr:h=/code/cmake/profiles/$BUILD_TARGET
+
+RUN set -eux; \
+    BCMD="conan install . \
+        --output-folder=${BUILD_FOLDER} \
+        --build=missing \
+        -s build_type=${BUILD_TYPE}"; \
+    if [ "${USE_CUSTOM_PROFILE}" = "1" ]; then \
+        BCMD="$BCMD -pr:h=/code/cmake/profiles/${BUILD_TARGET}"; \
+    fi; \
+    echo "Running: $BCMD"; \
+    eval $BCMD;
 
 RUN cmake -S /code -B ${BUILD_FOLDER} -DCMAKE_TOOLCHAIN_FILE=${BUILD_FOLDER}/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTESTNET=${BUILD_TESTNET}
 

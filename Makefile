@@ -75,6 +75,7 @@ PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
 SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
+CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
 
 all: help
 
@@ -159,7 +160,27 @@ docs-dev: configure
 
 docker-chain-node:
 	@echo "Building docker image: lthn/chain"
-	docker build utils/docker/images/lthn-chain  -t lthn/chain $(CURDIR)
+	docker buildx build -f $(CC_DOCKER_FILE)  -t lthn/chain $(CURDIR)
+
+docker-cc-linux-amd64:
+	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-amd64 --platform linux/amd64 $(CURDIR)
+
+docker-cc-linux-armv7:
+	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-armv7 --platform linux/arm/v7 $(CURDIR)
+
+docker-cc-linux-arm64v8:
+	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-arm64v8 --platform linux/arm64/v8 $(CURDIR)
+
+docker-cc-linux-ppc64le:
+	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-ppc64le --platform linux/ppc64le $(CURDIR)
+
+docker-cc-linux-riscv64:
+	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-riscv64 --platform linux/riscv64 $(CURDIR)
+
+docker-cc-linux-s390x:
+	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-s390x --platform linux/s390x $(CURDIR)
+
+
 
 clean:
 	rm -rf build
