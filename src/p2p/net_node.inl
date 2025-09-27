@@ -1,8 +1,19 @@
-// Copyright (c) 2014-2025 Zano Project
+// Copyright (c) 2014-2018 Zano Project
 // Copyright (c) 2014-2018 The Louisdor Project
-// Copyright (c) 2012-2013 The Cryptonote developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 
 #pragma once
 
@@ -424,24 +435,24 @@ namespace nodetool
 #ifndef TESTNET
     //TODO:
     //ADD_HARDCODED_SEED_NODE(std::string("0.0.0.0:") + std::to_string(P2P_DEFAULT_PORT));
-    ADD_HARDCODED_SEED_NODE("95.217.43.225", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("94.130.137.230", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("95.217.42.247", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("94.130.160.115", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("195.201.107.230", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("95.217.46.49", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("159.69.76.144", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("144.76.183.143", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("95.217.43.225", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("94.130.137.230", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("95.217.42.247", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("94.130.160.115", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("195.201.107.230", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("95.217.46.49", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("159.69.76.144", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("144.76.183.143", P2P_DEFAULT_PORT);
 #else
     // TESTNET
-    ADD_HARDCODED_SEED_NODE("95.217.43.225", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("94.130.137.230", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("95.217.42.247", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("94.130.160.115", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("195.201.107.230", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("95.217.46.49", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("159.69.76.144", P2P_DEFAULT_PORT);
-    ADD_HARDCODED_SEED_NODE("144.76.183.143", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("95.217.43.225", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("94.130.137.230", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("95.217.42.247", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("94.130.160.115", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("195.201.107.230", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("95.217.46.49", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("159.69.76.144", P2P_DEFAULT_PORT);
+    //ADD_HARDCODED_SEED_NODE("144.76.183.143", P2P_DEFAULT_PORT);
 #endif
 
     bool res = handle_command_line(vm);

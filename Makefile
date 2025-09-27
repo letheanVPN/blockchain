@@ -11,6 +11,8 @@
 
 # Default to “unknown” – will be overwritten below.
 CPU_CORES := 1
+TESTNET ?= 0
+BUILD_TYPE ?=Release
 
 # -----------------------------------------------------------------
 # Unix‑like systems (Linux, macOS, *BSD, etc.)
@@ -47,19 +49,19 @@ ifeq ($(OS),Windows_NT)
     endif
 endif
 
-testnet-genesis-new:
-	$(eval command += $(cmake_release) $(testnet))
-	$(call CMAKE,$(dir_release),$(command) -DGENERATE_PREMINE_WALLET=1 -DPREMINE_WALLET_PASSWORD=12345678) && cmake --build ./src --target premine_wallet || true
-	$(eval command += $(cmake_release) $(testnet))
-	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
-	$(eval command += $(cmake_release) $(testnet))
-	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
-
-genesis-new:
-	$(eval command += $(cmake_release))
-	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
-	$(eval command += $(cmake_release))
-	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+#testnet-genesis-new:
+#	$(eval command += $(cmake_release) $(testnet))
+#	$(call CMAKE,$(dir_release),$(command) -DGENERATE_PREMINE_WALLET=1 -DPREMINE_WALLET_PASSWORD=12345678) && cmake --build ./src --target premine_wallet || true
+#	$(eval command += $(cmake_release) $(testnet))
+#	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
+#	$(eval command += $(cmake_release) $(testnet))
+#	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
+#
+#genesis-new:
+#	$(eval command += $(cmake_release))
+#	$(call CMAKE,$(dir_release),$(command) -DGENERATE_FRESH_GENESIS=1) && cmake --build ./src --target genesis_generator
+#	$(eval command += $(cmake_release))
+#	$(call CMAKE,$(dir_release),$(command)) && $(MAKE)
 
 # -----------------------------------------------------------------
 # Safety net – ensure we always have a positive integer.
@@ -72,27 +74,27 @@ CONAN_CPU_COUNT=$(CPU_CORES)
 PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
 SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
-DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/cmake/profiles/default
+DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 
 all: help
 
 release: conan-profile-detect
 	@echo "Building profile: release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/release --config=Release --parallel=$(CPU_CORES)
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET)
+	cmake --build build/release --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
-	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug
+	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
 	cmake --build build/debug --config=Debug --parallel=$(CPU_CORES)
 
 static: static-release
 static-release: conan-profile-detect
 	@echo "Building profile: release-static"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
-	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -D STATIC=ON -DTESTNET=$(TESTNET)
 	cmake --build build/release-static --config=Release --parallel=$(CPU_CORES)
 
 conan-profile-detect:
@@ -105,19 +107,23 @@ conan-profile-detect:
 # Rule for each profile
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ --profile=cmake/profiles/$@ --build=missing
-	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
-	cmake --build build/$@ --config=Release --parallel=$(CPU_CORES)
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ -pr:b=$(DEFAULT_CONAN_PROFILE) -pr:h=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET)
+	cmake --build build/$@ --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 
 help:
 	@echo "Available targets:"
-	@printf "  %-22s %s\n" "all:" "Build all profiles"
-	@printf "  %-22s %s\n" "clean:" "Clean all build directories"
-	@printf "  %-22s %s\n" "release:" "Build release"
-	@printf "  %-22s %s\n" "static:" "Build static release"
-	@printf "  %-22s %s\n" "debug:" "Build debug"
-	@$(foreach profile,$(SORTED_PROFILES),printf "  %-22s %s\n" "make $(profile):" "Build the $(profile) profile";)
-	@printf "  %-22s %s\n" "help:" "Show this help message"
+	@printf "  %-42s %s\n" "make clean" "Clean all build directories"
+	@printf "  %-42s %s\n" "make release" "Build release"
+	@printf "  %-42s %s\n" "make static" "Build static release"
+	@printf "  %-42s %s\n" "make debug" "Build debug"
+	@printf "  %-42s %s\n" "make test" "Build & run tests"
+	@printf "  %-42s %s\n" "make docs" "Builds offline documentation website"
+	@printf "  %-42s %s\n" "make docs-dev" "Runs local doc server, for editing/adding docs"
+	@printf "  %-42s %s\n" "make conan-profile-detect" "Creates host config"
+	@printf "  %-42s %s\n" "make configure" "Runs a cmake configure within conan build flow"
+	@$(foreach profile,$(SORTED_PROFILES),printf "  %-42s %s\n" "make $(profile)" "Build the $(profile) profile";)
+	@printf "  %-42s %s\n" "make help" "Show this help message"
 
 #
 # Tests
@@ -126,22 +132,22 @@ help:
 test: test-release
 test-release:
 	@echo "Building profile: test-release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-release --build=missing
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-release --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B build/test-release -DCMAKE_TOOLCHAIN_FILE=build/test-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D BUILD_TESTS=ON
 	cmake --build build/test-release --config=Release --parallel=$(CPU_CORES)
 	$(MAKE) test
 
 test-debug:
 	@echo "Building profile: test-debug"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-debug --build=missing
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-debug --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B build/test-debug -DCMAKE_TOOLCHAIN_FILE=build/test-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D BUILD_TESTS=ON
 	cmake --build build/test-debug --config=Debug --parallel=$(CPU_CORES)
 	$(MAKE) test
 
 configure:
 	@echo "Running Config: release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
 docs: configure
 	@echo "Building Documentation"
@@ -151,6 +157,9 @@ docs-dev: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=serve_docs --config=Release
 
+docker-chain-node:
+	@echo "Building docker image: lthn/chain"
+	docker build utils/docker/images/lthn-chain  -t lthn/chain $(CURDIR)
 
 clean:
 	rm -rf build
@@ -158,4 +167,4 @@ clean:
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)
+.PHONY: all release docker-chain-node debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)

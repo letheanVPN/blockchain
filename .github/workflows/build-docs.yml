@@ -6,6 +6,7 @@ on:
 
 jobs:
   deploy:
+    name: Offline Local Version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

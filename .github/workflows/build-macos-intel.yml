@@ -12,7 +12,7 @@ on:
 
 jobs:
   build:
-    name: apple-clang-arm64-release
+    name: apple-clang-x86_64
     runs-on: macos-13
     steps:
       - name: Checkout Project
@@ -28,14 +28,12 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make apple-clang-arm64-release
+        run: make apple-clang-x86_64 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          assets: |
-            zanod
-            simplewallet
+          assets: lethean-*
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/apple-clang-arm64-release/src
+          asset-directory: ${{ github.workspace }}/build/apple-clang-x86_64/src

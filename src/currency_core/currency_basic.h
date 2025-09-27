@@ -1,9 +1,19 @@
-// Copyright (c) 2014-2024 Zano Project
+// Copyright (c) 2014-2018 Zano Project
 // Copyright (c) 2014-2018 The Louisdor Project
-// Copyright (c) 2012-2013 The Cryptonote developers
-// Copyright (c) 2014-2015 The Boolberry developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 
 #pragma once
 
@@ -772,7 +782,7 @@ namespace currency
       KV_SERIALIZE(current_supply)    DOC_DSCR("Currently emitted supply for the given asset (ignored for REGISTER operation).") DOC_EXMP(500000000000000000)    DOC_END
       KV_SERIALIZE(decimal_point)     DOC_DSCR("Decimal point.")                      DOC_EXMP(12)                        DOC_END
       KV_SERIALIZE(ticker)            DOC_DSCR("Ticker associated with the asset.")   DOC_EXMP("ZABC")                    DOC_END
-      KV_SERIALIZE(full_name)         DOC_DSCR("Full name of the asset.")             DOC_EXMP("Zano wrapped ABC")        DOC_END
+      KV_SERIALIZE(full_name)         DOC_DSCR("Full name of the asset.")             DOC_EXMP("Lethean wrapped ABC")        DOC_END
       KV_SERIALIZE(meta_info)         DOC_DSCR("Any other information associated with the asset, by default in a json format.")           DOC_EXMP("{ \"some_arbitrary_field_name\": \"some arbitrary value\"}")      DOC_END
       KV_SERIALIZE_POD_AS_HEX_STRING(owner) DOC_DSCR("Owner's key, used only for EMIT and UPDATE validation, can be changed by transferring asset ownership.")   DOC_EXMP("f74bb56a5b4fa562e679ccaadd697463498a66de4f1760b2cd40f11c3a00a7a8")        DOC_END
       KV_SERIALIZE(hidden_supply)     DOC_DSCR("This field is reserved for future use and will be documented later.") DOC_END

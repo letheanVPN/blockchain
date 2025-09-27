@@ -11,8 +11,8 @@ on:
         type: string
 
 jobs:
-  build:
-    name: msvc-194-amd64-release
+  msvc-194:
+    name: msvc-194-x86_64
     runs-on: windows-2022
     steps:
       - name: Checkout Project
@@ -28,14 +28,12 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make msvc-194-amd64-release
+        run: make msvc-194-x86_64 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          assets: |
-            zanod.exe
-            simplewallet.exe
+          assets: lethean-*
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/msvc-194-amd64-release/src/Release
+          asset-directory: ${{ github.workspace }}/build/msvc-194-x86_64/src/Release

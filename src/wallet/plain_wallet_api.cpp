@@ -1,6 +1,19 @@
-// Copyright (c) 2014-2020 Zano Project
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2014-2018 Zano Project
+// Copyright (c) 2014-2018 The Louisdor Project
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 
 
 #ifdef ANDROID_BUILD
@@ -18,7 +31,7 @@
 #include "static_helpers.h"
 #include "wallet_helpers.h"
 
-#define ANDROID_PACKAGE_NAME    "com.zano_mobile"
+#define ANDROID_PACKAGE_NAME    "com.lethean.mobile"
 
 #define LOGS_FOLDER             "logs"
 
@@ -427,7 +440,7 @@ namespace plain_wallet
   {
     const std::string src_folder_path = get_bundle_working_dir();
     boost::system::error_code ec;
-    const std::string full_target_path = target_dir + "/Zano_export" + std::to_string(epee::misc_utils::get_tick_count());
+    const std::string full_target_path = target_dir + "/Lethean_export" + std::to_string(epee::misc_utils::get_tick_count());
     boost::filesystem::create_directory(full_target_path, ec);
     if (ec)
     {
