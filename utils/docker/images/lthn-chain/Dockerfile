@@ -23,8 +23,8 @@ RUN apt update && apt -y upgrade
 
 RUN apt install -y build-essential pkgconf \
     curl ca-certificates bison autotools-dev checkinstall \
-    g++ llvm clang lld cmake \
-    git python3 python3-pip xz-utils gperf
+    g++ llvm clang lld cmake python-is-python3 \
+    git python3 python3-pip python3-dev xz-utils gperf
 
 RUN pip3 install conan --break-system-packages
 
