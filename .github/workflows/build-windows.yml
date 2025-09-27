@@ -39,7 +39,7 @@ jobs:
           asset-directory: ${{ github.workspace }}/build/msvc-194-x86_64/src/Release
 
   msvc-193:
-    name: msvc-194-x86_64
+    name: msvc-193-x86_64
     runs-on: windows-2022
     steps:
       - name: Checkout Project
