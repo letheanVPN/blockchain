@@ -3,7 +3,7 @@ FROM ubuntu:24.04 AS builder
 LABEL authors="snider"
 
 ARG THREADS=1
-ARG BUILD_BRANCH=dev-configure-testnet-1
+ARG BUILD_BRANCH=dev
 ARG BUILD_LOCAL=1
 ARG BUILD_REPO=https://github.com/letheanVPN/blockchain.git
 ARG BUILD_TARGET=gcc-linux-x86_64
@@ -52,7 +52,7 @@ RUN cmake --build ${BUILD_FOLDER} --config=${BUILD_TYPE} --parallel=${THREADS}
 RUN if [ "$BUILD_TESTNET" = "1" ]; then \
       cd ${BUILD_FOLDER}/src && \
       for f in lethean-testnet-*; do \
-        ln -s "$f" "${f/-testnet/}"; \
+        ln -s "$f" "$(echo "$f" | sed 's/-testnet//')"; \
       done; \
     fi
 

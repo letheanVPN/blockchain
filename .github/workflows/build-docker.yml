@@ -43,5 +43,10 @@ jobs:
           file: utils/docker/images/lthn-chain/Dockerfile
           context: ${{ github.workspace }}
           push: true
+          build-args: |
+            BUILD_TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+            THREADS=2
+            BUILD_TARGET=gcc-linux-x86_64
+            BUILD_LOCAL=1
           tags: lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
 
