@@ -6,7 +6,7 @@ ARG THREADS=1
 ARG BUILD_BRANCH=dev-configure-testnet-1
 ARG BUILD_LOCAL=1
 ARG BUILD_REPO=https://github.com/letheanVPN/blockchain.git
-ARG BUILD_TARGET=gcc-linux-arm64
+ARG BUILD_TARGET=gcc-linux-armv8
 ARG BUILD_FOLDER=build/release
 ARG BUILD_TYPE=Release
 ARG BUILD_TESTNET=0
@@ -18,7 +18,7 @@ ENV BUILD_TARGET=${BUILD_TARGET}
 RUN apt update && apt -y upgrade
 
 RUN apt install -y build-essential pkgconf \
-    curl ca-certificates \
+    curl ca-certificates bison \
     g++ llvm clang lld cmake \
     git python3 python3-pip xz-utils gperf
 
