@@ -12,6 +12,7 @@
 # Default to “unknown” – will be overwritten below.
 CPU_CORES := 1
 TESTNET ?= 0
+BUILD_TYPE ?=Release
 
 # -----------------------------------------------------------------
 # Unix‑like systems (Linux, macOS, *BSD, etc.)
@@ -73,15 +74,15 @@ CONAN_CPU_COUNT=$(CPU_CORES)
 PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
 SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
-DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/cmake/profiles/default
+DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 
 all: help
 
 release: conan-profile-detect
 	@echo "Building profile: release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -DTESTNET=$(TESTNET)
-	cmake --build build/release --config=Release --parallel=$(CPU_CORES)
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET)
+	cmake --build build/release --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
@@ -92,8 +93,8 @@ debug: conan-profile-detect
 static: static-release
 static-release: conan-profile-detect
 	@echo "Building profile: release-static"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing
-	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D STATIC=ON -DTESTNET=$(TESTNET)
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -D STATIC=ON -DTESTNET=$(TESTNET)
 	cmake --build build/release-static --config=Release --parallel=$(CPU_CORES)
 
 conan-profile-detect:
@@ -106,9 +107,9 @@ conan-profile-detect:
 # Rule for each profile
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ --profile=cmake/profiles/$@ --build=missing
-	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -DTESTNET=$(TESTNET)
-	cmake --build build/$@ --config=Release --parallel=$(CPU_CORES)
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ -pr:b=$(DEFAULT_CONAN_PROFILE) -pr:h=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET)
+	cmake --build build/$@ --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 
 help:
 	@echo "Available targets:"
@@ -131,22 +132,22 @@ help:
 test: test-release
 test-release:
 	@echo "Building profile: test-release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-release --build=missing
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-release --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B build/test-release -DCMAKE_TOOLCHAIN_FILE=build/test-release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release -D BUILD_TESTS=ON
 	cmake --build build/test-release --config=Release --parallel=$(CPU_CORES)
 	$(MAKE) test
 
 test-debug:
 	@echo "Building profile: test-debug"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-debug --build=missing
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/test-debug --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B build/test-debug -DCMAKE_TOOLCHAIN_FILE=build/test-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D BUILD_TESTS=ON
 	cmake --build build/test-debug --config=Debug --parallel=$(CPU_CORES)
 	$(MAKE) test
 
 configure:
 	@echo "Running Config: release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=Release
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
 docs: configure
 	@echo "Building Documentation"
@@ -156,6 +157,9 @@ docs-dev: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=serve_docs --config=Release
 
+docker-chain-node:
+	@echo "Building docker image: lthn/chain"
+	docker build utils/docker/images/lthn-chain  -t lthn/chain $(CURDIR)
 
 clean:
 	rm -rf build
@@ -163,4 +167,4 @@ clean:
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)
+.PHONY: all release docker-chain-node debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)
