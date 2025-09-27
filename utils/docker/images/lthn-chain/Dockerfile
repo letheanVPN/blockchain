@@ -21,7 +21,7 @@ ENV BUILD_TARGET=${BUILD_TARGET}
 RUN apt update && apt -y upgrade
 
 RUN apt install -y build-essential pkgconf \
-    curl ca-certificates bison \
+    curl ca-certificates bison autotools-dev checkinstall \
     g++ llvm clang lld cmake \
     git python3 python3-pip xz-utils gperf
 
