@@ -17,6 +17,7 @@ ENV CONAN_HOME=/root/sdk
 # CONAN: disables the generation of color escape characters.
 ENV NO_COLOR=1
 ENV BUILD_TARGET=${BUILD_TARGET}
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt -y upgrade
 
