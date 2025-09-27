@@ -13,6 +13,8 @@ ARG BUILD_TESTNET=0
 
 
 ENV CONAN_HOME=/root/sdk
+# CONAN: disables the generation of color escape characters.
+ENV NO_COLOR=1
 ENV BUILD_TARGET=${BUILD_TARGET}
 
 RUN apt update && apt -y upgrade
@@ -45,6 +47,15 @@ RUN cmake -S /code -B ${BUILD_FOLDER} -DCMAKE_TOOLCHAIN_FILE=${BUILD_FOLDER}/con
 
 RUN cmake --build ${BUILD_FOLDER} --config=${BUILD_TYPE} --parallel=${THREADS}
 
+# minor cmd-fu; TESTNEt and MAINNET, in docker context, use MAIINNET binaries names.
+# do i like removing `-testnet`, no, but i dislike working around multiple names for ever more, so...
+RUN if [ "$BUILD_TESTNET" = "1" ]; then \
+      cd ${BUILD_FOLDER}/src && \
+      for f in lethean-testnet-*; do \
+        ln -s "$f" "${f/-testnet/}"; \
+      done; \
+    fi
+
 
 FROM scratch AS build-cache
 COPY --from=builder ${CONAN_HOME} /
@@ -52,8 +63,8 @@ COPY --from=builder ${CONAN_HOME} /
 FROM scratch AS build-artifacts
 COPY --from=builder /code/build/release/src/lethean-* /
 
-#FROM ubuntu:24.04 AS chain-service
-#
-#COPY --from=build-artifacts --chmod=+x / /bin
-#
-#RUN lethean-testnet-chain-node --help
+FROM ubuntu:24.04 AS chain-service
+
+COPY --from=build-artifacts --chmod=+x / /bin
+
+RUN lethean-chain-node --help
