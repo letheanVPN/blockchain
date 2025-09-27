@@ -17,6 +17,7 @@ on:
 
 jobs:
   build:
+    name: "lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}"
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Project
@@ -39,8 +40,8 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v5
         with:
-          file: utils/docker/images/chain-node
-          context: .
+          file: ${{ github.workspace }}/utils/docker/images/chain-node/Dockerfile
+          context: ${{ github.workspace }}
           push: true
           tags: lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
 
