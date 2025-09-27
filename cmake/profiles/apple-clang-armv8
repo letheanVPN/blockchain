@@ -1,10 +1,9 @@
 [settings]
 os=Macos
-arch=x86_64
+arch=armv8
 compiler=apple-clang
 compiler.version=13
 compiler.libcxx=libc++
-build_type=Release
 
 [conf]
-
+tools.cmake.cmaketoolchain:user_presets=False
