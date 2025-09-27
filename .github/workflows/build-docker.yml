@@ -18,7 +18,7 @@ on:
 
 jobs:
   build:
-    name: "lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}"
+    name: "lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet-' || '' }}${{ matrix.arch_tag }}"
     runs-on: ubuntu-22.04
     strategy:
       matrix:
