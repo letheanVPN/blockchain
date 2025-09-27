@@ -73,6 +73,7 @@ jobs:
 
   finalize_manifest:
     needs: build
+    name: Multi-Arch Image
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
