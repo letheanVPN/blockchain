@@ -466,7 +466,7 @@ namespace currency
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(payment_id) DOC_DSCR("Hex-encoded Payment ID to be associated with the this address. If empty then wallet would generate new payment id using system random library") DOC_EXMP("1dfe5a88ff9effb3")  DOC_END
-        KV_SERIALIZE(regular_address) DOC_DSCR("Lethean wallet address to be used as a base for integrated address") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7")  DOC_END
+        KV_SERIALIZE(regular_address) DOC_DSCR("Lethean wallet address to be used as a base for integrated address") DOC_EXMP("iTHNHvUTA2gR7gSb854s58SpAyqtR5aCNcfzBzVHjhvPcw2gQ2PHDiwT48U4ZyLVjtLxev8fAQ7NaGLZe6ihTSgp7gL45MJTCK")  DOC_END
       END_KV_SERIALIZE_MAP()
     };
 
