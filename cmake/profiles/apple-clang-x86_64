@@ -6,4 +6,3 @@ compiler.version=13
 compiler.libcxx=libc++
 
 [conf]
-tools.cmake.cmaketoolchain:user_presets=False
