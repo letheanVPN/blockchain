@@ -157,6 +157,9 @@ docs-dev: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=serve_docs --config=Release
 
+docker-chain-node:
+	@echo "Building docker image: lthn/chain"
+	docker build utils/docker/images/lthn-chain  -t lthn/chain $(CURDIR)
 
 clean:
 	rm -rf build
@@ -164,4 +167,4 @@ clean:
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)
+.PHONY: all release docker-chain-node debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect $(PROFILES)

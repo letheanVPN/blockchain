@@ -1,4 +1,4 @@
-# This is a multi target docker image
+# use --target=builder to return a docker image able to compile the software, probbly used with -v .:/code
 FROM ubuntu:24.04 AS builder
 LABEL authors="snider"
 
@@ -9,7 +9,7 @@ ARG BUILD_REPO=https://github.com/letheanVPN/blockchain.git
 ARG BUILD_TARGET=gcc-linux-armv8
 ARG BUILD_FOLDER=build/release
 ARG BUILD_TYPE=Release
-ARG BUILD_TESTNET=0
+ARG BUILD_TESTNET=1
 
 
 ENV CONAN_HOME=/root/sdk
@@ -56,13 +56,15 @@ RUN if [ "$BUILD_TESTNET" = "1" ]; then \
       done; \
     fi
 
-
+# use --target=build-cache to return just the cache files
 FROM scratch AS build-cache
 COPY --from=builder ${CONAN_HOME} /
 
+# use --target=build-artifacts to return the binaries
 FROM scratch AS build-artifacts
 COPY --from=builder /code/build/release/src/lethean-* /
 
+# use --target=chain-service to return a working chain node
 FROM ubuntu:24.04 AS chain-service
 
 COPY --from=build-artifacts --chmod=+x / /bin
