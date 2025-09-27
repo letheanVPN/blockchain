@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           file: utils/docker/images/chain-node
-          context: {{defaultContext}}:${{ github.workspace }}
+          context: .
           push: true
           tags: lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
 
