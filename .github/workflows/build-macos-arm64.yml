@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/build/sdk
-          key: ${{ runner.os }}-sdk
+          key: ${{ runner.os }}-${{ runner.arch }}-sdk
 
       - name: Install Conan
         uses: conan-io/setup-conan@v1
@@ -39,7 +39,7 @@ jobs:
 #        run: make apple-clang-armv8 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
       - name: Compile Release
-        run: make release TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make release CPU_CORES=3 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
 
       - name: CLI Artifacts

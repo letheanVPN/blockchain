@@ -1,4 +1,4 @@
-name: build-macos-intel
+name: build-windows
 permissions:
   contents: read
 on:
@@ -11,16 +11,15 @@ on:
         type: string
 
 jobs:
-  build:
-    name: apple-clang-x86_64
-    runs-on: macos-13
+  msvc-194:
+    name: msvc-194-arm64
+    runs-on: windows-11-arm
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
         with:
           fetch-depth: 0
           submodules: recursive
-
 
       - name: Cache SDK Folder
         uses: actions/cache@v4

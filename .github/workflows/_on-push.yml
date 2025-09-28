@@ -16,15 +16,27 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build-linux:
+  build-linux-intel:
     name: Chain
-    uses: ./.github/workflows/build-linux.yml
+    uses: ./.github/workflows/build-linux-intel.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
-  build-windows:
+  build-linux-arm:
     name: Chain
-    uses: ./.github/workflows/build-windows.yml
+    uses: ./.github/workflows/build-linux-arm64.yml
+    with:
+      chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
+
+  build-windows-intel:
+    name: Chain
+    uses: ./.github/workflows/build-windows-intel.yml
+    with:
+      chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
+
+  build-windows-arm:
+    name: Chain
+    uses: ./.github/workflows/build-windows-arm64.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
