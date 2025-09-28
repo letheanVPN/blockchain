@@ -31,12 +31,16 @@ jobs:
           cache_packages: true
 
       - name: Compile Release
-        run: make gcc-linux-x86_64 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make release TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
-      - name: CLI Artifacts
-        uses: ./.github/actions/upload-artifacts
+      - uses: actions/upload-artifact@v4
         with:
-          chain-network: ${{ inputs.chain-network }}
-          assets: lethean-*
-          asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/gcc-linux-x86_64/src
+          path: ${{ github.workspace }}/build/release/packages/lethean-*.deb
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ${{ github.workspace }}/build/release/packages/lethean-*.tar.xz
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ${{ github.workspace }}/build/release/packages/lethean-*.zip

@@ -4,7 +4,7 @@ include_directories (${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/currency_co
 include(${CMAKE_SOURCE_DIR}/cmake/config-vars.cmake)
 #include(${CMAKE_SOURCE_DIR}/cmake/currency_configs/example.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/check-config-vars.cmake)
-configure_file("currency_core/currency_config.h.in" "currency_core/currency_config.h")
+configure_file("src/currency_core/currency_config.h.in" "src/currency_core/currency_config.h")
 
 # CAUTION - wallet generation will only work properly in UNIX line environment
 set(GENERATE_FRESH_GENESIS OFF CACHE BOOL "Generate new genesis block")

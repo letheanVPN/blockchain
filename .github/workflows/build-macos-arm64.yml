@@ -36,8 +36,15 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: "${{ inputs.chain-network == 'testnet' && 'testnet-' || '' }}apple-clang-armv8"
-          path: ${{ github.workspace }}/build/release/packages/lethean-*
+          path: ${{ github.workspace }}/build/release/packages/lethean-*.pkg
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ${{ github.workspace }}/build/release/packages/lethean-*.tar.xz
+
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ${{ github.workspace }}/build/release/packages/lethean-*.zip
 
 #      - name: CLI Artifacts
 #        uses: ./.github/actions/upload-artifacts

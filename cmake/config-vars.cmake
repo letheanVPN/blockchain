@@ -42,7 +42,7 @@ endif ()
 # installer config
 set(package_vendor "Lethean Community" CACHE STRING "CPACK_PACKAGE_VENDOR" )
 set(package_description "A privacy‑preserving blockchain node" CACHE STRING "CPACK_PACKAGE_DESCRIPTION_SUMMARY" )
-set(package_version "1.0.0" CACHE STRING "CPACK_PACKAGE_VERSION" )
+set(package_version "${BUILD_VERSION}" CACHE STRING "CPACK_PACKAGE_VERSION" )
 set(package_contact "support@lt.hn" CACHE STRING "CPACK_PACKAGE_CONTACT" )
 set(package_website "https://github.com/letheanVPN/blockchain" CACHE STRING "CPACK_PACKAGE_HOMEPAGE_URL" )
 set(package_macos_installer "PKG" CACHE STRING "CPACK_GENERATOR" )

@@ -3,7 +3,9 @@ cmake_minimum_required(VERSION 3.16)
 set(DISABLE_TOR TRUE CACHE BOOL "Disable TOR library(and related tor-connect submodule)")
 
 PROJECT(Lethean)
-set(VERSION "1.0")
+
+set(VERSION "1.0" CACHE STRING "Build version")
+
 
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
 message("OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
@@ -266,10 +268,6 @@ elseif(NOT MSVC AND NOT APPLE AND NOT CAKEWALLET AND STATIC)
   list(APPEND Boost_LIBRARIES icui18n.a icuuc.a icudata.a dl)
 endif()
 
-if(BUILD_GUI)
-  find_package(Qt6 REQUIRED COMPONENTS Core5Compat Widgets WebEngineWidgets WebChannel PrintSupport)
-  message(STATUS "Found QT Packages")
-endif()
 
 set(COMMIT_ID_IN_VERSION ON CACHE BOOL "Include commit ID in version")
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/version")
@@ -296,6 +294,8 @@ else()
     add_custom_target(version ALL)
   endif()
 endif()
+
+include(ChainConfig)
 
 set(BUILD_TESTS FALSE CACHE BOOL "Build Lethean tests")
 set(DISABLE_MDBX FALSE CACHE BOOL "Exclude mdbx from build(need for a first time)")

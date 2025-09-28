@@ -13,6 +13,7 @@
 CPU_CORES := 1
 TESTNET:= 0
 BUILD_TYPE ?=Release
+BUILD_VERSION:=6.0.0
 
 # -----------------------------------------------------------------
 # Unix‑like systems (Linux, macOS, *BSD, etc.)
@@ -82,7 +83,7 @@ all: help
 release: conan-profile-detect
 	@echo "Building profile: release $(TESTNET)"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET)
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 	cmake --build build/release --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 	(cd build/release && cpack)
 
