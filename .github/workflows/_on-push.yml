@@ -34,12 +34,6 @@ jobs:
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
-  build-windows-arm:
-    name: Chain
-    uses: ./.github/workflows/build-windows-arm64.yml
-    with:
-      chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-
   build-macos-arm64:
     name: Chain
     uses: ./.github/workflows/build-macos-arm64.yml
