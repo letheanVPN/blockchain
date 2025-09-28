@@ -212,7 +212,7 @@ else()
   else()
     set(DEBUG_FLAGS "-g3 -O0")
   endif()
-  set(RELEASE_FLAGS "-O3 -ffast-math -DNDEBUG -Wno-unused-variable")
+  set(RELEASE_FLAGS "-O3 -ffast-math -DNDEBUG -w")
 
   if(NOT APPLE AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     set(RELEASE_FLAGS "${RELEASE_FLAGS} -flto=auto -g3")
