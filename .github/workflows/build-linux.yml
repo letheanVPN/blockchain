@@ -33,14 +33,10 @@ jobs:
       - name: Compile Release
         run: make release TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
-      - uses: actions/upload-artifact@v4
+      - name: CLI Artifacts
+        uses: ./.github/actions/upload-artifacts
         with:
-          path: ${{ github.workspace }}/build/release/packages/lethean-*.deb
-
-      - uses: actions/upload-artifact@v4
-        with:
-          path: ${{ github.workspace }}/build/release/packages/lethean-*.tar.xz
-
-      - uses: actions/upload-artifact@v4
-        with:
-          path: ${{ github.workspace }}/build/release/packages/lethean-*.zip
+          chain-network: ${{ inputs.chain-network }}
+          assets: lethean-*
+          asset-type: 'cli'
+          asset-directory: ${{ github.workspace }}/build/release/packages
