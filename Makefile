@@ -11,7 +11,7 @@
 
 # Default to “unknown” – will be overwritten below.
 CPU_CORES := 1
-TESTNET ?= 0
+TESTNET:= 0
 BUILD_TYPE ?=Release
 
 # -----------------------------------------------------------------
@@ -80,10 +80,11 @@ CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
 all: help
 
 release: conan-profile-detect
-	@echo "Building profile: release"
+	@echo "Building profile: release $(TESTNET)"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET)
 	cmake --build build/release --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
+	(cd build/release && cpack)
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"

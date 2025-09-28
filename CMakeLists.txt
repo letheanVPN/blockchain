@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(DISABLE_TOR TRUE CACHE BOOL "Disable TOR library(and related tor-connect submodule)")
 
-PROJECT(Zano)
+PROJECT(Lethean)
 set(VERSION "1.0")
 
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
@@ -297,7 +297,7 @@ else()
   endif()
 endif()
 
-set(BUILD_TESTS FALSE CACHE BOOL "Build Zano tests")
+set(BUILD_TESTS FALSE CACHE BOOL "Build Lethean tests")
 set(DISABLE_MDBX FALSE CACHE BOOL "Exclude mdbx from build(need for a first time)")
 if(NOT DISABLE_MDBX)
    add_definitions(-DENABLED_ENGINE_MDBX)
@@ -310,3 +310,5 @@ add_subdirectory(src)
 if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()
+
+include(CPackConfig)

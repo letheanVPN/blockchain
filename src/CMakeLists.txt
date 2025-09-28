@@ -189,3 +189,6 @@ else ()
   set_property(TARGET connectivity_tool PROPERTY OUTPUT_NAME "lethean-testnet-chain-tool")
 endif ()
 
+install(TARGETS daemon simplewallet
+        RUNTIME DESTINATION bin)
+

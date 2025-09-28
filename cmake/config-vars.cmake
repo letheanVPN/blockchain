@@ -10,6 +10,8 @@ set(currency_display_decimal_point 12 CACHE STRING "CURRENCY_DISPLAY_DECIMAL_POI
 set(currency_name_abr "LTHN" CACHE STRING "CURRENCY_NAME_ABR" )
 set(currency_name_base "Lethean" CACHE STRING "CURRENCY_NAME_BASE" )
 set(currency_name_short_base "Lethean" CACHE STRING "CURRENCY_NAME_SHORT_BASE" )
+
+
 # prefix is 'iT', non auditable wallets then use 'H', auditable wallets use 'h'; 'N' is a base addr, 'n' is a sub address,
 set(address_prefix 0x1eaf7 CACHE STRING "CURRENCY_PUBLIC_ADDRESS_BASE58_PREFIX" ) # addresses start with 'iTHN'
 set(address_prefix_integrated 0xdeaf7 CACHE STRING "CURRENCY_PUBLIC_INTEG_ADDRESS_V2_BASE58_PREFIX" ) # integrated addresses start with 'iTHn'
@@ -29,8 +31,22 @@ if (TESTNET)
     set(p2p_default_port 36942 CACHE STRING "P2P_DEFAULT_PORT" )
     set(rpc_default_port 36941 CACHE STRING "RPC_DEFAULT_PORT" )
     set(stratum_default_port 36940 CACHE STRING "STRATUM_DEFAULT_PORT" )
+    set(package_name "lethean-testnet-cli" CACHE STRING "CPACK_PACKAGE_NAME" )
 else ()
+    message(CHECK_FAIL "bad")
     set(p2p_default_port 36942 CACHE STRING "P2P_DEFAULT_PORT" )
     set(rpc_default_port 36941 CACHE STRING "RPC_DEFAULT_PORT" )
     set(stratum_default_port 36940 CACHE STRING "STRATUM_DEFAULT_PORT" )
+    set(package_name "lethean-cli" CACHE STRING "CPACK_PACKAGE_NAME" )
 endif ()
+# installer config
+set(package_vendor "Lethean Community" CACHE STRING "CPACK_PACKAGE_VENDOR" )
+set(package_description "A privacy‑preserving blockchain node" CACHE STRING "CPACK_PACKAGE_DESCRIPTION_SUMMARY" )
+set(package_version "1.0.0" CACHE STRING "CPACK_PACKAGE_VERSION" )
+set(package_contact "support@lt.hn" CACHE STRING "CPACK_PACKAGE_CONTACT" )
+set(package_website "https://github.com/letheanVPN/blockchain" CACHE STRING "CPACK_PACKAGE_HOMEPAGE_URL" )
+set(package_macos_installer "PKG" CACHE STRING "CPACK_GENERATOR" )
+set(package_macos_dmg_background "DMG" CACHE STRING "CPACK_DMG_BACKGROUND_IMAGE" )
+set(package_macos_pkg_productbuild_identifier "com.lethean.blockchainnode" CACHE STRING "CPACK_PRODUCTBUILD_IDENTIFIER" )
+set(package_macos_pkg_productbuild_signer "Developer ID Installer: Your Company (TEAMID)" CACHE STRING "CPACK_PRODUCTBUILD_SIGNING_IDENTITY" )
+
