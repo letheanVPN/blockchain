@@ -58,3 +58,12 @@ runs:
       with:
         name: ${{ steps.asset.outputs.key }}
         path: ${{ steps.asset.outputs.paths }}
+
+    - name: Make Release
+      uses: softprops/action-gh-release@v2
+      continue-on-error: true
+      with:
+        tag_name: ${{ inputs.chain-network }}-${{ inputs.release-tag }}
+        prerelease: contains(inputs.chain-network, 'testnet')
+        files: ${{ inputs.asset-directory }}/lethean-*
+        target_commitish: ${{ github.sha }}

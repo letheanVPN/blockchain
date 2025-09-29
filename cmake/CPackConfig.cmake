@@ -1,10 +1,10 @@
-#include(${CMAKE_SOURCE_DIR}/cmake/config-vars.cmake)
+
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPACK_PACKAGE_NAME "${package_name}")
     set(CPACK_PACKAGE_VENDOR "${package_vendor}")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${package_description}")
-    set(CPACK_PACKAGE_VERSION "${package_version}")
+    set(CPACK_PACKAGE_VERSION "${BUILD_VERSION}")
     set(CPACK_PACKAGE_CONTACT "${package_contact}")
     set(CPACK_PACKAGE_HOMEPAGE_URL "${package_website}")
 
