@@ -6,7 +6,7 @@ target_link_libraries(genesis_generator
         currency_core
         crypto
         common
-        zlibstatic
+        ZLIB::ZLIB
         ${CMAKE_THREAD_LIBS_INIT}
         ${Boost_LIBRARIES}
         OpenSSL::SSL
