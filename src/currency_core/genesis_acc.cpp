@@ -21,8 +21,8 @@
 namespace currency
 {
 #ifndef TESTNET
-#include "generated/_genesis_acc.cpp.gen"
+#include "../genesis/_genesis_acc.cpp.gen"
 #else 
-#include "generated/_genesis_acc_tn.cpp.gen"
+#include "../genesis/_genesis_acc_tn.cpp.gen"
 #endif 
 }

@@ -29,7 +29,7 @@ if (GENERATE_FRESH_GENESIS)
         message(FATAL_ERROR "GENESIS_PREMINE_ADDRESS is not set and could not be read from file. Please set it via -DGENESIS_PREMINE_ADDRESS=<address>")
     else()
          add_custom_command(TARGET genesis_generator POST_BUILD
-            COMMAND $<TARGET_FILE:genesis_generator> --address ${GENESIS_PREMINE_ADDRESS} --proof "${GENESIS_PROOF}" --output "${CMAKE_SOURCE_DIR}/src/currency_core/generated/"
+            COMMAND $<TARGET_FILE:genesis_generator> --address ${GENESIS_PREMINE_ADDRESS} --proof "${GENESIS_PROOF}" --output "${CMAKE_SOURCE_DIR}/src/genesis/"
             COMMENT "Generating genesis data..."
             VERBATIM
         )

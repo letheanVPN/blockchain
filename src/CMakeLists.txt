@@ -84,7 +84,7 @@ source_group(wallet FILES ${WALLET})
 INIT_SHARED_PCH()
 
 add_subdirectory(config)
-add_subdirectory(genesis_generator)
+add_subdirectory(genesis)
 
 add_library(common ${COMMON})
 add_dependencies(common version config ${PCH_LIB_NAME})

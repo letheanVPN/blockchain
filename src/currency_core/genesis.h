@@ -22,9 +22,9 @@ namespace currency
 {
 #pragma pack(push, 1)
 #ifndef TESTNET
-#include "generated/_genesis.h.gen"
+#include "../genesis/_genesis.h.gen"
 #else
-#include "generated/_genesis_tn.h.gen"
+#include "../genesis/_genesis_tn.h.gen"
 #endif
 #pragma pack(pop)
   extern const genesis_tx_raw_data ggenesis_tx_raw;
