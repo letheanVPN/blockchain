@@ -16,7 +16,7 @@
 //
 
 #include "db_backend_selector.h"
-#include "currency_core/currency_config.h"
+#include "config/currency_config.h"
 #include "command_line.h"
 #include "db_backend_lmdb.h"
 #include "db_backend_mdbx.h"

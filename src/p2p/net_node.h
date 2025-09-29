@@ -38,7 +38,7 @@
 #include "math_helper.h"
 #include "net_node_common.h"
 #include "maintainers_info_boost_serialization.h"
-#include "currency_core/currency_config.h"
+#include "config/currency_config.h"
 using namespace epee;
 
 #undef LOG_DEFAULT_CHANNEL 

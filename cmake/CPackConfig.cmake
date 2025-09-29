@@ -1,4 +1,4 @@
-include(${CMAKE_SOURCE_DIR}/cmake/config-vars.cmake)
+#include(${CMAKE_SOURCE_DIR}/cmake/config-vars.cmake)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPACK_PACKAGE_NAME "${package_name}")

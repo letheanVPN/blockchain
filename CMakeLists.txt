@@ -295,8 +295,6 @@ else()
   endif()
 endif()
 
-include(ChainConfig)
-
 set(BUILD_TESTS FALSE CACHE BOOL "Build Lethean tests")
 set(DISABLE_MDBX FALSE CACHE BOOL "Exclude mdbx from build(need for a first time)")
 if(NOT DISABLE_MDBX)

@@ -65,7 +65,6 @@ file(GLOB_RECURSE SIMPLEWALLET simplewallet/*)
 file(GLOB_RECURSE CONN_TOOL connectivity_tool/*)
 file(GLOB_RECURSE WALLET wallet/*)
 file(GLOB_RECURSE MINER miner/*)
-file(GLOB_RECURSE GENESIS_GENERATOR genesis_generator/*)
 
 
 source_group(pch FILES ${PCH})
@@ -80,14 +79,16 @@ source_group(stratum FILES ${STRATUM})
 source_group(simplewallet FILES ${SIMPLEWALLET})
 source_group(connectivity-tool FILES ${CONN_TOOL})
 source_group(wallet FILES ${WALLET})
-source_group(genesis_generator FILES ${GENESIS_GENERATOR})
 
 
 INIT_SHARED_PCH()
 
+add_subdirectory(config)
+add_subdirectory(genesis_generator)
+
 add_library(common ${COMMON})
-add_dependencies(common version ${PCH_LIB_NAME})
-target_link_libraries(common PUBLIC ${Boost_LIBRARIES})
+add_dependencies(common version config ${PCH_LIB_NAME})
+target_link_libraries(common PUBLIC ${Boost_LIBRARIES} config)
 ENABLE_SHARED_PCH(common COMMON)
 
 if(NOT MSVC AND NOT APPLE AND NOT CLANG)  # TODO(unassigned): do we really need the clang equivalent?
@@ -107,15 +108,16 @@ endif()
 
 add_library(crypto ${CRYPTO})
 if(USE_BITCOIN_SECP256K1_FOR_ECDSA)
-  add_dependencies(crypto secp256k1)
-  target_link_libraries(crypto secp256k1 ${BCRYPT_LIB})
+  add_dependencies(crypto secp256k1 config)
+  target_link_libraries(crypto config secp256k1 ${BCRYPT_LIB})
 else()
-  add_dependencies(crypto OpenSSL::Crypto)
-  target_link_libraries(crypto OpenSSL::Crypto ${BCRYPT_LIB})
+  add_dependencies(crypto OpenSSL::Crypto config)
+  target_link_libraries(crypto PUBLIC config OpenSSL::Crypto ${BCRYPT_LIB})
 endif()
 
 add_library(currency_core ${CURRENCY_CORE})
-add_dependencies(currency_core version  ${PCH_LIB_NAME})
+add_dependencies(currency_core version config ${PCH_LIB_NAME})
+target_link_libraries(currency_core config)
 ENABLE_SHARED_PCH(currency_core CURRENCY_CORE)
 
 add_library(wallet  ${WALLET})
@@ -123,7 +125,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android" )
   add_dependencies(wallet version ${PCH_LIB_NAME})
   target_link_libraries(wallet currency_core crypto common ZLIB::ZLIB ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} android log OpenSSL::SSL OpenSSL::Crypto)
 else()
-  add_dependencies(wallet version ${PCH_LIB_NAME})
+  add_dependencies(wallet version config ${PCH_LIB_NAME})
+  target_link_libraries(wallet config)
   ENABLE_SHARED_PCH(wallet WALLET)
 endif()
 
@@ -146,25 +149,27 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
 endif()
 
 add_library(rpc ${RPC})
-add_dependencies(rpc version ${PCH_LIB_NAME})
+add_dependencies(rpc version config ${PCH_LIB_NAME})
+target_link_libraries(rpc config)
 ENABLE_SHARED_PCH(rpc RPC)
 
 add_library(stratum ${STRATUM})
-add_dependencies(stratum version ${PCH_LIB_NAME})
+add_dependencies(stratum version config ${PCH_LIB_NAME})
+target_link_libraries(stratum config)
 ENABLE_SHARED_PCH(stratum STRATUM)
 
 
-target_link_libraries(currency_core lmdb mdbx)
+target_link_libraries(currency_core config lmdb mdbx)
 
 add_executable(daemon ${DAEMON} ${P2P} ${CURRENCY_PROTOCOL})
 add_dependencies(daemon version)
-target_link_libraries(daemon rpc stratum currency_core crypto common miniupnpc::miniupnpc ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(daemon  rpc stratum currency_core crypto common miniupnpc::miniupnpc ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 ENABLE_SHARED_PCH(daemon DAEMON)
 ENABLE_SHARED_PCH_EXECUTABLE(daemon)
                      
 add_executable(connectivity_tool ${CONN_TOOL})
 add_dependencies(connectivity_tool version)
-target_link_libraries(connectivity_tool currency_core crypto common ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(connectivity_tool  currency_core crypto common ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 ENABLE_SHARED_PCH(connectivity_tool CONN_TOOL)
 ENABLE_SHARED_PCH_EXECUTABLE(connectivity_tool)
 
@@ -190,4 +195,3 @@ endif ()
 
 install(TARGETS daemon simplewallet
         RUNTIME DESTINATION bin)
-

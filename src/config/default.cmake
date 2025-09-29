@@ -49,4 +49,3 @@ set(package_macos_installer "PKG" CACHE STRING "CPACK_GENERATOR" )
 set(package_macos_dmg_background "DMG" CACHE STRING "CPACK_DMG_BACKGROUND_IMAGE" )
 set(package_macos_pkg_productbuild_identifier "com.lethean.blockchainnode" CACHE STRING "CPACK_PRODUCTBUILD_IDENTIFIER" )
 set(package_macos_pkg_productbuild_signer "Developer ID Installer: Your Company (TEAMID)" CACHE STRING "CPACK_PRODUCTBUILD_SIGNING_IDENTITY" )
-

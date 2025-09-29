@@ -16,7 +16,7 @@
 //
 #include "one_out_of_many_proofs.h"
 #include "../currency_core/crypto_config.h"
-#include "../currency_core/currency_config.h" // for static asset checks
+#include "config/currency_config.h" // for static asset checks
 #include "epee/include/misc_log_ex.h"
 
 //DISABLE_GCC_AND_CLANG_WARNING(unused-function)

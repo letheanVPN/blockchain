@@ -32,7 +32,7 @@
 #include "blockchain_storage.h"
 #include "currency_format_utils.h"
 #include "currency_boost_serialization.h"
-#include "currency_core/currency_config.h"
+#include "config/currency_config.h"
 #include "miner.h"
 #include "misc_language.h"
 #include "profile_tools.h"

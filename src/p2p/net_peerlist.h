@@ -35,7 +35,7 @@
 #include "syncobj.h"
 #include "net/local_ip.h"
 #include "p2p_protocol_defs.h"
-#include "currency_core/currency_config.h"
+#include "config/currency_config.h"
 #include "net_peerlist_boost_serialization.h"
 #include "common/boost_serialization_helper.h"
 

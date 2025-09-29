@@ -17,7 +17,7 @@
 
 
 #include "command_line.h"
-#include "currency_core/currency_config.h"
+#include "config/currency_config.h"
 
 namespace command_line
 {

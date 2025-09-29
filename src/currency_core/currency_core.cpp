@@ -25,7 +25,7 @@ using namespace epee;
 #include "common/util.h"
 #include "warnings.h"
 #include "crypto/crypto.h"
-#include "currency_core/currency_config.h"
+#include "config/currency_config.h"
 #include "currency_format_utils.h"
 #include "misc_language.h"
 #include "string_coding.h"

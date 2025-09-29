@@ -46,7 +46,7 @@
 #include "serialization/debug_archive.h"
 #include "serialization/keyvalue_serialization.h" // epee key-value serialization
 #include "string_tools.h"
-#include "currency_config.h"
+#include "config/currency_config.h"
 #include "crypto/crypto.h"
 #include "crypto/hash.h"
 #include "crypto/range_proofs.h"

@@ -25,7 +25,7 @@
 
 #include "common/int-util.h"
 #include "crypto/hash.h"
-#include "currency_core/currency_config.h"
+#include "config/currency_config.h"
 #include "difficulty.h"
 #include "profile_tools.h"
 

@@ -20,7 +20,7 @@
 using namespace epee;
 
 #include "util.h"
-#include "currency_core/currency_config.h"
+#include "config/currency_config.h"
 #include "version.h"
 #define UTF_CPP_CPLUSPLUS 201703L
 #include "utf8.h"
