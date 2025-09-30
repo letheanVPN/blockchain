@@ -1,6 +1,6 @@
 name: build-macos-intel
 permissions:
-  contents: read
+  contents: write
 on:
   workflow_call:
     inputs:

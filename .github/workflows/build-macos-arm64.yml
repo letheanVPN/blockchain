@@ -1,6 +1,6 @@
 name: build-macos-arm64
 permissions:
-  contents: read
+  contents: write
 on:
   workflow_call:
     inputs:
