@@ -71,6 +71,6 @@ runs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.asset.outputs.version }}
-        prerelease: contains(inputs.chain-network, 'testnet')
+        prerelease:  ${{ contains(inputs.chain-network, 'testnet') }}
         files: ${{ inputs.asset-directory }}/lethean-*
         target_commitish: ${{ github.sha }}
