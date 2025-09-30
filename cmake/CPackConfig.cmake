@@ -59,7 +59,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/packages")
 
     install(FILES README.md LICENSE.txt
-            DESTINATION .
+            DESTINATION "share/doc/${CPACK_PACKAGE_NAME}"
     )
 
     set(_arch "${CMAKE_SYSTEM_PROCESSOR}")

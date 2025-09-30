@@ -98,7 +98,7 @@ static-release: conan-profile-detect
 	@echo "Building profile: release-static"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -D STATIC=ON -DTESTNET=$(TESTNET)
-	cmake --build build/release-static --config=Release --parallel=$(CPU_CORES)
+	cmake --build build/release-static --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
