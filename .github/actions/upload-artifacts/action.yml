@@ -70,7 +70,7 @@ runs:
     - name: Make Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ steps.asset.outputs.version }}
+        tag_name: ${{ steps.asset.outputs.version }}${{ inputs.chain-network == 'mainnet' && '' || '-pre' }}+${{ github.run_number }}
         prerelease:  ${{ contains(inputs.chain-network, 'testnet') }}
         files: ${{ inputs.asset-directory }}/lethean-*
         target_commitish: ${{ github.sha }}
