@@ -20,6 +20,7 @@ jobs:
       (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
       (github.event.review.state == 'approved' && !github.event.pull_request.draft)
     uses: ./.github/workflows/build-linux-intel.yml
+    secrets: inherit
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
@@ -29,6 +30,7 @@ jobs:
       (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
       (github.event.review.state == 'approved' && !github.event.pull_request.draft)
     uses: ./.github/workflows/build-linux-arm64.yml
+    secrets: inherit
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
@@ -38,6 +40,7 @@ jobs:
       (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
       (github.event.review.state == 'approved' && !github.event.pull_request.draft)
     uses: ./.github/workflows/build-windows-intel.yml
+    secrets: inherit
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
@@ -47,6 +50,7 @@ jobs:
       (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
       (github.event.review.state == 'approved' && !github.event.pull_request.draft)
     uses: ./.github/workflows/build-macos-arm64.yml
+    secrets: inherit
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
@@ -56,6 +60,7 @@ jobs:
       (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
       (github.event.review.state == 'approved' && !github.event.pull_request.draft)
     uses: ./.github/workflows/build-macos-intel.yml
+    secrets: inherit
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
@@ -65,9 +70,9 @@ jobs:
       (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
       (github.event.review.state == 'approved' && !github.event.pull_request.draft)
     uses: ./.github/workflows/build-docker.yml
+    secrets: inherit
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
-    secrets: inherit
 
   build-docs:
     name: Docs
