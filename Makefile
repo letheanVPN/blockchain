@@ -13,7 +13,7 @@
 CPU_CORES := 1
 TESTNET:= 0
 BUILD_TYPE ?=Release
-BUILD_VERSION:=6.0.0
+BUILD_VERSION:=6.0.1
 
 # -----------------------------------------------------------------
 # Unix‑like systems (Linux, macOS, *BSD, etc.)
