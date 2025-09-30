@@ -61,7 +61,6 @@ runs:
 
     - name: Make Release
       uses: softprops/action-gh-release@v2
-      continue-on-error: true
       with:
         tag_name: ${{ inputs.chain-network }}-${{ inputs.release-tag }}
         prerelease: contains(inputs.chain-network, 'testnet')
