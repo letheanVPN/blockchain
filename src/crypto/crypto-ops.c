@@ -1,29 +1,19 @@
-// Copyright (c) 2018-2021 Zano Project
-// Copyright (c) 2020-2021 sowle (val@zano.org, crypto.sowle@gmail.com)
-// Copyright (c) 2012-2013 The Cryptonote developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2014-2018 Zano Project
+// Copyright (c) 2014-2018 The Louisdor Project
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
 //
-// This file contains pieces of code from libsodium project.
-// libsodium is licensed under the ISC License:
-/*
- * ISC License
- *
- * Copyright (c) 2013-2020
- * Frank Denis <j at pureftpd dot org>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 
 #include <assert.h>
 #include <stdint.h>

@@ -1,0 +1,8 @@
+build
+.github
+.idea
+docs
+resources
+snap
+tests
+CMakeUserPresets.json

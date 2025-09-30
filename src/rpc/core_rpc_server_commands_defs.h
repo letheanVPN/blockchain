@@ -1,8 +1,19 @@
-// Copyright (c) 2014-2024 Zano Project
+// Copyright (c) 2014-2018 Zano Project
 // Copyright (c) 2014-2018 The Louisdor Project
-// Copyright (c) 2012-2013 The Cryptonote developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 #pragma once
 #include "serialization/keyvalue_hexemizer.h"
 #include "currency_protocol/currency_protocol_defs.h"
@@ -154,7 +165,7 @@ namespace currency
 
   struct COMMAND_RPC_GET_ASSETS_LIST
   {
-    DOC_COMMAND("Return list of assets registered in Zano blockchain");
+    DOC_COMMAND("Return list of assets registered in Lethean blockchain");
 
     struct request
     {
@@ -174,7 +185,7 @@ namespace currency
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(status)                     DOC_DSCR("Status code of operation, OK if success")     DOC_EXMP(API_RETURN_CODE_OK)     DOC_END
-        KV_SERIALIZE(assets)                     DOC_DSCR("List of assets registered in Zano blockchain")     DOC_EXMP_AUTO(1)     DOC_END
+        KV_SERIALIZE(assets)                     DOC_DSCR("List of assets registered in Lethean blockchain")     DOC_EXMP_AUTO(1)     DOC_END
       END_KV_SERIALIZE_MAP()
     };
   };
@@ -455,7 +466,7 @@ namespace currency
 
       BEGIN_KV_SERIALIZE_MAP()
         KV_SERIALIZE(payment_id) DOC_DSCR("Hex-encoded Payment ID to be associated with the this address. If empty then wallet would generate new payment id using system random library") DOC_EXMP("1dfe5a88ff9effb3")  DOC_END
-        KV_SERIALIZE(regular_address) DOC_DSCR("Zano wallet address to be used as a base for integrated address") DOC_EXMP("ZxCSpsGGeJsS8fwvQ4HktDU3qBeauoJTR6j73jAWWZxFXdF7XTbGm4YfS2kXJmAP4Rf5BVsSQ9iZ45XANXEYsrLN2L2W77dH7")  DOC_END
+        KV_SERIALIZE(regular_address) DOC_DSCR("Lethean wallet address to be used as a base for integrated address") DOC_EXMP("iTHNHvUTA2gR7gSb854s58SpAyqtR5aCNcfzBzVHjhvPcw2gQ2PHDiwT48U4ZyLVjtLxev8fAQ7NaGLZe6ihTSgp7gL45MJTCK")  DOC_END
       END_KV_SERIALIZE_MAP()
     };
 

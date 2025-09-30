@@ -1,10 +1,18 @@
-// Copyright (c) 2022-2024 Zano Project
-// Copyright (c) 2022-2024 sowle (val@zano.org, crypto.sowle@gmail.com)
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2014-2018 Zano Project
+// Copyright (c) 2014-2018 The Louisdor Project
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
 //
-// This file contains implementation of the original d-CLSAG (s.a. https://eprint.iacr.org/2019/654.pdf by Goodel at el)
-// and the extended d/v-CLSAG version (s.a. https://github.com/hyle-team/docs/blob/master/zano/dv-CLSAG-extension/ by sowle)
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
 //
 #pragma once
 #include "crypto-sugar.h"

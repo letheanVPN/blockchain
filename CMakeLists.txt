@@ -2,8 +2,10 @@ cmake_minimum_required(VERSION 3.16)
 
 set(DISABLE_TOR TRUE CACHE BOOL "Disable TOR library(and related tor-connect submodule)")
 
-PROJECT(Zano)
-set(VERSION "1.0")
+PROJECT(Lethean)
+
+set(VERSION "1.0" CACHE STRING "Build version")
+
 
 message("OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
 message("OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
@@ -210,7 +212,7 @@ else()
   else()
     set(DEBUG_FLAGS "-g3 -O0")
   endif()
-  set(RELEASE_FLAGS "-O3 -ffast-math -DNDEBUG -Wno-unused-variable")
+  set(RELEASE_FLAGS "-O3 -ffast-math -DNDEBUG -w")
 
   if(NOT APPLE AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     set(RELEASE_FLAGS "${RELEASE_FLAGS} -flto=auto -g3")
@@ -266,10 +268,6 @@ elseif(NOT MSVC AND NOT APPLE AND NOT CAKEWALLET AND STATIC)
   list(APPEND Boost_LIBRARIES icui18n.a icuuc.a icudata.a dl)
 endif()
 
-if(BUILD_GUI)
-  find_package(Qt6 REQUIRED COMPONENTS Core5Compat Widgets WebEngineWidgets WebChannel PrintSupport)
-  message(STATUS "Found QT Packages")
-endif()
 
 set(COMMIT_ID_IN_VERSION ON CACHE BOOL "Include commit ID in version")
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/version")
@@ -297,7 +295,7 @@ else()
   endif()
 endif()
 
-set(BUILD_TESTS FALSE CACHE BOOL "Build Zano tests")
+set(BUILD_TESTS FALSE CACHE BOOL "Build Lethean tests")
 set(DISABLE_MDBX FALSE CACHE BOOL "Exclude mdbx from build(need for a first time)")
 if(NOT DISABLE_MDBX)
    add_definitions(-DENABLED_ENGINE_MDBX)
@@ -310,3 +308,5 @@ add_subdirectory(src)
 if (BUILD_TESTS)
   add_subdirectory(tests)
 endif()
+
+include(CPackConfig)

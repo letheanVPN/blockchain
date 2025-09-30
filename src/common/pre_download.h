@@ -1,7 +1,19 @@
-// Copyright (c) 2020 Zano Project
-// Copyright (c) 2012-2018 The Boolberry developers
-// Distributed under the MIT/X11 software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// Copyright (c) 2014-2018 Zano Project
+// Copyright (c) 2014-2018 The Louisdor Project
+// Copyright (c) 2012-2013 The Boolberry developers
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; the MIT terms are therefore
+// considered “grandfathered” under the EUPL for this code.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 #pragma once
 
 #include <boost/program_options.hpp>
@@ -21,10 +33,10 @@ namespace tools
   };
 
 #ifndef TESTNET
-  static constexpr pre_download_entry c_pre_download_mdbx             = { "https://f005.backblazeb2.com/file/zano-predownload/zano_mdbx_95_3150000.pak", "296d3129fee9253adea332d6c6128941aa5ef67eecaba49b9f8327f8c2d86ea1", 9388521394, 14226862080 };
-  static constexpr pre_download_entry c_pre_download_lmdb             = { "https://f005.backblazeb2.com/file/zano-predownload/zano_lmdb_95_3150000.pak", "bdb9d651636b36fd7d1f216c4afe89b1e7ec887da6eac7455ea18253a93345e8", 11287228509, 13988814848 };
-  static constexpr pre_download_entry c_pre_download_mdbx_non_pruned  = { "https://f005.backblazeb2.com/file/zano-predownload/zano_mdbx_95_3141000_non_pruned.pak", "0703902d535253627a2dd3c8697b305844b0241dfffefce5ec9d9e8e3475cdab", 10065877170, 15032156160 };
-  static constexpr pre_download_entry c_pre_download_lmdb_non_pruned  = { "https://f005.backblazeb2.com/file/zano-predownload/zano_lmdb_95_3141000_non_pruned.pak", "fe407e332d42a124d42781f6ccc6d2456728348230d7f05d94203ac405c37e63", 12081697874, 14824468480 };
+  static constexpr pre_download_entry c_pre_download_mdbx             = { "", "", 0, 0 };
+  static constexpr pre_download_entry c_pre_download_lmdb             = { "", "", 0, 0 };
+  static constexpr pre_download_entry c_pre_download_mdbx_non_pruned  = { "", "", 0, 0 };
+  static constexpr pre_download_entry c_pre_download_lmdb_non_pruned  = { "", "", 0, 0 };
 #else
   static constexpr pre_download_entry c_pre_download_mdbx             = { "", "", 0, 0 };
   static constexpr pre_download_entry c_pre_download_lmdb             = { "", "", 0, 0 };

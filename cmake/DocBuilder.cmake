@@ -18,8 +18,7 @@ add_custom_target(docs
 
 # Optional install step
 install(DIRECTORY "${MKDOCS_OUT}/"
-        DESTINATION "share/doc/${PROJECT_NAME}"
-        COMPONENT docs)
+        DESTINATION "share/doc/${PROJECT_NAME}")
 
 add_custom_target(install-docs
         DEPENDS docs
