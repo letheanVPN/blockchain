@@ -50,12 +50,6 @@ MACRO(ENABLE_SHARED_PCH_EXECUTABLE target)
 ENDMACRO(ENABLE_SHARED_PCH_EXECUTABLE)
 #####  End of Precompiled Headers macros  ######
 
-include_directories (${CMAKE_BINARY_DIR}/src ${CMAKE_BINARY_DIR}/src/currency_core)
-include(../cmake/config-vars.cmake)
-include(../cmake/currency_configs/example.cmake)
-include(../cmake/check-config-vars.cmake)
-configure_file("currency_core/currency_config.h.in" "currency_core/currency_config.h")
-
 
 file(GLOB_RECURSE PCH pch/*)
 file(GLOB_RECURSE COMMON common/*)
@@ -71,7 +65,6 @@ file(GLOB_RECURSE SIMPLEWALLET simplewallet/*)
 file(GLOB_RECURSE CONN_TOOL connectivity_tool/*)
 file(GLOB_RECURSE WALLET wallet/*)
 file(GLOB_RECURSE MINER miner/*)
-file(GLOB_RECURSE GENESIS_GENERATOR genesis_generator/*)
 
 
 source_group(pch FILES ${PCH})
@@ -86,14 +79,16 @@ source_group(stratum FILES ${STRATUM})
 source_group(simplewallet FILES ${SIMPLEWALLET})
 source_group(connectivity-tool FILES ${CONN_TOOL})
 source_group(wallet FILES ${WALLET})
-source_group(genesis_generator FILES ${GENESIS_GENERATOR})
 
 
 INIT_SHARED_PCH()
 
+add_subdirectory(config)
+add_subdirectory(genesis)
+
 add_library(common ${COMMON})
-add_dependencies(common version ${PCH_LIB_NAME})
-target_link_libraries(common PUBLIC ${Boost_LIBRARIES})
+add_dependencies(common version config ${PCH_LIB_NAME})
+target_link_libraries(common PUBLIC ${Boost_LIBRARIES} config)
 ENABLE_SHARED_PCH(common COMMON)
 
 if(NOT MSVC AND NOT APPLE AND NOT CLANG)  # TODO(unassigned): do we really need the clang equivalent?
@@ -113,15 +108,16 @@ endif()
 
 add_library(crypto ${CRYPTO})
 if(USE_BITCOIN_SECP256K1_FOR_ECDSA)
-  add_dependencies(crypto secp256k1)
-  target_link_libraries(crypto secp256k1 ${BCRYPT_LIB})
+  add_dependencies(crypto secp256k1 config)
+  target_link_libraries(crypto config secp256k1 ${BCRYPT_LIB})
 else()
-  add_dependencies(crypto OpenSSL::Crypto)
-  target_link_libraries(crypto OpenSSL::Crypto ${BCRYPT_LIB})
+  add_dependencies(crypto OpenSSL::Crypto config)
+  target_link_libraries(crypto PUBLIC config OpenSSL::Crypto ${BCRYPT_LIB})
 endif()
 
 add_library(currency_core ${CURRENCY_CORE})
-add_dependencies(currency_core version  ${PCH_LIB_NAME})
+add_dependencies(currency_core version config ${PCH_LIB_NAME})
+target_link_libraries(currency_core config)
 ENABLE_SHARED_PCH(currency_core CURRENCY_CORE)
 
 add_library(wallet  ${WALLET})
@@ -129,7 +125,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android" )
   add_dependencies(wallet version ${PCH_LIB_NAME})
   target_link_libraries(wallet currency_core crypto common ZLIB::ZLIB ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} android log OpenSSL::SSL OpenSSL::Crypto)
 else()
-  add_dependencies(wallet version ${PCH_LIB_NAME})
+  add_dependencies(wallet version config ${PCH_LIB_NAME})
+  target_link_libraries(wallet config)
   ENABLE_SHARED_PCH(wallet WALLET)
 endif()
 
@@ -152,82 +149,27 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Android")
 endif()
 
 add_library(rpc ${RPC})
-add_dependencies(rpc version ${PCH_LIB_NAME})
+add_dependencies(rpc version config ${PCH_LIB_NAME})
+target_link_libraries(rpc config)
 ENABLE_SHARED_PCH(rpc RPC)
 
 add_library(stratum ${STRATUM})
-add_dependencies(stratum version ${PCH_LIB_NAME})
+add_dependencies(stratum version config ${PCH_LIB_NAME})
+target_link_libraries(stratum config)
 ENABLE_SHARED_PCH(stratum STRATUM)
 
 
-target_link_libraries(currency_core lmdb mdbx)
-
-# CAUTION - wallet generation will only work properly in UNIX line environment
-set(GENERATE_FRESH_GENESIS OFF CACHE BOOL "Generate new genesis block")
-
-set(GENESIS_PREMINE_ADDRESS "" CACHE STRING "Premine wallet address")
-set(GENESIS_PROOF "" CACHE STRING "Genesis proof string")
-
-set(GENERATE_PREMINE_WALLET OFF CACHE BOOL "Generate premine wallet")
-set(PREMINE_WALLET_PASSWORD "" CACHE STRING "Premine wallet password")
-
-if (GENERATE_PREMINE_WALLET AND GENERATE_FRESH_GENESIS)
-	message(FATAL_ERROR "Genesis can be generatet together with premine wallet")
-endif()
-
-if (GENERATE_PREMINE_WALLET)
-	unset(GENERATE_PREMINE_WALLET CACHE)
-	message(WARNING "Generating premine wallet")
-
-	if (NOT DEFINED PREMINE_WALLET_PASSWORD OR PREMINE_WALLET_PASSWORD STREQUAL "")
-		message(FATAL_ERROR "set PREMINE_WALLET_PASSWORD or GENESIS_PREMINE_ADDRESS to generate genesis block")
-	endif()
-
-	# Make wallet directory
-	add_custom_target(
-	    premine_wallet
-	    "${CMAKE_COMMAND}" -E make_directory "${CMAKE_SOURCE_DIR}/premine_wallet"
-	    COMMENT "Creating premine wallet directory"
-	)
-
-	# Generate wallet
-	add_custom_command(TARGET premine_wallet POST_BUILD
-		COMMAND echo ${PREMINE_WALLET_PASSWORD} | ${CMAKE_BINARY_DIR}/src/simplewallet --generate-new-wallet ${CMAKE_SOURCE_DIR}/premine_wallet/premine_wallet
-		COMMENT "Generating premine wallet in ${CMAKE_SOURCE_DIR}/premine_wallet"
-	)
-
-	add_dependencies(premine_wallet simplewallet)
-endif()
-
-if (GENERATE_FRESH_GENESIS)
-	unset(GENERATE_FRESH_GENESIS CACHE)
-	add_executable(genesis_generator ${GENESIS_GENERATOR})
-	target_link_libraries(genesis_generator currency_core crypto common zlibstatic ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
-
-	if (NOT DEFINED GENESIS_PREMINE_ADDRESS OR GENESIS_PREMINE_ADDRESS STREQUAL "")
-		message(WARNING "GENESIS_PREMINE_ADDRESS not set, loading from ${CMAKE_SOURCE_DIR}/premine_wallet/premine_wallet.address")
-		file(READ "${CMAKE_SOURCE_DIR}/premine_wallet/premine_wallet.address" GENESIS_PREMINE_ADDRESS)
-		if (NOT DEFINED GENESIS_PREMINE_ADDRESS OR GENESIS_PREMINE_ADDRESS STREQUAL "")
-			message(FATAL_ERROR "GENESIS_PREMINE_ADDRESS not set")
-		endif()
-	else()
-		add_custom_command(TARGET genesis_generator POST_BUILD
-			COMMAND ${CMAKE_BINARY_DIR}/src/genesis_generator --address ${GENESIS_PREMINE_ADDRESS} --proof ${GENESIS_PROOF} --output ${CMAKE_SOURCE_DIR}/src/currency_core/generated/
-			COMMENT "Generating genesis data in ${CMAKE_SOURCE_DIR}/src/currency_core/"
-		)
-	endif()
-
-endif()
+target_link_libraries(currency_core config lmdb mdbx)
 
 add_executable(daemon ${DAEMON} ${P2P} ${CURRENCY_PROTOCOL})
 add_dependencies(daemon version)
-target_link_libraries(daemon rpc stratum currency_core crypto common miniupnpc::miniupnpc ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(daemon  rpc stratum currency_core crypto common miniupnpc::miniupnpc ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 ENABLE_SHARED_PCH(daemon DAEMON)
 ENABLE_SHARED_PCH_EXECUTABLE(daemon)
                      
 add_executable(connectivity_tool ${CONN_TOOL})
 add_dependencies(connectivity_tool version)
-target_link_libraries(connectivity_tool currency_core crypto common ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(connectivity_tool  currency_core crypto common ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 ENABLE_SHARED_PCH(connectivity_tool CONN_TOOL)
 ENABLE_SHARED_PCH_EXECUTABLE(connectivity_tool)
 
@@ -240,5 +182,16 @@ ENABLE_SHARED_PCH_EXECUTABLE(simplewallet)
 
 set_property(TARGET common crypto currency_core rpc stratum wallet PROPERTY FOLDER "libs")
 set_property(TARGET daemon simplewallet connectivity_tool PROPERTY FOLDER "prog")
-set_property(TARGET daemon PROPERTY OUTPUT_NAME "zanod")
 
+if (NOT TESTNET)
+  set_property(TARGET daemon PROPERTY OUTPUT_NAME "lethean-chain-node")
+  set_property(TARGET simplewallet PROPERTY OUTPUT_NAME "lethean-wallet-cli")
+  set_property(TARGET connectivity_tool PROPERTY OUTPUT_NAME "lethean-chain-tool")
+else ()
+  set_property(TARGET daemon PROPERTY OUTPUT_NAME "lethean-testnet-chain-node")
+  set_property(TARGET simplewallet PROPERTY OUTPUT_NAME "lethean-testnet-wallet-cli")
+  set_property(TARGET connectivity_tool PROPERTY OUTPUT_NAME "lethean-testnet-chain-tool")
+endif ()
+
+install(TARGETS daemon simplewallet
+        RUNTIME DESTINATION bin)

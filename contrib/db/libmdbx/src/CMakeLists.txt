@@ -61,12 +61,12 @@ if(CC_HAS_VISIBILITY)
   target_compile_options(mdbx PRIVATE "-fvisibility=hidden")
 endif()
 
-install(TARGETS mdbx
-  LIBRARY DESTINATION lib COMPONENT runtime
-  RUNTIME DESTINATION bin COMPONENT runtime
-  ARCHIVE DESTINATION lib/static COMPONENT devel
-  PUBLIC_HEADER DESTINATION include
-  INCLUDES DESTINATION include COMPONENT devel)
+#install(TARGETS mdbx
+#  LIBRARY DESTINATION lib COMPONENT runtime
+#  RUNTIME DESTINATION bin COMPONENT runtime
+#  ARCHIVE DESTINATION lib/static COMPONENT devel
+#  PUBLIC_HEADER DESTINATION include
+#  INCLUDES DESTINATION include COMPONENT devel)
 
 ################################################################################
 #

@@ -1,6 +1,6 @@
 name: build-macos-arm64
 permissions:
-  contents: read
+  contents: write
 on:
   workflow_call:
     inputs:
@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-cli:
-    name: apple-clang-arm64-release
+    name: apple-clang-armv8
     runs-on: macos-15
     steps:
       - name: Checkout Project
@@ -22,21 +22,30 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+
+      - name: Cache SDK Folder
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/sdk
+          key: ${{ runner.os }}-${{ runner.arch }}-sdk
+
       - name: Install Conan
         uses: conan-io/setup-conan@v1
         with:
           home: ${{ github.workspace }}/build/sdk
-          cache_packages: true
+          cache_packages: false
+
+#      - name: Compile Release
+#        run: make apple-clang-armv8 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
       - name: Compile Release
-        run: make apple-clang-arm64-release
+        run: make release CPU_CORES=3 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          assets: |
-            zanod
-            simplewallet
+          assets: lethean-*
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/apple-clang-arm64-release/src
+          asset-directory: ${{ github.workspace }}/build/release/packages

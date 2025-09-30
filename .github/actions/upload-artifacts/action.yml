@@ -29,6 +29,14 @@ runs:
         FILENAME="${{ inputs.chain-network }}-${{ inputs.asset-type }}-${TARGET_OS}-${LOWERCASE_ARCH}"
         echo "key=$FILENAME" >> $GITHUB_OUTPUT
         
+        VERSION=$(grep '^BUILD_VERSION:=' Makefile | cut -d'=' -f2)
+        # Check if a version was found
+        if [ -z "$VERSION" ]; then
+          echo "Error: BUILD_VERSION could not be found in the Makefile." >&2
+          exit 1
+        fi
+        echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+        
         # Format the output to be a multi-line string.
         # This is the correct way to pass a multi-line string in GITHUB_OUTPUT.
         echo "paths<<EOF" >> "$GITHUB_OUTPUT"
@@ -58,3 +66,11 @@ runs:
       with:
         name: ${{ steps.asset.outputs.key }}
         path: ${{ steps.asset.outputs.paths }}
+
+    - name: Make Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.asset.outputs.version }}${{ inputs.chain-network == 'mainnet' && '' || '-pre' }}+${{ github.run_number }}
+        prerelease:  ${{ contains(inputs.chain-network, 'testnet') }}
+        files: ${{ inputs.asset-directory }}/lethean-*
+        target_commitish: ${{ github.sha }}

@@ -1,0 +1,48 @@
+name: Linux
+permissions:
+  contents: write
+on:
+  workflow_call:
+    inputs:
+      chain-network:
+        description: "The network to use, can either be testnet, stagenet or mainnet"
+        default: testnet
+        required: false
+        type: string
+
+jobs:
+  build:
+    name: gcc-linux-arm64
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: install dependencies
+        run: sudo apt-get install -y autotools-dev  git build-essential
+
+      - name: Cache SDK Folder
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/build/sdk
+          key: ${{ runner.os }}-${{ runner.arch }}-sdk
+
+      - name: Install Conan
+        uses: conan-io/setup-conan@v1
+        with:
+          home: ${{ github.workspace }}/build/sdk
+          cache_packages: false
+
+      - name: Compile Release
+        run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+
+      - name: CLI Artifacts
+        uses: ./.github/actions/upload-artifacts
+        with:
+          chain-network: ${{ inputs.chain-network }}
+          assets: lethean-*
+          asset-type: 'cli'
+          asset-directory: ${{ github.workspace }}/build/release/packages
