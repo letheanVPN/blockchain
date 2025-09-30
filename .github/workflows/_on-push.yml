@@ -1,6 +1,6 @@
 name: Push Compile
 permissions:
-  contents: read
+  contents: write
   packages: write
 on:
   # Allows you to run this workflow manually from the Actions tab
