@@ -39,13 +39,8 @@ class BlockchainConan(ConanFile):
         deps.generate()
 
     def layout(self):
-        multi = True if self.settings.get_safe("compiler") == "msvc" else False
-        if multi:
-            self.folders.generators = os.path.join("build", "generators")
-            self.folders.build = "build"
-        else:
-            self.folders.generators = os.path.join("build", str(self.settings.build_type).lower(), "generators")
-            self.folders.build = os.path.join("build", str(self.settings.build_type).lower())
+        self.folders.generators = os.path.join("build", str(self.settings.build_type).lower(), "generators")
+        self.folders.build = os.path.join("build", str(self.settings.build_type).lower())
 
     def build(self):
         cmake = CMake(self)
