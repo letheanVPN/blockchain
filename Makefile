@@ -80,26 +80,6 @@ CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
 
-ifeq ($(OS),Windows_NT)
-    ifneq (,$(findstring cl,$(CC)))
-        MSVC := 1
-    endif
-endif
-
-ifeq ($(STATIC), 1)
-	ifeq ($(MSVC), 1)
-		CONAN_STATIC_FLAG = -s compiler.runtime=static -o *:static=True
-	else
-		CONAN_STATIC_FLAG = -o *:static=True
-	endif
-else
-    ifeq ($(MSVC), 1)
-    		CONAN_STATIC_FLAG = -s compiler.runtime=dynamic -o *:static=False
-    	else
-    		CONAN_STATIC_FLAG = -o *:static=False
-    	endif
-endif
-
 all: help
 
 release: docs build
@@ -116,7 +96,7 @@ debug: conan-profile-detect
 
 configure: conan-profile-detect
 	@echo "Config profile: $(BUILD_TYPE) testnet=$(TESTNET)"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE) $(CONAN_STATIC_FLAG)
+	CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 
 
