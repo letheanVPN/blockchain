@@ -33,7 +33,6 @@ jobs:
         with:
           python-version: 3.x
 
-      - run: brew install cairo freetype libffi libjpeg libpng zlib pngquant
       - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
       - name: Install Conan

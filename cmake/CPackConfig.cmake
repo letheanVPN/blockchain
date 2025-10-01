@@ -8,10 +8,10 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPACK_PACKAGE_CONTACT "${package_contact}")
     set(CPACK_PACKAGE_HOMEPAGE_URL "${package_website}")
 
-#    set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")   # Linux/macOS default
-#    if(WIN32)
-#        set(CPACK_PACKAGING_INSTALL_PREFIX "C:/Program Files/${PROJECT_NAME}")
-#    endif()
+    set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")   # Linux/macOS default
+    if(WIN32)
+        set(CPACK_PACKAGING_INSTALL_PREFIX "C:/Program Files/${PROJECT_NAME}")
+    endif()
 
     if(APPLE)
         if("${package_macos_installer}" STREQUAL "DMG")
@@ -59,7 +59,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/packages")
 
     install(FILES README.md LICENSE.txt
-            DESTINATION "share/doc/${CPACK_PACKAGE_NAME}"
+            DESTINATION "share/doc/${PROJECT_NAME}"
     )
 
     set(_arch "${CMAKE_SYSTEM_PROCESSOR}")
