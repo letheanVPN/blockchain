@@ -38,6 +38,14 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          target: builder
+          tags: lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
+          cache-from: type=registry,ref=lthn/chain:buildcache
+          cache-to: type=registry,ref=lthn/chain:buildcache,mode=max
 
       - name: Build and push
         id: docker_build
@@ -52,6 +60,5 @@ jobs:
             BUILD_THREADS=2
             BUILD_LOCAL=1
           tags: lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=registry,ref=lthn/chain:buildcache
 

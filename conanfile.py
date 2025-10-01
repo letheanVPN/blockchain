@@ -33,6 +33,12 @@ class BlockchainConan(ConanFile):
         tc.variables["TESTNET"] = self.options.testnet
         # tc.preprocessor_definitions["TESTNET"] = None
         # tc.variables["BUILD_VERSION"] = self.options.build_version
+        if self.settings.get_safe("compiler") == "msvc":
+            if self.options.static:
+                tc.variables["CMAKE_MSVC_RUNTIME_LIBRARY"] = "MultiThreaded$<$<CONFIG:Debug>:Debug>"
+            else:
+                tc.variables["CMAKE_MSVC_RUNTIME_LIBRARY"] = "MultiThreadedDLL$<$<CONFIG:Debug>:Debug>"
+
         tc.generate()
 
         deps = CMakeDeps(self)

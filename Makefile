@@ -80,27 +80,45 @@ CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
 
+ifeq ($(OS),Windows_NT)
+    ifneq (,$(findstring cl,$(CC)))
+        MSVC := 1
+    endif
+endif
 
 ifeq ($(STATIC), 1)
-    CONAN_STATIC_FLAG = True
+	ifeq ($(MSVC), 1)
+		CONAN_STATIC_FLAG = -s compiler.runtime=static -o *:static=True
+	else
+		CONAN_STATIC_FLAG = -o *:static=True
+	endif
 else
-    CONAN_STATIC_FLAG = False
+    ifeq ($(MSVC), 1)
+    		CONAN_STATIC_FLAG = -s compiler.runtime=dynamic -o *:static=False
+    	else
+    		CONAN_STATIC_FLAG = -o *:static=False
+    	endif
 endif
 
 all: help
 
-release: conan-profile-detect
-	@echo "Building profile: $(BUILD_TYPE) testnet=$(TESTNET)"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE) -o *:static=$(CONAN_STATIC_FLAG)
-	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
-	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
+release: build
 	(cd $(BUILD_FOLDER) && cpack)
+
+build: configure
+	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
 	cmake --build build/debug --config=Debug --parallel=$(CPU_CORES)
+
+configure: conan-profile-detect
+	@echo "Config profile: $(BUILD_TYPE) testnet=$(TESTNET)"
+	CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE) $(CONAN_STATIC_FLAG)
+	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
+
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
@@ -149,10 +167,6 @@ test-debug:
 	cmake --build build/test-debug --config=Debug --parallel=$(CPU_CORES)
 	$(MAKE) test
 
-configure:
-	@echo "Running Config: release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 
 docs: configure
 	@echo "Building Documentation"
@@ -161,29 +175,6 @@ docs: configure
 docs-dev: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=serve_docs --config=Release
-
-docker-chain-node:
-	@echo "Building docker image: lthn/chain"
-	docker buildx build -f $(CC_DOCKER_FILE)  -t lthn/chain $(CURDIR)
-
-docker-cc-linux-amd64:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-amd64 --platform linux/amd64 $(CURDIR)
-
-docker-cc-linux-armv7:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-armv7 --platform linux/arm/v7 $(CURDIR)
-
-docker-cc-linux-arm64v8:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-arm64v8 --platform linux/arm64/v8 $(CURDIR)
-
-docker-cc-linux-ppc64le:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-ppc64le --platform linux/ppc64le $(CURDIR)
-
-docker-cc-linux-riscv64:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-riscv64 --platform linux/riscv64 $(CURDIR)
-
-docker-cc-linux-s390x:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-s390x --platform linux/s390x $(CURDIR)
-
 
 
 clean:
