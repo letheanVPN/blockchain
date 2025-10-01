@@ -91,7 +91,7 @@ all: help
 
 release: conan-profile-detect
 	@echo "Building profile: $(BUILD_TYPE) testnet=$(TESTNET)"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE) -o static=$(CONAN_STATIC_FLAG)
+	CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE) -o *:static=$(CONAN_STATIC_FLAG)
 	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 	(cd $(BUILD_FOLDER) && cpack)
