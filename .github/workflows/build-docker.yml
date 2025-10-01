@@ -39,6 +39,9 @@ jobs:
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_SUMMARY: false
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           file: utils/docker/images/lthn-chain/Dockerfile
           context: ${{ github.workspace }}
