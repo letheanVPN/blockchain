@@ -16,7 +16,7 @@ RUN apt install -y build-essential pkgconf \
     g++ llvm clang lld cmake python-is-python3 \
     git python3 python3-pip python3-dev xz-utils gperf
 
-RUN pip3 install conan --break-system-packages
+RUN pip3 install conan mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging] --break-system-packages
 
 WORKDIR /
 
@@ -44,7 +44,7 @@ ARG BUILD_TESTNET=1
 
 
 
-RUN make release CPU_CORES=${BUILD_THREADS} TESTNET=${BUILD_TESTNET} STATIC=${BUILD_STATIC}
+RUN make build CPU_CORES=${BUILD_THREADS} TESTNET=${BUILD_TESTNET} STATIC=${BUILD_STATIC}
 #RUN cmake --build ${BUILD_FOLDER} --config=${BUILD_TYPE} --parallel=${THREADS}
 
 # minor cmd-fu; TESTNEt and MAINNET, in docker context, use MAIINNET binaries names.
