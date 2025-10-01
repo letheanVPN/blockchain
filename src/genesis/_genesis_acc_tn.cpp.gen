@@ -1,4 +1,4 @@
-const std::string ggenesis_tx_pub_key_str = "f971f914382e875df5655f591c8df7b126d95f5e8331613ba3f5c797f541839c";
+const std::string ggenesis_tx_pub_key_str = "6f7fbc7dfa2809974084b92e8930353b7e93f8759979ff037984a1837fb3948a";
 const crypto::public_key ggenesis_tx_pub_key = epee::string_tools::parse_tpod_from_hex_string<crypto::public_key>(ggenesis_tx_pub_key_str);
 extern const genesis_tx_dictionary_entry ggenesis_dict[1];
 const genesis_tx_dictionary_entry ggenesis_dict[1] = {
