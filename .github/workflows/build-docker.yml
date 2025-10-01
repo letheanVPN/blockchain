@@ -26,11 +26,11 @@ jobs:
         include:
           - arch: amd64
             runner: ubuntu-latest
-            tag: "${{ env.LTHN_TAG }}-amd64"
+            tag: "-amd64"
             platform: linux/amd64
           - arch: arm64
             runner: ubuntu-arm
-            tag: "${{ env.LTHN_TAG }}-arm64"
+            tag: "-arm64"
             platform: linux/arm64
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
           file: utils/docker/images/lthn-chain/Dockerfile
           push: true
           platforms: ${{ matrix.platform }}
-          tags: lthn/chain:${{ matrix.tag }}
+          tags: lthn/chain:${{ env.LTHN_TAG }}${{ matrix.tag }}
 
   manifest:
     needs: build
