@@ -145,7 +145,7 @@ test-debug:
 configure:
 	@echo "Running Config: release"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
 docs: configure
 	@echo "Building Documentation"
