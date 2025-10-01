@@ -131,8 +131,9 @@ conan-profile-detect:
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ -pr:b=$(DEFAULT_CONAN_PROFILE) -pr:h=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET)
+	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 	cmake --build build/$@ --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
+	(cd build/$@ && cpack)
 
 help:
 	@echo "Available targets:"

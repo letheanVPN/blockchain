@@ -39,7 +39,7 @@ jobs:
           cache_packages: false
 
       - name: Compile Release
-        run: make release STATIC=1 CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make msvc-194-x86_64 STATIC=1 CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
@@ -47,4 +47,4 @@ jobs:
           chain-network: ${{ inputs.chain-network }}
           assets: lethean-*
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/release/packages
+          asset-directory: ${{ github.workspace }}/build/msvc-194-x86_64/packages
