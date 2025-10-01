@@ -39,7 +39,7 @@ jobs:
         uses: conan-io/setup-conan@v1
         with:
           home: ${{ github.workspace }}/build/sdk
-          cache_packages: true
+          cache_packages: false
 
 #      - name: Compile Release
 #        run: make apple-clang-armv8 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
