@@ -14,12 +14,12 @@ on:
         default: testnet
         required: false
         type: string
-env:
-  LTHN_TAG: ${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
 
 jobs:
   build:
     runs-on: ${{ matrix.runner }}
+    env:
+      LTHN_TAG: ${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
     strategy:
       matrix:
         include:
@@ -55,6 +55,8 @@ jobs:
   manifest:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      LTHN_TAG: ${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
     steps:
       - name: Log in to DockerHub
         uses: docker/login-action@v3
