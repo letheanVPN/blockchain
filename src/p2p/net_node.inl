@@ -434,7 +434,7 @@ namespace nodetool
   {
 #ifndef TESTNET
     //TODO:
-    ADD_HARDCODED_SEED_NODE(std::string("0.0.0.0:") + std::to_string(P2P_DEFAULT_PORT));
+    // ADD_HARDCODED_SEED_NODE(std::string("0.0.0.0:") + std::to_string(P2P_DEFAULT_PORT));
     ADD_HARDCODED_SEED_NODE("116.202.82.115", P2P_DEFAULT_PORT);
     //ADD_HARDCODED_SEED_NODE("94.130.137.230", P2P_DEFAULT_PORT);
     //ADD_HARDCODED_SEED_NODE("95.217.42.247", P2P_DEFAULT_PORT);

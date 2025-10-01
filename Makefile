@@ -15,6 +15,7 @@ TESTNET:= 0
 STATIC:= 0
 BUILD_TYPE ?=Release
 BUILD_VERSION:=6.0.1
+BUILD_FOLDER:=build/Release
 
 # -----------------------------------------------------------------
 # Unix‑like systems (Linux, macOS, *BSD, etc.)
@@ -82,11 +83,11 @@ CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
 all: help
 
 release: conan-profile-detect
-	@echo "Building profile: release $(TESTNET)"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
-	cmake --build build/release --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
-	(cd build/release && cpack)
+	@echo "Building profile: $(BUILD_TYPE) testnet=$(TESTNET)"
+	CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
+	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
+	(cd $(BUILD_FOLDER) && cpack)
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
