@@ -38,7 +38,7 @@ runs:
         echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
         
         if [ "${{ github.event_name }}" == "pull_request" ]; then
-          TAG_SUFFIX="-${{ github.event.number }}"
+          TAG_SUFFIX="-${{ github.event.number }}alpha"
           PRERELEASE=true
         elif [ "${{ inputs.chain-network }}" != "mainnet" ]; then
           TAG_SUFFIX="-beta"

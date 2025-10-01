@@ -15,7 +15,7 @@ TESTNET:= 0
 STATIC:= 0
 BUILD_TYPE ?=Release
 BUILD_VERSION:=6.0.1
-BUILD_FOLDER:=build/Release
+BUILD_FOLDER:=build/release
 
 # -----------------------------------------------------------------
 # Unix‑like systems (Linux, macOS, *BSD, etc.)
