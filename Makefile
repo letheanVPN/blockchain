@@ -12,6 +12,7 @@
 # Default to “unknown” – will be overwritten below.
 CPU_CORES := 1
 TESTNET:= 0
+STATIC:= 0
 BUILD_TYPE ?=Release
 BUILD_VERSION:=6.0.1
 
@@ -69,7 +70,7 @@ endif
 # -----------------------------------------------------------------
 CPU_CORES := $(or $(CPU_CORES),1)
 CPU_CORES := $(shell expr $(CPU_CORES) + 0 2>/dev/null || echo 1)
-CONAN_CPU_COUNT=$(CPU_CORES)
+#CONAN_CPU_COUNT=$(CPU_CORES)
 
 
 PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
@@ -83,7 +84,7 @@ all: help
 release: conan-profile-detect
 	@echo "Building profile: release $(TESTNET)"
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
+	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 	cmake --build build/release --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 	(cd build/release && cpack)
 
@@ -92,13 +93,6 @@ debug: conan-profile-detect
 	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
 	cmake --build build/debug --config=Debug --parallel=$(CPU_CORES)
-
-static: static-release
-static-release: conan-profile-detect
-	@echo "Building profile: release-static"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -D STATIC=ON -DTESTNET=$(TESTNET)
-	cmake --build build/release-static --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \

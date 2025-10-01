@@ -2,9 +2,10 @@
 FROM ubuntu:24.04 AS builder
 LABEL authors="snider"
 
-ARG THREADS=1
+ARG BUILD_THREADS=1
 ARG BUILD_BRANCH=dev
 ARG BUILD_LOCAL=1
+ARG BUILD_STATIC=0
 ARG BUILD_REPO=https://github.com/letheanVPN/blockchain.git
 ARG BUILD_TARGET=gcc-linux-x86_64
 ARG BUILD_FOLDER=build/release
@@ -39,26 +40,12 @@ RUN if [ "$BUILD_LOCAL" = "1" ]; then \
       git clone --recursive --branch ${BUILD_BRANCH} ${BUILD_REPO} code; \
     fi
 
+VOLUME /code/build/sdk
+
 WORKDIR /code
 
-RUN conan profile detect --name=default --force
-
-#RUN conan install . --output-folder=${BUILD_FOLDER} --build=missing -s build_type=${BUILD_TYPE} -pr:h=/code/cmake/profiles/$BUILD_TARGET
-
-RUN set -eux; \
-    BCMD="conan install . \
-        --output-folder=${BUILD_FOLDER} \
-        --build=missing \
-        -s build_type=${BUILD_TYPE}"; \
-    if [ "${USE_CUSTOM_PROFILE}" = "1" ]; then \
-        BCMD="$BCMD -pr:h=/code/cmake/profiles/${BUILD_TARGET}"; \
-    fi; \
-    echo "Running: $BCMD"; \
-    eval $BCMD;
-
-RUN cmake -S /code -B ${BUILD_FOLDER} -DCMAKE_TOOLCHAIN_FILE=${BUILD_FOLDER}/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} -DTESTNET=${BUILD_TESTNET}
-
-RUN cmake --build ${BUILD_FOLDER} --config=${BUILD_TYPE} --parallel=${THREADS}
+RUN make release CPU_CORES=${BUILD_THREADS} TESTNET=${BUILD_TESTNET} STATIC=${BUILD_STATIC}
+#RUN cmake --build ${BUILD_FOLDER} --config=${BUILD_TYPE} --parallel=${THREADS}
 
 # minor cmd-fu; TESTNEt and MAINNET, in docker context, use MAIINNET binaries names.
 # do i like removing `-testnet`, no, but i dislike working around multiple names for ever more, so...
@@ -83,3 +70,5 @@ FROM ubuntu:24.04 AS chain-service
 COPY --from=build-artifacts --chmod=+x / /bin
 
 RUN lethean-chain-node --help
+
+ENTRYPOINT ["lethean-chain-node"]
