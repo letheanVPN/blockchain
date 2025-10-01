@@ -34,6 +34,9 @@ jobs:
             platform: linux/arm64
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -47,9 +50,13 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ${{ github.workspace }}
           file: utils/docker/images/lthn-chain/Dockerfile
           push: true
+          build-args: |
+            BUILD_TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+            THREADS=2
+            BUILD_LOCAL=1
           platforms: ${{ matrix.platform }}
           tags: lthn/chain:${{ env.LTHN_TAG }}${{ matrix.tag }}
 
