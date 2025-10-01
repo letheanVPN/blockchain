@@ -59,6 +59,8 @@ jobs:
             BUILD_LOCAL=1
           platforms: ${{ matrix.platform }}
           tags: lthn/chain:${{ env.LTHN_TAG }}${{ matrix.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   manifest:
     needs: build
