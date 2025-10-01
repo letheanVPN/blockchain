@@ -41,7 +41,14 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
+          file: utils/docker/images/lthn-chain/Dockerfile
+          context: ${{ github.workspace }}
           push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            BUILD_TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+            BUILD_THREADS=2
+            BUILD_LOCAL=1
           target: builder
           tags: lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
           cache-from: type=registry,ref=lthn/chain:buildcache
