@@ -41,10 +41,7 @@ jobs:
         uses: conan-io/setup-conan@v1
         with:
           home: ${{ github.workspace }}/build/sdk
-          cache_packages: false
-
-      - name: Compile Docs
-        run: make docs
+          cache_packages: true
 
       - name: Compile Release
         run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}

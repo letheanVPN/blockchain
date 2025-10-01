@@ -18,7 +18,7 @@ on:
 jobs:
   build:
     name: "lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}"
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -48,7 +48,6 @@ jobs:
           build-args: |
             BUILD_TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
             BUILD_THREADS=2
-            BUILD_LOCAL=1
           target: builder
           tags: lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
           cache-from: type=registry,ref=lthn/chain:buildcache
@@ -65,7 +64,6 @@ jobs:
           build-args: |
             BUILD_TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
             BUILD_THREADS=2
-            BUILD_LOCAL=1
           tags: lthn/chain:${{ inputs.chain-network == 'testnet' && 'testnet' || 'latest' }}
           cache-from: type=registry,ref=lthn/chain:buildcache
 

@@ -102,7 +102,7 @@ endif
 
 all: help
 
-release: build
+release: docs build
 	(cd $(BUILD_FOLDER) && cpack)
 
 build: configure
