@@ -27,11 +27,19 @@ jobs:
           path: ${{ github.workspace }}/build/sdk
           key: ${{ runner.os }}-${{ runner.arch }}-sdk
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
+
       - name: Install Conan
         uses: conan-io/setup-conan@v1
         with:
           home: ${{ github.workspace }}/build/sdk
           cache_packages: false
+
+      - name: Compile Docs
+        run: make docs
 
       - name: Compile Release
         run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
