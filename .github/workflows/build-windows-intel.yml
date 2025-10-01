@@ -42,7 +42,7 @@ jobs:
         run: make docs
 
       - name: Compile Release
-        run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make release STATIC=1 CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
