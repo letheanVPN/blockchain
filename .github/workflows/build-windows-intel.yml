@@ -56,7 +56,7 @@ jobs:
 
 
       - name: Compile Release
-        run: make build STATIC=1 CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make msvc-194-x86_64 STATIC=1 CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
