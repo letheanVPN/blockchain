@@ -13,7 +13,7 @@ on:
 jobs:
   msvc-194:
     name: msvc-194-x86_64
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -21,10 +21,10 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - uses: TheMrMilchmann/setup-msvc-dev@v4
-        with:
-          arch: x64
-          toolset: 14.3
+#      - uses: TheMrMilchmann/setup-msvc-dev@v4
+#        with:
+#          arch: x64
+#          toolset: 14.3
 
       - name: Cache SDK Folder
         uses: actions/cache@v4
