@@ -79,7 +79,14 @@ SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
-
+# Detect if we are on Windows
+ifeq ($(OS), Windows_NT)
+    # If so, define a prefix to clear the problematic env vars
+    FIX_ENV := CFLAGS="" CXXFLAGS=""
+else
+    # Otherwise, the prefix is empty
+    FIX_ENV :=
+endif
 all: help
 
 release: docs build
@@ -90,13 +97,13 @@ build: configure
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
+	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
 	cmake --build build/debug --config=Debug --parallel=$(CPU_CORES)
 
 configure: conan-profile-detect
 	@echo "Config profile: $(BUILD_TYPE) testnet=$(TESTNET)"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE)
+	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 
 
@@ -110,7 +117,7 @@ conan-profile-detect:
 # Rule for each profile
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
-	CONAN_HOME=$(CONAN_CACHE) conan install . -pr:a=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
+	CFLAGS="" CXXFLAGS="" CONAN_HOME=$(CONAN_CACHE) conan install . -pr:a=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 	(cd $(BUILD_FOLDER) && cpack)
