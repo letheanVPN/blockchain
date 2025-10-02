@@ -65,6 +65,9 @@ FROM ubuntu:24.04 AS chain-service
 
 COPY --from=build-artifacts --chmod=+x / /bin
 
+EXPOSE 36941
+EXPOSE 36942
+
 RUN lethean-chain-node --help
 
-ENTRYPOINT ["lethean-chain-node"]
+ENTRYPOINT ["lethean-chain-node", "--data-dir", "/data", "--disable-upnp", "--disable-debug-p2p-requests"]

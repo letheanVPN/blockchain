@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  lethean-chain:
+    image: lthn/chain:testnet
+    build:
+      tags:
+        - lthn/chain:testnet
+      dockerfile: utils/docker/images/lthn-chain/Dockerfile
+      context: .
+      target: chain-service
+      args:
+        - BUILD_THREADS=1
+        - BUILD_TESTNET=1
+        - BUILD_STATIC=0
+        - BUILD_BRANCH=dev
+        - BUILD_LOCAL=1
+        - BUILD_REPO=https://github.com/letheanVPN/blockchain.git
+        - BUILD_FOLDER=build/release
+        - BUILD_TYPE=Release
+    ports:
+      - "36941:36941"
+      - "36942:36942"
+    volumes:
+      - lethean_data:/data
+
+volumes:
+  lethean_data:
