@@ -21,6 +21,11 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
+          toolset: 17.11.5
+
       - name: Cache SDK Folder
         uses: actions/cache@v4
         with:

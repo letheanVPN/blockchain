@@ -5,3 +5,4 @@ compiler.cppstd=17
 compiler.runtime=static
 compiler.version=194
 os=Windows
+build_type=Release
