@@ -117,7 +117,7 @@ conan-profile-detect:
 # Rule for each profile
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
-	CFLAGS="" CXXFLAGS="" CONAN_HOME=$(CONAN_CACHE) conan install . -pr:a=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
+	CFLAGS="" CXXFLAGS="" CONAN_HOME=$(CONAN_CACHE) conan install . -pr:h=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 	(cd $(BUILD_FOLDER) && cpack)
