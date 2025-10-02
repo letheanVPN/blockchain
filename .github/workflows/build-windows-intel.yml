@@ -24,7 +24,6 @@ jobs:
       - uses: TheMrMilchmann/setup-msvc-dev@v4
         with:
           arch: x64
-          toolset: 17.xx
 
       - name: Cache SDK Folder
         uses: actions/cache@v4
