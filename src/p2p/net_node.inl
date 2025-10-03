@@ -705,7 +705,7 @@ namespace nodetool
       }else
       {
         LOG_PRINT_L0(" COMMAND_HANDSHAKE(AND CLOSE) INVOKED OK");
-        //m_net_server.get_config_object().close(context_.m_connection_id);
+        m_net_server.get_config_object().close(context_.m_connection_id);
       }
     }, P2P_DEFAULT_HANDSHAKE_INVOKE_TIMEOUT);
 
