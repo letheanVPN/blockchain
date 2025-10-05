@@ -1,0 +1,22 @@
+# .github/actions/make-docs/action.yml
+name: 'Build Documentation'
+description: 'Archives and uploads signed binaries to a GitHub release'
+
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+    - run: echo "cache_id=$(date -u '+%V')" >> $GITHUB_ENV
+    - uses: actions/cache@v4
+      with:
+        key: mkdocs-material-${{ env.cache_id }}
+        path: ~/.cache
+        restore-keys: |
+            mkdocs-material-
+
+    - if: runner.os == 'Linux'
+      run: |
+        sudo apt-get install -y libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev pngquant
+    - run: pip install mkdocs-git-revision-date-localized-plugin cairosvg mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging]

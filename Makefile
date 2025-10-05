@@ -12,8 +12,10 @@
 # Default to “unknown” – will be overwritten below.
 CPU_CORES := 1
 TESTNET:= 0
+STATIC:= 0
 BUILD_TYPE ?=Release
 BUILD_VERSION:=6.0.1
+BUILD_FOLDER:=build/release
 
 # -----------------------------------------------------------------
 # Unix‑like systems (Linux, macOS, *BSD, etc.)
@@ -69,7 +71,7 @@ endif
 # -----------------------------------------------------------------
 CPU_CORES := $(or $(CPU_CORES),1)
 CPU_CORES := $(shell expr $(CPU_CORES) + 0 2>/dev/null || echo 1)
-CONAN_CPU_COUNT=$(CPU_CORES)
+#CONAN_CPU_COUNT=$(CPU_CORES)
 
 
 PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
@@ -77,28 +79,37 @@ SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
-
+# Detect if we are on Windows
+ifeq ($(OS), Windows_NT)
+    # If so, define a prefix to clear the problematic env vars
+    FIX_ENV := CFLAGS="" CXXFLAGS=""
+else
+    # Otherwise, the prefix is empty
+    FIX_ENV :=
+endif
 all: help
 
-release: conan-profile-detect
-	@echo "Building profile: release $(TESTNET)"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
-	cmake --build build/release --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
-	(cd build/release && cpack)
+release: docs build
+	(cd $(BUILD_FOLDER) && cpack)
+
+build: configure
+	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
+	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
 	cmake --build build/debug --config=Debug --parallel=$(CPU_CORES)
 
-static: static-release
-static-release: conan-profile-detect
-	@echo "Building profile: release-static"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release-static --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release-static -DCMAKE_TOOLCHAIN_FILE=build/release-static/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -D STATIC=ON -DTESTNET=$(TESTNET)
-	cmake --build build/release-static --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
+
+build-deps: conan-profile-detect
+	@echo "Build Dependencies: $(BUILD_TYPE) testnet=$(TESTNET)"
+	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE)
+
+configure: build-deps
+	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
+	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
+
 
 conan-profile-detect:
 	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
@@ -110,9 +121,10 @@ conan-profile-detect:
 # Rule for each profile
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/$@ -pr:b=$(DEFAULT_CONAN_PROFILE) -pr:h=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/$@ -DCMAKE_TOOLCHAIN_FILE=build/$@/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DTESTNET=$(TESTNET)
-	cmake --build build/$@ --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
+	CFLAGS="" CXXFLAGS="" CONAN_HOME=$(CONAN_CACHE) conan install . -pr:h=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
+	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
+	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
+	(cd $(BUILD_FOLDER) && cpack)
 
 help:
 	@echo "Available targets:"
@@ -147,10 +159,6 @@ test-debug:
 	cmake --build build/test-debug --config=Debug --parallel=$(CPU_CORES)
 	$(MAKE) test
 
-configure:
-	@echo "Running Config: release"
-	CONAN_HOME=$(CONAN_CACHE) conan install . --output-folder=build/release --build=missing -s build_type=$(BUILD_TYPE)
-	cmake -S . -B build/release -DCMAKE_TOOLCHAIN_FILE=build/release/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 
 docs: configure
 	@echo "Building Documentation"
@@ -159,29 +167,6 @@ docs: configure
 docs-dev: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=serve_docs --config=Release
-
-docker-chain-node:
-	@echo "Building docker image: lthn/chain"
-	docker buildx build -f $(CC_DOCKER_FILE)  -t lthn/chain $(CURDIR)
-
-docker-cc-linux-amd64:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-amd64 --platform linux/amd64 $(CURDIR)
-
-docker-cc-linux-armv7:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-armv7 --platform linux/arm/v7 $(CURDIR)
-
-docker-cc-linux-arm64v8:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-arm64v8 --platform linux/arm64/v8 $(CURDIR)
-
-docker-cc-linux-ppc64le:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-ppc64le --platform linux/ppc64le $(CURDIR)
-
-docker-cc-linux-riscv64:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-riscv64 --platform linux/riscv64 $(CURDIR)
-
-docker-cc-linux-s390x:
-	docker buildx build -f $(CC_DOCKER_FILE) --target build-artifacts --output type=local,dest=build/cc-linux-s390x --platform linux/s390x $(CURDIR)
-
 
 
 clean:

@@ -5,6 +5,4 @@ compiler.cppstd=17
 compiler.runtime=static
 compiler.version=194
 os=Windows
-
-[conf]
-tools.cmake.cmaketoolchain:user_presets=False
+build_type=Release

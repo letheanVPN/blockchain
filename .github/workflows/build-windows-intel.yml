@@ -13,7 +13,7 @@ on:
 jobs:
   msvc-194:
     name: msvc-194-x86_64
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
       - name: Checkout Project
         uses: actions/checkout@v4.2.2
@@ -26,6 +26,11 @@ jobs:
         with:
           path: ${{ github.workspace }}/build/sdk
           key: ${{ runner.os }}-${{ runner.arch }}-sdk
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
       - name: Install Conan
         uses: conan-io/setup-conan@v1

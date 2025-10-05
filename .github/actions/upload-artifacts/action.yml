@@ -6,7 +6,7 @@ inputs:
     required: true
     description: 'The chain network name to use in filenames, mainnet or testnet'
   assets:
-    description: "A \\n separated string list of filenames to archive; if asset is a abs path, it's respected"
+    description: "A EOL separated string list of filenames to archive; if asset is a abs path, it's respected"
     required: false
   asset-type:
     required: true
@@ -37,6 +37,20 @@ runs:
         fi
         echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
         
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+          TAG_SUFFIX="-${{ github.event.number }}alpha"
+          PRERELEASE=true
+        elif [ "${{ inputs.chain-network }}" != "mainnet" ]; then
+          TAG_SUFFIX="-beta"
+          PRERELEASE=true
+        else
+          TAG_SUFFIX=""
+          PRERELEASE=false
+        fi
+        TAG_NAME="${VERSION}${TAG_SUFFIX}+${{ github.run_number }}"
+        echo "tag_name=${TAG_NAME}" >> "$GITHUB_OUTPUT"
+        echo "prerelease=${PRERELEASE}" >> "$GITHUB_OUTPUT"
+
         # Format the output to be a multi-line string.
         # This is the correct way to pass a multi-line string in GITHUB_OUTPUT.
         echo "paths<<EOF" >> "$GITHUB_OUTPUT"
@@ -70,7 +84,7 @@ runs:
     - name: Make Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ steps.asset.outputs.version }}${{ inputs.chain-network == 'mainnet' && '' || '-pre' }}+${{ github.run_number }}
-        prerelease:  ${{ contains(inputs.chain-network, 'testnet') }}
+        tag_name: ${{ steps.asset.outputs.tag_name }}
+        prerelease: ${{ steps.asset.outputs.prerelease }}
         files: ${{ inputs.asset-directory }}/lethean-*
         target_commitish: ${{ github.sha }}
