@@ -28,6 +28,7 @@ jobs:
         run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
 
       - name: Delete Release and Tag
+        if: contains(steps.get_version.outputs.VERSION, '-alpha') || contains(steps.get_version.outputs.VERSION, '-beta')
         uses: dev-drprasad/delete-older-releases@v0.3.4
         with:
           keep_latest: 0
