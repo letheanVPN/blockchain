@@ -4,7 +4,10 @@ LABEL authors="snider"
 ARG BUILD_THREADS=1
 ARG BUILD_TESTNET=1
 ARG BUILD_STATIC=0
+ARG BUILD_LOCAL=1
 ENV CONAN_HOME=/root/sdk
+ARG BUILD_REPO=https://github.com/letheanVPN/blockchain.git
+ARG BUILD_BRANCH=dev
 # CONAN: disables the generation of color escape characters.
 ENV NO_COLOR=1
 ENV DEBIAN_FRONTEND=noninteractive
@@ -34,10 +37,7 @@ WORKDIR /code
 
 FROM builder AS build
 ARG BUILD_THREADS=1
-ARG BUILD_BRANCH=dev
-ARG BUILD_LOCAL=1
 ARG BUILD_STATIC=0
-ARG BUILD_REPO=https://github.com/letheanVPN/blockchain.git
 ARG BUILD_FOLDER=build/release
 ARG BUILD_TYPE=Release
 ARG BUILD_TESTNET=1
