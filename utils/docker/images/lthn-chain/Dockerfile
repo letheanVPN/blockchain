@@ -1,4 +1,4 @@
-# use --target=builder to return a docker image able to compile the software, probbly used with -v .:/code
+# use --target=builder to return a docker image able to compile the software, probably used with -v .:/code
 FROM ubuntu:24.04 AS builder
 LABEL authors="snider"
 ARG BUILD_THREADS=1
