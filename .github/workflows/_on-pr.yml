@@ -8,12 +8,34 @@ on:
   pull_request:
     types:
       - review_requested
+      - closed
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
+  cleanup-release:
+    name: Cleanup Release
+    if: github.event.action == 'closed' && github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+
+      - name: Get Version
+        id: get_version
+        run: echo "VERSION=$(git describe --tags --abbrev=0)" >> $GITHUB_OUTPUT
+
+      - name: Delete Release and Tag
+        uses: dev-drprasad/delete-older-releases@v0.3.4
+        with:
+          keep_latest: 0
+          delete_tags: true
+          delete_tag_pattern: ${{ steps.get_version.outputs.VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   build-linux-intel:
     name: Chain
     if: |
