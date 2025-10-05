@@ -1422,10 +1422,12 @@ namespace nodetool
       return false;
 
     uint32_t actual_ip =  context.m_remote_ip;
+    uint16_t actual_port = context.m_remote_port;
     if(!m_peerlist.is_ip_allowed(actual_ip))
       return false;
     std::string ip = string_tools::get_ip_string_from_int32(actual_ip);
-    std::string port = string_tools::num_to_string_fast(node_data.my_port);
+    // std::string port = string_tools::num_to_string_fast(node_data.my_port);
+    std::string port = string_tools::num_to_string_fast(actual_port);
     peerid_type pr = node_data.peer_id;
     bool r = m_net_server.connect_async(ip, port, m_config.m_net_config.ping_connection_timeout, [cb, /*context,*/ ip, port, pr, this](
       const typename net_server::t_connection_context& ping_context,
