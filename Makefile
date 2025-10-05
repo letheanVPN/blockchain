@@ -101,9 +101,13 @@ debug: conan-profile-detect
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
 	cmake --build build/debug --config=Debug --parallel=$(CPU_CORES)
 
-configure: conan-profile-detect
-	@echo "Config profile: $(BUILD_TYPE) testnet=$(TESTNET)"
+
+build-deps: conan-profile-detect
+	@echo "Build Dependencies: $(BUILD_TYPE) testnet=$(TESTNET)"
 	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) conan install . --build=missing -s build_type=$(BUILD_TYPE)
+
+configure: build-deps
+	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
 	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 
 

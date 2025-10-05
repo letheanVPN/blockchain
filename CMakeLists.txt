@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+message(STATUS "Using CMake version: ${CMAKE_VERSION}")
 
 set(DISABLE_TOR TRUE CACHE BOOL "Disable TOR library(and related tor-connect submodule)")
 
