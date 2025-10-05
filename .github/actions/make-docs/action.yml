@@ -16,7 +16,7 @@ runs:
         restore-keys: |
             mkdocs-material-
 
-    - if: runner.os == 'linux'
+    - if: runner.os == 'Linux'
       run: |
         sudo apt-get install -y libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev pngquant
     - run: pip install mkdocs-git-revision-date-localized-plugin cairosvg mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging]
