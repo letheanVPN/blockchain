@@ -1565,17 +1565,18 @@ namespace nodetool
     {
       peerid_type peer_id_l = arg.node_data.peer_id;
       uint32_t port_l = arg.node_data.my_port;
+      uint32_t remote_ip = context.m_remote_ip;
       //try ping to be sure that we can add this peer to peer_list
-      try_ping(arg.node_data, context, [peer_id_l, port_l, context, this]()
+      try_ping(arg.node_data, context, [peer_id_l, port_l, remote_ip, this]()
       {
         //called only(!) if success pinged, update local peerlist
         peerlist_entry pe;
-        pe.adr.ip = context.m_remote_ip;
+        pe.adr.ip = remote_ip;
         pe.adr.port = port_l;
         time(&pe.last_seen);
         pe.id = peer_id_l;
         this->m_peerlist.append_with_peer_white(pe);
-        LOG_PRINT_L2("PING SUCCESS " << string_tools::get_ip_string_from_int32(context.m_remote_ip) << ":" << port_l);
+        LOG_PRINT_L2("PING SUCCESS " << string_tools::get_ip_string_from_int32(remote_ip) << ":" << port_l);
       });
     }
 
