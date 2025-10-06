@@ -22,6 +22,7 @@ jobs:
           submodules: recursive
 
       - name: Cache SDK Folder
+        id: cache
         uses: actions/cache@v4
         with:
           path: |
@@ -30,11 +31,14 @@ jobs:
           key: ${{ runner.os }}-${{ runner.arch }}-sdk
 
       - uses: actions/setup-python@v5
+        if: steps.cache.outputs.cache-hit != 'true'
         with:
           python-version: 3.x
-      - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
       - name: Compile Release
+        if: steps.cache.outputs.cache-hit != 'true'
         run: make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
   msvc-194:
