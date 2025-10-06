@@ -11,8 +11,41 @@ on:
         type: string
 
 jobs:
+  cache:
+    name: apple-clang-x86_64
+    runs-on: macos-13
+    steps:
+      - name: Cache SDK Folder
+        id: cache
+        uses: actions/cache@v4
+        with:
+          lookup-only: true
+          path: |
+            ${{ github.workspace }}/build/sdk
+            ${{ github.workspace }}/build/bin
+          key: ${{ runner.os }}-${{ runner.arch }}-sdk
+
+      - name: Checkout Project
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - uses: actions/setup-python@v5
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          python-version: 3.x
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
+
+      - name: Compile Release
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+
   build:
     name: apple-clang-x86_64
+    needs: cache
     runs-on: macos-13
     steps:
       - name: Checkout Project

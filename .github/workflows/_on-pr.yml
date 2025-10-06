@@ -7,6 +7,7 @@ on:
   pull_request_review:
   pull_request:
     types:
+      - ready_for_review
       - review_requested
       - closed
 
