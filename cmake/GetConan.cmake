@@ -96,7 +96,7 @@ if(NOT EXISTS "${CONAN_EXECUTABLE}")
   # Clean up the archive
   file(REMOVE "${CONAN_ARCHIVE}")
 
-  message(STATUS "Conan installed successfully in ${CONAN_INSTALL_DIR}/conan")
+  message(STATUS "Conan installed successfully at ${CONAN_EXECUTABLE}")
 else()
-  message(STATUS "Conan already installed in ${CONAN_INSTALL_DIR}/conan")
+  message(STATUS "Conan already installed at ${CONAN_EXECUTABLE}")
 endif()
