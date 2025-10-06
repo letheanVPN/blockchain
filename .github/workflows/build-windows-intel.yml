@@ -25,6 +25,7 @@ jobs:
         id: cache
         uses: actions/cache@v4
         with:
+          lookup-only: true
           path: |
             ${{ github.workspace }}/build/sdk
             ${{ github.workspace }}/build/bin

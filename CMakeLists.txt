@@ -30,7 +30,7 @@ endif()
 
 include(DocBuilder)
 option (USE_CCACHE "Use ccache if a usable instance is found" ON)
-if (USE_CCACHE)
+if (USE_CCACHE AND NOT WIN32)
   include(FindCcache)
 else()
   message(STATUS "ccache deselected")
