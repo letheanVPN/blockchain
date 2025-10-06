@@ -81,7 +81,7 @@ if(NOT EXISTS "${CONAN_EXECUTABLE}")
       RESULT_VARIABLE result
     )
   elseif(CONAN_ARCHIVE_TYPE STREQUAL "zip")
-    # Cmake -E tar can handle zip files
+    # CMake -E tar can handle zip files
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E tar xf "${CONAN_ARCHIVE}"
       WORKING_DIRECTORY "${CONAN_INSTALL_DIR}"
@@ -96,7 +96,7 @@ if(NOT EXISTS "${CONAN_EXECUTABLE}")
   # Clean up the archive
   file(REMOVE "${CONAN_ARCHIVE}")
 
-  message(STATUS "Conan installed successfully in ${CONAN_INSTALL_DIR}/conan")
+  message(STATUS "Conan installed successfully at ${CONAN_EXECUTABLE}")
 else()
-  message(STATUS "Conan already installed in ${CONAN_INSTALL_DIR}/conan")
+  message(STATUS "Conan already installed at ${CONAN_EXECUTABLE}")
 endif()
