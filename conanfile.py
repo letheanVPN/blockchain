@@ -15,7 +15,8 @@ class BlockchainConan(ConanFile):
     }
     default_options = {
         "static": False,
-        "testnet": False
+        "testnet": False,
+        "boost/*:without_test": True
     }
 
     tool_requires = "ccache/4.11"
@@ -27,6 +28,10 @@ class BlockchainConan(ConanFile):
         "miniupnpc/2.2.5",
         "jwt-cpp/0.7.1"
     ]
+
+    def configure(self):
+        if self.settings.compiler.get_safe("cppstd"):
+            self.settings.compiler.cppstd = "17"
 
     def generate(self):
         tc = CMakeToolchain(self)
