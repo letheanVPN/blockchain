@@ -32,6 +32,6 @@ jobs:
         uses: ./.github/actions/upload-artifacts
         with:
           chain-network: ${{ inputs.chain-network }}
-          assets: *
+          assets: "*"
           asset-type: 'docs'
           asset-directory: ${{ github.workspace }}/build/docs
