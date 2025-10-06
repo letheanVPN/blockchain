@@ -1,13 +1,7 @@
 # Use the CONAN_HOME from the environment, or default to a local directory.
-if(NOT DEFINED ENV{CONAN_HOME})
-    set(CONAN_HOME "${CMAKE_SOURCE_DIR}/build/sdk")
-    message(STATUS "CONAN_HOME not set, defaulting to: ${CONAN_HOME}")
-else()
-    set(CONAN_HOME "$ENV{CONAN_HOME}")
-endif()
 
+set(CONAN_HOME "${CMAKE_SOURCE_DIR}/build/sdk")
 set(DEFAULT_PROFILE "${CONAN_HOME}/profiles/default")
-
 
 if(NOT EXISTS "${DEFAULT_PROFILE}")
     message(STATUS "Conan default profile not found. Detecting a new one...")
@@ -30,12 +24,12 @@ set(CUSTOM_SETTINGS "
 compiler.cppstd=17
 ")
 
-if(WIN32)
-    message(STATUS "Windows detected. Appending static runtime setting.")
-    string(APPEND CUSTOM_SETTINGS "
-compiler.runtime=static
-")
-endif()
+#if(WIN32)
+#    message(STATUS "Windows detected. Appending static runtime setting.")
+#    string(APPEND CUSTOM_SETTINGS "
+#compiler.runtime=static
+#")
+#endif()
 
 file(APPEND "${DEFAULT_PROFILE}" "${CUSTOM_SETTINGS}")
 
