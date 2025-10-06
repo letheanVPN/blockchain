@@ -66,14 +66,7 @@ CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 CONAN_EXECUTABLE := $(CURDIR)/build/bin/conan
 CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
-CONAN_OPTIONS:= -s compiler.cppstd=17
-# Detect if we are on Windows
-ifeq ($(OS), Windows_NT)
-    # If so, define a prefix to clear the problematic env vars
-    CONAN_OPTIONS+= -s compiler.runtime=static
-else
-    # Otherwise, the prefix is empty
-endif
+
 all: help
 
 release: docs build
@@ -92,7 +85,7 @@ debug: conan-profile-detect
 
 build-deps: conan-profile-detect
 	@echo "Build Dependencies: $(BUILD_TYPE) testnet=$(TESTNET)"
-	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing  -s build_type=$(BUILD_TYPE) $(CONAN_OPTIONS)
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing  -s build_type=$(BUILD_TYPE)
 
 configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
