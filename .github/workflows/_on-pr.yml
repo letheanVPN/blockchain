@@ -7,6 +7,7 @@ on:
   pull_request_review:
   pull_request:
     types:
+      - ready_for_review
       - review_requested
       - closed
 
@@ -39,9 +40,7 @@ jobs:
 
   build-linux-intel:
     name: Chain
-    if: |
-      (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
-      (github.event.review.state == 'approved' && !github.event.pull_request.draft)
+    if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-linux-intel.yml
     secrets: inherit
     with:
@@ -49,9 +48,7 @@ jobs:
 
   build-linux-arm:
     name: Chain
-    if: |
-      (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
-      (github.event.review.state == 'approved' && !github.event.pull_request.draft)
+    if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-linux-arm64.yml
     secrets: inherit
     with:
@@ -59,9 +56,7 @@ jobs:
 
   build-windows-intel:
     name: Chain
-    if: |
-      (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
-      (github.event.review.state == 'approved' && !github.event.pull_request.draft)
+    if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-windows-intel.yml
     secrets: inherit
     with:
@@ -69,9 +64,7 @@ jobs:
 
   build-macos-arm64:
     name: Chain
-    if: |
-      (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
-      (github.event.review.state == 'approved' && !github.event.pull_request.draft)
+    if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-macos-arm64.yml
     secrets: inherit
     with:
@@ -79,9 +72,7 @@ jobs:
 
   build-macos-intel:
     name: Chain
-    if: |
-      (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
-      (github.event.review.state == 'approved' && !github.event.pull_request.draft)
+    if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-macos-intel.yml
     secrets: inherit
     with:
@@ -89,9 +80,7 @@ jobs:
 
   build-docker:
     name: Docker
-    if: |
-      (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
-      (github.event.review.state == 'approved' && !github.event.pull_request.draft)
+    if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-docker.yml
     secrets: inherit
     with:
@@ -99,7 +88,5 @@ jobs:
 
   build-docs:
     name: Docs
-    if: |
-      (github.actor == 'Snider' && github.event.pull_request.user.login == 'Snider') ||
-      (github.event.review.state == 'approved' && !github.event.pull_request.draft)
+    if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-docs.yml
