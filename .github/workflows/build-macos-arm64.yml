@@ -13,7 +13,7 @@ on:
 
 jobs:
   cache:
-    name: apple-clang-armv8
+    name: cache-armv8
     runs-on: macos-15
     steps:
       - name: Cache SDK Folder
@@ -41,12 +41,12 @@ jobs:
       - if: steps.cache.outputs.cache-hit != 'true'
         run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
-      - name: Compile Release
+      - name: Compile Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: make build-deps CPU_CORES=3 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
   build:
-    name: apple-clang-armv8
+    name: compile-armv8
     needs: cache
     runs-on: macos-15
     steps:

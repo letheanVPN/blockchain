@@ -11,8 +11,8 @@ on:
         type: string
 
 jobs:
-  msvc-194-cache:
-    name: cache-msvc-194-x86_64
+  cache:
+    name: cache-x86_64
     runs-on: windows-latest
     steps:
       - name: Cache SDK Folder
@@ -39,13 +39,13 @@ jobs:
       - if: steps.cache.outputs.cache-hit != 'true'
         run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
-      - name: Compile Release
+      - name: Compile Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
-  msvc-194:
-    name: msvc-194-x86_64
-    needs: msvc-194-cache
+  build:
+    name: compile-x86_64
+    needs: cache
     runs-on: windows-latest
     steps:
       - name: Checkout Project

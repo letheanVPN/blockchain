@@ -12,7 +12,7 @@ on:
 
 jobs:
   cache:
-    name: gcc-linux-arm64
+    name: cache-arm64
     runs-on: ubuntu-22.04-arm
     steps:
       - name: Cache SDK Folder
@@ -43,12 +43,12 @@ jobs:
       - if: steps.cache.outputs.cache-hit != 'true'
         run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
-      - name: Compile Release
+      - name: Compile Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
 
   build:
-    name: gcc-linux-arm64
+    name: compile-arm64
     needs: cache
     runs-on: ubuntu-22.04-arm
     steps:
