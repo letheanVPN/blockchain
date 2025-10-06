@@ -1,7 +1,7 @@
 import os
 
 from conan import ConanFile
-from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain, CMake
+from conan.tools.cmake import CMakeDeps, CMakeToolchain, CMake
 
 
 class BlockchainConan(ConanFile):
@@ -28,10 +28,6 @@ class BlockchainConan(ConanFile):
         "miniupnpc/2.2.5",
         "jwt-cpp/0.7.1"
     ]
-
-    def configure(self):
-        if self.settings.compiler.get_safe("cppstd"):
-            self.settings.compiler.cppstd = "17"
 
     def generate(self):
         tc = CMakeToolchain(self)

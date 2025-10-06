@@ -92,7 +92,7 @@ debug: conan-profile-detect
 
 build-deps: conan-profile-detect
 	@echo "Build Dependencies: $(BUILD_TYPE) testnet=$(TESTNET)"
-	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing -s build_type=$(BUILD_TYPE)
+	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing -s compiler.cppstd=17 -s build_type=$(BUILD_TYPE)
 
 configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
