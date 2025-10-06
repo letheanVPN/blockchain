@@ -31,6 +31,7 @@ if(NOT EXISTS "${CONAN_EXECUTABLE}")
   file(MAKE_DIRECTORY "${CONAN_INSTALL_DIR}")
 
   # Detect the operating system and architecture
+  message(STATUS "Detecting OS and architecture: ${CMAKE_HOST_SYSTEM_PROCESSOR} on ${CMAKE_HOST_SYSTEM_NAME}")
   if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Darwin")
     if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "arm64")
       set(CONAN_URL ${CONAN_URL_MACOS_ARM})
