@@ -21,6 +21,7 @@ function(selective_clean_build_dir)
 
         # List of top-level items in the build directory to keep.
         set(golden_items
+            "${CMAKE_SOURCE_DIR}/build/.ccache"
             "${CMAKE_SOURCE_DIR}/build/bin"
             "${CMAKE_SOURCE_DIR}/build/docs"
             "${CMAKE_SOURCE_DIR}/build/sdk"

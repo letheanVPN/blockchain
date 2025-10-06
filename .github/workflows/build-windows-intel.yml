@@ -24,7 +24,10 @@ jobs:
       - name: Cache SDK Folder
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/build/sdk
+          path: |
+            ${{ github.workspace }}/build/.ccache
+            ${{ github.workspace }}/build/sdk
+            ${{ github.workspace }}/build/bin
           key: ${{ runner.os }}-${{ runner.arch }}-sdk
 
       - uses: actions/setup-python@v5
