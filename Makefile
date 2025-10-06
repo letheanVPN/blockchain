@@ -102,11 +102,7 @@ get-conan:
 	cmake -P cmake/GetConan.cmake
 
 conan-profile-detect: get-conan
-	@if [ ! -f "$(DEFAULT_CONAN_PROFILE)" ]; then \
-		echo "Default conan profile not found. Detecting a new one..."; \
-		CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) profile detect --name=default --force; \
-	fi
-
+	cmake -P cmake/ConanProfileSetup.cmake
 
 # Rule for each profile
 $(PROFILES): conan-profile-detect
