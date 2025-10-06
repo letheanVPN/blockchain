@@ -19,7 +19,7 @@ RUN apt install -y build-essential pkgconf \
     g++ llvm clang lld cmake python-is-python3 \
     git python3 python3-pip python3-dev xz-utils gperf
 
-RUN pip3 install conan mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging] --break-system-packages
+RUN pip3 install mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging] --break-system-packages
 
 WORKDIR /
 
