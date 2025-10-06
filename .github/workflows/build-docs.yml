@@ -1,6 +1,6 @@
 name: docs
 permissions:
-  contents: read
+  contents: write
 on:
   workflow_call:
 
@@ -17,16 +17,13 @@ jobs:
         with:
           python-version: 3.x
 
-      - name: Install Conan
-        uses: conan-io/setup-conan@v1
+      - name: Cache SDK Folder
+        uses: actions/cache@v4
         with:
-          home: ${{ github.workspace }}/build/sdk
-          cache_packages: true
-
-      - uses: actions/cache@v4
-        with:
-          key: ${{ github.ref }}
-          path: .cache
+          path: |
+            ${{ github.workspace }}/build/sdk
+            ${{ github.workspace }}/build/bin
+          key: ${{ runner.os }}-${{ runner.arch }}-sdk
 
       - run: sudo apt-get install -y libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev pngquant
       - run: pip install mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging]
@@ -34,13 +31,10 @@ jobs:
       - name: Build Offline Version
         run: make docs
 
-      - name: Zip Build
-        run: |
-          cd build/docs
-          zip -qq -r ../documentation.zip *
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4.6.2
+      - name: CLI Artifacts
+        uses: ./.github/actions/upload-artifacts
         with:
-          name: Documentation
-          path: build/documentation.zip
+          chain-network: ${{ inputs.chain-network }}
+          assets: "*"
+          asset-type: 'docs'
+          asset-directory: ${{ github.workspace }}/build/docs
