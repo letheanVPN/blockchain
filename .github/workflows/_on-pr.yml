@@ -7,8 +7,9 @@ on:
   pull_request_review:
   pull_request:
     types:
-      - ready_for_review
-      - review_requested
+      - opened
+      - synchronize
+      - reopened
       - closed
 
 concurrency:
@@ -39,7 +40,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build-linux-intel:
-    name: Chain
+    name: Linux
     if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-linux-intel.yml
     secrets: inherit
@@ -47,7 +48,7 @@ jobs:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
   build-linux-arm:
-    name: Chain
+    name: Linux
     if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-linux-arm64.yml
     secrets: inherit
@@ -55,7 +56,7 @@ jobs:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
   build-windows-intel:
-    name: Chain
+    name: Windows
     if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-windows-intel.yml
     secrets: inherit
@@ -63,15 +64,14 @@ jobs:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
   build-macos-arm64:
-    name: Chain
-    if: ${{!github.event.pull_request.draft}}
+    name: MacOS
     uses: ./.github/workflows/build-macos-arm64.yml
     secrets: inherit
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
   build-macos-intel:
-    name: Chain
+    name: MacOS
     if: ${{!github.event.pull_request.draft}}
     uses: ./.github/workflows/build-macos-intel.yml
     secrets: inherit
