@@ -34,7 +34,7 @@ if(NOT EXISTS "${CONAN_EXECUTABLE}")
   if(CMAKE_HOST_SYSTEM_PROCESSOR)
     set(HOST_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR})
   else()
-    set(HOST_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
+    cmake_host_system_information(RESULT HOST_PROCESSOR QUERY OS_PLATFORM)
   endif()
 
   # Detect the operating system and architecture
