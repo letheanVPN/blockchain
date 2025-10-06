@@ -12,6 +12,7 @@ set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE} cache_dir=${CMAKE_SO
 set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK    "${CCACHE} cache_dir=${CMAKE_SOURCE_DIR}/build/.ccache")
 add_executable(main test.cpp)
 ]=])
+    cmake_policy(SET CMP0091 NEW)
     try_compile(RET "${TEST_PROJECT}/build" "${TEST_PROJECT}" "test" CMAKE_FLAGS -DCCACHE="${CCACHE_FOUND} -DCMAKE_POLICY_DEFAULT_CMP0091=NEW")
     unset(TEST_PROJECT)
     if (${RET})
