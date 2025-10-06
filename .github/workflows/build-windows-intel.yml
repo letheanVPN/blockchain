@@ -11,8 +11,35 @@ on:
         type: string
 
 jobs:
+  msvc-194-cache:
+    name: cache-msvc-194-x86_64
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Cache SDK Folder
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/build/sdk
+            ${{ github.workspace }}/build/bin
+          key: ${{ runner.os }}-${{ runner.arch }}-sdk
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
+
+      - name: Compile Release
+        run: make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+
   msvc-194:
     name: msvc-194-x86_64
+    needs: msvc-194-cache
     runs-on: windows-latest
     steps:
       - name: Checkout Project
