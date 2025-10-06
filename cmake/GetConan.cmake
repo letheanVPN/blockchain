@@ -81,7 +81,7 @@ if(NOT EXISTS "${CONAN_EXECUTABLE}")
       RESULT_VARIABLE result
     )
   elseif(CONAN_ARCHIVE_TYPE STREQUAL "zip")
-    # Cmake -E tar can handle zip files
+    # CMake -E tar can handle zip files
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E tar xf "${CONAN_ARCHIVE}"
       WORKING_DIRECTORY "${CONAN_INSTALL_DIR}"
