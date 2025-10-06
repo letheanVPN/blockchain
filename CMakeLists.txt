@@ -6,15 +6,11 @@ set(DISABLE_TOR TRUE CACHE BOOL "Disable TOR library(and related tor-connect sub
 PROJECT(Lethean)
 
 set(VERSION "1.0" CACHE STRING "Build version")
-
-
-message("OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
-message("OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
-message("OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(INSERT CMAKE_MODULE_PATH 0
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(DocBuilder)
 
 if(POLICY CMP0043)
   cmake_policy(SET CMP0043 NEW)
@@ -22,11 +18,22 @@ endif()
 if(POLICY CMP0043)
   cmake_policy(SET CMP0074 NEW)
 endif()
+if(POLICY CMP0091)
+  cmake_policy(SET CMP0091 NEW)
+endif()
 if(POLICY CMP0144)
   cmake_policy(SET CMP0144 NEW)
 endif()
 if(POLICY CMP0167)
   cmake_policy(SET CMP0167 OLD)
+endif()
+
+include(DocBuilder)
+option (USE_CCACHE "Use ccache if a usable instance is found" ON)
+if (USE_CCACHE)
+  include(FindCcache)
+else()
+  message(STATUS "ccache deselected")
 endif()
 
 #option (USE_CCACHE "Use ccache if a usable instance is found" ON)
@@ -36,8 +43,7 @@ endif()
 #  message(STATUS "ccache deselected")
 #endif()
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 
 
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR CMAKE_SYSTEM_NAME STREQUAL "Android")
