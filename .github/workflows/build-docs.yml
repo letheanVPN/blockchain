@@ -17,10 +17,13 @@ jobs:
         with:
           python-version: 3.x
 
-      - uses: actions/cache@v4
+      - name: Cache SDK Folder
+        uses: actions/cache@v4
         with:
-          key: ${{ github.ref }}
-          path: .cache
+          path: |
+            ${{ github.workspace }}/build/sdk
+            ${{ github.workspace }}/build/bin
+          key: ${{ runner.os }}-${{ runner.arch }}-sdk
 
       - run: sudo apt-get install -y libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev pngquant
       - run: pip install mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin mkdocs-material[imaging]

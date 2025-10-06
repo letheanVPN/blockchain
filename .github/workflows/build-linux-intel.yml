@@ -28,7 +28,6 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ${{ github.workspace }}/build/.ccache
             ${{ github.workspace }}/build/sdk
             ${{ github.workspace }}/build/bin
           key: ${{ runner.os }}-${{ runner.arch }}-sdk
