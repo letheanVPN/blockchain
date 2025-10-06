@@ -66,13 +66,13 @@ CONAN_CACHE := $(CURDIR)/build/sdk
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 CONAN_EXECUTABLE := $(CURDIR)/build/bin/conan
 CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
+CONAN_OPTIONS:= -s compiler.cppstd=17
 # Detect if we are on Windows
 ifeq ($(OS), Windows_NT)
     # If so, define a prefix to clear the problematic env vars
-    FIX_ENV := CFLAGS="" CXXFLAGS=""
+    CONAN_OPTIONS+= -s compiler.runtime=static
 else
     # Otherwise, the prefix is empty
-    FIX_ENV :=
 endif
 all: help
 
@@ -85,14 +85,14 @@ build: configure
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
-	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --output-folder=build/debug --build=missing -s build_type=Debug
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --output-folder=build/debug --build=missing -s build_type=Debug
 	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
 	cmake --build build/debug --config=Debug --parallel=$(CPU_CORES)
 
 
 build-deps: conan-profile-detect
 	@echo "Build Dependencies: $(BUILD_TYPE) testnet=$(TESTNET)"
-	$(FIX_ENV) CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing -s compiler.cppstd=17 -s build_type=$(BUILD_TYPE)
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing  -s build_type=$(BUILD_TYPE) $(CONAN_OPTIONS)
 
 configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
@@ -111,7 +111,7 @@ conan-profile-detect: get-conan
 # Rule for each profile
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
-	CFLAGS="" CXXFLAGS="" CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . -pr:h=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . -pr:h=cmake/profiles/$@ --build=missing -s build_type=$(BUILD_TYPE)
 	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
 	(cd $(BUILD_FOLDER) && cpack)
