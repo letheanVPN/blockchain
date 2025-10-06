@@ -12,14 +12,18 @@ set(CONAN_URL_WINDOWS_X86_64 "https://github.com/conan-io/conan/releases/downloa
 set(CONAN_URL_WINDOWS_ARM64 "https://github.com/conan-io/conan/releases/download/${CONAN_VERSION}/conan-${CONAN_VERSION}-windows-arm64.zip")
 set(CONAN_URL_LINUX_X86_64 "https://github.com/conan-io/conan/releases/download/${CONAN_VERSION}/conan-${CONAN_VERSION}-linux-x86_64.tgz")
 set(CONAN_URL_LINUX_AARCH64 "https://github.com/conan-io/conan/releases/download/${CONAN_VERSION}/conan-${CONAN_VERSION}-linux-aarch64.tgz")
-set(CONAN_INSTALL_DIR "${CMAKE_SOURCE_DIR}/build")
+
 # Set the installation directory
 if(NOT CMAKE_BINARY_DIR)
   set(CMAKE_BINARY_DIR "${CONAN_INSTALL_DIR}")
 endif()
-
-set(CONAN_EXECUTABLE "${CONAN_INSTALL_DIR}/bin/conan")
-
+if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+  set(CONAN_EXECUTABLE "${CONAN_INSTALL_DIR}/bin/conan.exe")
+  set(CONAN_INSTALL_DIR "${CMAKE_SOURCE_DIR}/build/bin")
+else ()
+  set(CONAN_EXECUTABLE "${CONAN_INSTALL_DIR}/bin/conan")
+  set(CONAN_INSTALL_DIR "${CMAKE_SOURCE_DIR}/build")
+endif ()
 # Check if Conan is already installed
 if(NOT EXISTS "${CONAN_EXECUTABLE}")
   message(STATUS "Conan not found. Downloading and installing...")
@@ -44,7 +48,7 @@ if(NOT EXISTS "${CONAN_EXECUTABLE}")
       set(CONAN_ARCHIVE_TYPE "zip")
     endif()
   elseif(CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-    if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "aarch64")
+    if(CMAKE_HOST_SYSTEM_PROCESSOR MATCHES "aarch64|arm64")
       set(CONAN_URL ${CONAN_URL_LINUX_AARCH64})
       set(CONAN_ARCHIVE_TYPE "tgz")
     else()
