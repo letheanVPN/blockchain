@@ -38,7 +38,7 @@ runs:
         echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
         
         if [ "${{ github.event_name }}" == "pull_request" ]; then
-          TAG_SUFFIX="-${{ github.event.number }}alpha"
+          TAG_SUFFIX="-alpha.${{ github.event.number }}"
           PRERELEASE=true
         elif [ "${{ inputs.chain-network }}" != "mainnet" ]; then
           TAG_SUFFIX="-beta"
@@ -86,5 +86,5 @@ runs:
       with:
         tag_name: ${{ steps.asset.outputs.tag_name }}
         prerelease: ${{ steps.asset.outputs.prerelease }}
-        files: ${{ inputs.asset-directory }}/lethean-*
+        files: ${{ inputs.asset-directory }}/*
         target_commitish: ${{ github.sha }}
