@@ -41,7 +41,9 @@ jobs:
 
       - name: Compile Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: | 
+          make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }} CONAN_USER=ci-user CONAN_PASSWORD=${{ secrets.CONAN_PASSWORD }}
+          make upload-conan-cache
 
   build:
     name: compile-x86_64
@@ -68,7 +70,7 @@ jobs:
       - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
       - name: Compile Release
-        run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }} CONAN_USER=ci-user CONAN_PASSWORD=${{ secrets.CONAN_PASSWORD }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
