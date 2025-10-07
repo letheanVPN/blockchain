@@ -11,8 +11,47 @@ on:
         type: string
 
 jobs:
+  cache:
+    name: cache-arm64
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: Cache SDK Folder
+        id: cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ github.workspace }}/build/sdk
+            ${{ github.workspace }}/build/bin
+          key: ${{ runner.os }}-${{ runner.arch }}-sdk
+
+      - name: Checkout Project
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4.2.2
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: sudo apt-get install -y autotools-dev  git build-essential libcairo2-dev libfreetype6-dev libffi-dev libjpeg-dev libpng-dev libz-dev pngquant
+
+      - uses: actions/setup-python@v5
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          python-version: 3.x
+
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
+
+      - name: Compile Dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }} CONAN_USER=ci-user CONAN_PASSWORD=${{ secrets.CONAN_PASSWORD }}
+          make upload-conan-cache
+
   build:
-    name: gcc-linux-arm64
+    name: compile-arm64
+    needs: cache
     runs-on: ubuntu-22.04-arm
     steps:
       - name: Checkout Project
@@ -27,7 +66,9 @@ jobs:
       - name: Cache SDK Folder
         uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/build/sdk
+          path: |
+            ${{ github.workspace }}/build/sdk
+            ${{ github.workspace }}/build/bin
           key: ${{ runner.os }}-${{ runner.arch }}-sdk
 
       - uses: actions/setup-python@v5
@@ -36,15 +77,8 @@ jobs:
 
       - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
-
-      - name: Install Conan
-        uses: conan-io/setup-conan@v1
-        with:
-          home: ${{ github.workspace }}/build/sdk
-          cache_packages: false
-
       - name: Compile Release
-        run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }} CONAN_USER=ci-user CONAN_PASSWORD=${{ secrets.CONAN_PASSWORD }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
@@ -52,4 +86,4 @@ jobs:
           chain-network: ${{ inputs.chain-network }}
           assets: lethean-*
           asset-type: 'cli'
-          asset-directory: ${{ github.workspace }}/build/release/packages
+          asset-directory: ${{ github.workspace }}/build/packages
