@@ -29,22 +29,12 @@ if(POLICY CMP0167)
 endif()
 
 include(DocBuilder)
-option (USE_CCACHE "Use ccache if a usable instance is found" ON)
+option (USE_CCACHE "Use ccache if a usable instance is found" OFF)
 if (USE_CCACHE)
   include(FindCcache)
 else()
   message(STATUS "ccache deselected")
 endif()
-
-#option (USE_CCACHE "Use ccache if a usable instance is found" ON)
-#if (USE_CCACHE)
-#  include(FindCcache) # Has to be included after the project() macro, to be able to read the CXX variable.
-#else()
-#  message(STATUS "ccache deselected")
-#endif()
-
-
-
 
 if(CMAKE_SYSTEM_NAME STREQUAL "iOS" OR CMAKE_SYSTEM_NAME STREQUAL "Android")
   add_definitions(-DMOBILE_WALLET_BUILD)
