@@ -19,8 +19,6 @@ class BlockchainConan(ConanFile):
         "boost/*:without_test": True
     }
 
-    tool_requires = "ccache/4.11"
-
     requires = [
         "zlib/1.3.1",
         "boost/1.85.0",
