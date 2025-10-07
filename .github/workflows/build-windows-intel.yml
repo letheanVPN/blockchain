@@ -41,7 +41,9 @@ jobs:
 
       - name: Compile Dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: |
+          make build-deps CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }} CONAN_USER=ci-user CONAN_PASSWORD=${{ secrets.CONAN_PASSWORD }}
+          make upload-conan-cache
 
   build:
     name: compile-x86_64
