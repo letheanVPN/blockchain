@@ -1,7 +1,7 @@
 import os
 
 from conan import ConanFile
-from conan.tools.cmake import cmake_layout, CMakeDeps, CMakeToolchain, CMake
+from conan.tools.cmake import CMakeDeps, CMakeToolchain, CMake
 
 
 class BlockchainConan(ConanFile):
@@ -15,8 +15,11 @@ class BlockchainConan(ConanFile):
     }
     default_options = {
         "static": False,
-        "testnet": False
+        "testnet": False,
+        "boost/*:without_test": True
     }
+
+    tool_requires = "ccache/4.11"
 
     requires = [
         "zlib/1.3.1",

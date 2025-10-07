@@ -16,31 +16,31 @@ concurrency:
 
 jobs:
   build-linux-intel:
-    name: Chain
+    name: Linux
     uses: ./.github/workflows/build-linux-intel.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
   build-linux-arm:
-    name: Chain
+    name: Linux
     uses: ./.github/workflows/build-linux-arm64.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
   build-windows-intel:
-    name: Chain
+    name: Windows
     uses: ./.github/workflows/build-windows-intel.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
   build-macos-arm64:
-    name: Chain
+    name: MacOS
     uses: ./.github/workflows/build-macos-arm64.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}
 
   build-macos-intel:
-    name: Chain
+    name: MacOS
     uses: ./.github/workflows/build-macos-intel.yml
     with:
       chain-network: ${{ github.ref_name == 'main' && 'mainnet' || 'testnet' }}

@@ -1,0 +1,8 @@
+find_program(CCACHE_FOUND ccache)
+if (CCACHE_FOUND)
+    message(STATUS "Found usable ccache: ${CCACHE_FOUND}")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_FOUND} cache_dir=${CMAKE_SOURCE_DIR}/build/.ccache")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK    "${CCACHE_FOUND} cache_dir=${CMAKE_SOURCE_DIR}/build/.ccache")
+else()
+    message(STATUS "ccache NOT found! Please install it for faster rebuilds.")
+endif()
