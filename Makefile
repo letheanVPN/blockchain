@@ -63,6 +63,9 @@ CONAN_CPU_COUNT=$(CPU_CORES)
 PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
 SORTED_PROFILES := $(sort $(PROFILES))
 CONAN_CACHE := $(CURDIR)/build/sdk
+CONAN_URL:=https://artifacts.host.uk.com/artifactory/api/conan/conan-build
+CONAN_USER:=public
+CONAN_PASSWORD:=Lethean1234
 DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
 CONAN_EXECUTABLE := $(CURDIR)/build/bin/conan
 CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
@@ -91,8 +94,17 @@ configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
 	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 
+docs: configure
+	@echo "Building Documentation"
+	cmake --build build/release --target=docs --config=Release --parallel=$(CPU_CORES)
+
 get-conan:
 	cmake -P cmake/GetConan.cmake
+	(CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote add conan_build $(CONAN_URL) && \
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote login conan_build $(CONAN_USER) -p $(CONAN_PASSWORD)) || true
+
+upload-conan-cache:
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) upload "*" -r=conan_build --confirm
 
 conan-profile-detect: get-conan
 	cmake -P cmake/ConanProfileSetup.cmake
@@ -139,11 +151,6 @@ test-debug:
 	cmake --build build/test-debug --config=Debug --parallel=$(CPU_CORES)
 	$(MAKE) test
 
-
-docs: configure
-	@echo "Building Documentation"
-	cmake --build build/release --target=docs --config=Release --parallel=$(CPU_CORES)
-
 docs-dev: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=serve_docs --config=Release
@@ -157,4 +164,4 @@ clean-build:
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release docker-chain-node debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect get-conan $(PROFILES)
+.PHONY: all release upload-conan-cache docker-chain-node debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect get-conan $(PROFILES)
