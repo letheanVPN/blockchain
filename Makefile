@@ -16,10 +16,9 @@ STATIC:= 0
 BUILD_TYPE ?=Release
 BUILD_VERSION:=6.0.1
 BUILD_FOLDER:=build/release
+PRESET_BUILD:=conan-release
+PRESET_CONFIGURE:=conan-release
 
-# -----------------------------------------------------------------
-# Unix‑like systems (Linux, macOS, *BSD, etc.)
-# -----------------------------------------------------------------
 UNAME_S := $(shell uname -s 2>/dev/null || echo Unknown)
 
 ifeq ($(UNAME_S),Linux)
@@ -38,10 +37,10 @@ ifeq ($(filter %BSD,$(UNAME_S)),%BSD)
     CPU_CORES := $(shell sysctl -n hw.ncpu 2>/dev/null || echo 1)
 endif
 
-# -----------------------------------------------------------------
-# Windows (detected by the built‑in $(OS) variable set by GNU make)
-# -----------------------------------------------------------------
 ifeq ($(OS),Windows_NT)
+
+PRESET_CONFIGURE:=conan-default
+
     # Prefer the environment variable that Windows sets for us.
     # It works in both cmd.exe and PowerShell.
     CPU_CORES := $(NUMBER_OF_PROCESSORS)
@@ -77,14 +76,7 @@ release: docs build
 	@rm -rf $(CURDIR)/build/packages/_CPack_Packages
 
 build: configure
-	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
-
-debug: conan-profile-detect
-	@echo "Building profile: debug"
-	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing -s build_type=Debug
-	cmake -S . -B $(CURDIR)/build/debug -DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/build/debug/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
-	cmake --build $(CURDIR)/build/debug --config=Debug --parallel=$(CPU_CORES)
-
+	cmake --build --preset $(PRESET_BUILD) --parallel=$(CPU_CORES)
 
 build-deps: conan-profile-detect
 	@echo "Build Dependencies: $(BUILD_TYPE) testnet=$(TESTNET)"
@@ -92,7 +84,7 @@ build-deps: conan-profile-detect
 
 configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
-	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
+	cmake --preset $(PRESET_CONFIGURE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 
 docs: configure
 	@echo "Building Documentation"
@@ -165,4 +157,4 @@ clean-build:
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release upload-conan-cache docker-chain-node debug docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect get-conan $(PROFILES)
+.PHONY: all release upload-conan-cache docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect get-conan $(PROFILES)
