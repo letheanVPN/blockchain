@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contrib/bitcoin-secp256k1" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contrib/jwt-cpp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/contrib/tor-connect" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/docs" vcs="Git" />
+  </component>
+</project>

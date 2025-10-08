@@ -90,12 +90,6 @@ if(NOT USE_BITCOIN_SECP256K1_FOR_ECDSA)
   add_definitions(-DUSE_OPEN_SSL_FOR_ECDSA)
 endif()
 
-find_package(miniupnpc REQUIRED)
-find_package(ZLIB REQUIRED)
-
-
-include_directories(src contrib/eos_portable_archive ${ZLIB_INCLUDE_DIRS} contrib contrib/epee/include contrib/jwt-cpp/include  ${OPENSSL_INCLUDE_DIR} "${CMAKE_BINARY_DIR}/version")
-
 add_definitions(-DSTATICLIB)
 
 if(TESTNET)
@@ -214,9 +208,9 @@ else()
   if(NOT APPLE AND NOT (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     set(RELEASE_FLAGS "${RELEASE_FLAGS} -flto=auto -g3")
   endif()
-  #if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
-  #  set(RELEASE_FLAGS "${RELEASE_FLAGS} -fno-fat-lto-objects")
-  #endif()
+  if(CMAKE_C_COMPILER_ID STREQUAL "GNU" AND NOT MINGW)
+    set(RELEASE_FLAGS "${RELEASE_FLAGS} -fno-fat-lto-objects")
+  endif()
   set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} ${DEBUG_FLAGS}")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${DEBUG_FLAGS}")
   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${RELEASE_FLAGS}")
@@ -248,14 +242,26 @@ set(BOOST_COMPONENTS system filesystem locale thread timer date_time chrono rege
 if(NOT APPLE)
   list(APPEND BOOST_COMPONENTS log)
 endif()
-
-# Find Boost package using Conan
-find_package(Boost REQUIRED COMPONENTS ${BOOST_COMPONENTS})
-
 message(STATUS "Using Boost ${Boost_VERSION} from Conan")
 
-include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
-include_directories(SYSTEM ${PROJECT_SOURCE_DIR}/contrib/ethereum/libethash)
+find_package(miniupnpc REQUIRED)
+find_package(ZLIB REQUIRED)
+find_package(ethash REQUIRED)
+find_package(Boost REQUIRED COMPONENTS ${BOOST_COMPONENTS})
+
+include_directories(src "${CMAKE_BINARY_DIR}/version")
+
+include_directories(SYSTEM
+        ${Boost_INCLUDE_DIRS}
+        ${ZLIB_INCLUDE_DIRS}
+        ${OPENSSL_INCLUDE_DIR}
+        ${PROJECT_SOURCE_DIR}/contrib/ethereum/libethash
+        contrib
+        contrib/epee/include
+        contrib/jwt-cpp/include
+        contrib/eos_portable_archive
+
+)
 
 # Append other needed libraries
 if(MINGW)

@@ -5,6 +5,10 @@
 ._.DS_Store
 Thumbs.db
 ._*
-.idea
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/dictionaries
+.idea/shelf
+.idea/copilot*
 .vs/*
 CMakeUserPresets.json
