@@ -92,7 +92,7 @@ build-deps: conan-profile-detect
 
 configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
-	cmake --preset conan-default -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
+	cmake --preset conan-release -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 
 docs: configure
 	@echo "Building Documentation"
