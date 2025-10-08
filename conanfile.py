@@ -11,11 +11,13 @@ class BlockchainConan(ConanFile):
 
     options = {
         "static": [True, False],
-        "testnet": [True, False]
+        "testnet": [True, False],
+        "ci": [True, False]
     }
     default_options = {
         "static": False,
         "testnet": False,
+        "ci": False,
         "boost/*:without_test": True
     }
 
@@ -29,7 +31,15 @@ class BlockchainConan(ConanFile):
 
     def generate(self):
         tc = CMakeToolchain(self)
-        tc.user_presets_path = False
+
+        # When conan-default / conan-release becomes an issue the blow adds OS, ARCH and Compiler to the preset name
+        # if self.options.__contains__("CI"):
+        #     os_val = str(self.settings.os).lower()
+        #     arch_val = str(self.settings.arch).lower()
+        #     compiler_val = str(self.settings.compiler).lower()
+        #     tc.presets_prefix = f"{os_val}-{arch_val}-{compiler_val}"
+
+        tc.user_presets_path = "ConanPresets.json"
         tc.variables["STATIC"] = self.options.static
         tc.variables["TESTNET"] = self.options.testnet
         # tc.preprocessor_definitions["TESTNET"] = None
@@ -40,8 +50,10 @@ class BlockchainConan(ConanFile):
         deps.generate()
 
     def layout(self):
+
         self.folders.generators = os.path.join("build", str(self.settings.build_type).lower(), "generators")
         self.folders.build = os.path.join("build", str(self.settings.build_type).lower())
+        # self.folders.build_folder_vars = ["settings.os", "settings.arch", "settings.compiler", "settings.build_type"]
 
     def build(self):
         cmake = CMake(self)
