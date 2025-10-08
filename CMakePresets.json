@@ -1,11 +1,10 @@
 {
-  "version": 10,
+  "version": 8,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 23,
     "patch": 0
   },
-  "$comment": "Lethean presets",
   "include": [
     "ConanPresets.json"
 
@@ -22,7 +21,7 @@
       }
     },
     {
-      "name": "windows-default",
+      "name": "windows-defaultss",
       "displayName": "Windows x64 Debug",
       "description": "Sets Ninja generator, compilers, x64 architecture, build and install directory, debug build type",
       "generator": "Ninja",

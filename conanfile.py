@@ -32,12 +32,10 @@ class BlockchainConan(ConanFile):
     def generate(self):
         tc = CMakeToolchain(self)
 
-        # When conan-default / conan-release becomes an issue the blow adds OS, ARCH and Compiler to the preset name
-        # if self.options.__contains__("CI"):
-        #     os_val = str(self.settings.os).lower()
-        #     arch_val = str(self.settings.arch).lower()
-        #     compiler_val = str(self.settings.compiler).lower()
-        #     tc.presets_prefix = f"{os_val}-{arch_val}-{compiler_val}"
+        os_val = str(self.settings.os).lower()
+        # arch_val = str(self.settings.arch).lower()
+        # compiler_val = str(self.settings.compiler).lower()
+        # tc.presets_prefix = f"{os_val}"
 
         tc.user_presets_path = "ConanPresets.json"
         tc.variables["STATIC"] = self.options.static
@@ -50,10 +48,15 @@ class BlockchainConan(ConanFile):
         deps.generate()
 
     def layout(self):
-
-        self.folders.generators = os.path.join("build", str(self.settings.build_type).lower(), "generators")
-        self.folders.build = os.path.join("build", str(self.settings.build_type).lower())
-        # self.folders.build_folder_vars = ["settings.os", "settings.arch", "settings.compiler", "settings.build_type"]
+        if self.settings.compiler == "msvc":
+            # For multi-config, all configurations go into the same "build" folder.
+            self.folders.build = "build/release"
+            self.folders.generators = "build/release/generators"
+        else:
+            # For single-config, we create a subfolder for each build type.
+            build_type_str = str(self.settings.build_type).lower()
+            self.folders.build = os.path.join("build", build_type_str)
+            self.folders.generators = os.path.join(self.folders.build, "generators")
 
     def build(self):
         cmake = CMake(self)
