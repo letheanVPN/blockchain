@@ -10,5 +10,7 @@ Thumbs.db
 .idea/dictionaries
 .idea/shelf
 .idea/copilot*
+.idea/modules.xml
+.idea/*.iml
 .vs/*
 CMakeUserPresets.json

@@ -77,7 +77,7 @@ release: docs build
 	@rm -rf $(CURDIR)/build/packages/_CPack_Packages
 
 build: configure
-	cmake --build $(BUILD_FOLDER) --config=$(BUILD_TYPE) --parallel=$(CPU_CORES)
+	cmake --build --preset conan-release --parallel=$(CPU_CORES)
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
@@ -92,7 +92,7 @@ build-deps: conan-profile-detect
 
 configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
-	cmake -S . -B $(BUILD_FOLDER) -DCMAKE_TOOLCHAIN_FILE=$(BUILD_FOLDER)/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$(BUILD_TYPE) -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
+	cmake --preset conan-release -DSTATIC=$(STATIC) -DTESTNET=$(TESTNET) -DBUILD_VERSION=$(BUILD_VERSION)
 
 docs: configure
 	@echo "Building Documentation"
