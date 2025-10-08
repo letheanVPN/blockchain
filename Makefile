@@ -81,9 +81,9 @@ build: configure
 
 debug: conan-profile-detect
 	@echo "Building profile: debug"
-	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --output-folder=build/debug --build=missing -s build_type=Debug
-	cmake -S . -B build/debug -DCMAKE_TOOLCHAIN_FILE=build/debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
-	cmake --build build/debug --config=Debug --parallel=$(CPU_CORES)
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing -s build_type=Debug
+	cmake -S . -B $(CURDIR)/build/debug -DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/build/debug/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -DTESTNET=$(TESTNET)
+	cmake --build $(CURDIR)/build/debug --config=Debug --parallel=$(CPU_CORES)
 
 
 build-deps: conan-profile-detect
@@ -98,6 +98,7 @@ docs: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=docs --config=Release --parallel=$(CPU_CORES)
 
+# allowing this target to error quietly saves cross brwoser file detection
 get-conan:
 	cmake -P cmake/GetConan.cmake
 	(CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote add conan_build $(CONAN_URL) && \
