@@ -1,6 +1,6 @@
 
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo" OR CMAKE_BUILD_TYPE STREQUAL "MinSizeRel" OR CMAKE_BUILD_TYPE STREQUAL "")
     set(CPACK_PACKAGE_NAME "${package_name}")
     set(CPACK_PACKAGE_VENDOR "${package_vendor}")
     set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${package_description}")
@@ -26,8 +26,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
       #      message(STATUS "Registered CPACK_GENERATOR: productbuild")
         endif ()
     elseif(WIN32)
-      #  set(CPACK_GENERATOR "WIX")
-      #  message(STATUS "Registered CPACK_GENERATOR: WIX")
+#         set(CPACK_GENERATOR "WIX")
+#         message(STATUS "Registered CPACK_GENERATOR: WIX")
 #        set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/windows_icon.ico")
 #        set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/LICENSE.rtf")
 #        set(CPACK_WIX_UPGRADE_GUID "D3F5A9C1-4B2E-4F5A-9C71-123456789ABC") # change once per major version

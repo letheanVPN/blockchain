@@ -19,9 +19,6 @@ BUILD_FOLDER:=build/release
 PRESET_BUILD:=conan-release
 PRESET_CONFIGURE:=conan-release
 
-# -----------------------------------------------------------------
-# Unix‑like systems (Linux, macOS, *BSD, etc.)
-# -----------------------------------------------------------------
 UNAME_S := $(shell uname -s 2>/dev/null || echo Unknown)
 
 ifeq ($(UNAME_S),Linux)
@@ -40,10 +37,10 @@ ifeq ($(filter %BSD,$(UNAME_S)),%BSD)
     CPU_CORES := $(shell sysctl -n hw.ncpu 2>/dev/null || echo 1)
 endif
 
-# -----------------------------------------------------------------
-# Windows (detected by the built‑in $(OS) variable set by GNU make)
-# -----------------------------------------------------------------
 ifeq ($(OS),Windows_NT)
+
+PRESET_CONFIGURE:=conan-default
+
     # Prefer the environment variable that Windows sets for us.
     # It works in both cmd.exe and PowerShell.
     CPU_CORES := $(NUMBER_OF_PROCESSORS)
