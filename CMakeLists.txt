@@ -246,7 +246,6 @@ message(STATUS "Using Boost ${Boost_VERSION} from Conan")
 
 find_package(miniupnpc REQUIRED)
 find_package(ZLIB REQUIRED)
-find_package(ethash REQUIRED)
 find_package(Boost REQUIRED COMPONENTS ${BOOST_COMPONENTS})
 
 include_directories(src "${CMAKE_BINARY_DIR}/version")
