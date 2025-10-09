@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="GitHub Action JSON Schema">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="GitHub Action JSON Schema" />
+              <option name="relativePathToSchema" value="jar://$APPLICATION_PLUGINS_DIR$/vcs-github-IU/lib/vcs-github.jar!/schemas/github-action.json" />
+              <option name="applicationDefined" value="true" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value=".github/actions/**/*.yml" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>
