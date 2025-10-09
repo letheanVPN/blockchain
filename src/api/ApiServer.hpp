@@ -7,7 +7,6 @@
 #include "oatpp-swagger/Resources.hpp"
 
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
-#include "oatpp-swagger/Resources.hpp"
 #include "oatpp-swagger/Model.hpp"
 class ApiServer {
 public:
