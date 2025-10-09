@@ -20,7 +20,6 @@ public:
   {}
 public:
 
-  // oatpp::web::server::api::Endpoints(m_infoController, "/info");
 
   ENDPOINT("GET", "/hello", root) {
     auto dto = MyDto::createShared();
