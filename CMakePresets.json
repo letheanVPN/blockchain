@@ -7,64 +7,63 @@
   },
   "include": [
     "ConanPresets.json"
-
   ],
   "configurePresets": [
     {
-      "name": "default",
-      "displayName": "Default Config",
-      "description": "Default build using Ninja generator",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/default",
-      "cacheVariables": {
-        "TESTNET": "ON"
-      }
-    },
-    {
-      "name": "windows-defaultss",
-      "displayName": "Windows x64 Debug",
-      "description": "Sets Ninja generator, compilers, x64 architecture, build and install directory, debug build type",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "architecture": {
-        "value": "x64",
-        "strategy": "external"
+      "name": "testnet",
+      "binaryDir": "${sourceDir}/build/release",
+      "environment": {
+        "CONAN_HOME": "${sourceDir}/build/sdk"
       },
       "cacheVariables": {
         "TESTNET": "ON",
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/install/${presetName}"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES":"cmake/conan_provider.cmake"
+      }
+    },
+    {
+      "name": "mainnet",
+      "binaryDir": "${sourceDir}/build/release",
+      "environment": {
+        "CONAN_HOME": "${sourceDir}/build/sdk"
       },
-      "vendor": {
-        "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "hostOS": [ "Windows" ]
-        }
-      },
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Windows"
+      "cacheVariables": {
+        "TESTNET": "OFF",
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES":"cmake/conan_provider.cmake"
       }
     }
   ],
   "buildPresets": [
     {
-      "name": "default",
-      "configurePreset": "default"
+      "name": "testnet",
+      "configurePreset": "testnet"
+    },
+    {
+      "name": "mainnet",
+      "configurePreset": "mainnet"
     }
   ],
   "testPresets": [
     {
-      "name": "default",
-      "configurePreset": "default",
+      "name": "mainnet",
+      "configurePreset": "mainnet",
       "output": {"outputOnFailure": true},
       "execution": {"noTestsAction": "error", "stopOnFailure": true}
     }
   ],
   "packagePresets": [
     {
-      "name": "default",
-      "configurePreset": "default",
+      "name": "mainnet",
+      "configurePreset": "mainnet",
+      "generators": [
+        "TGZ",
+        "ZIP"
+      ]
+    },
+    {
+      "name": "testnet",
+      "configurePreset": "testnet",
       "generators": [
         "TGZ",
         "ZIP"
@@ -73,23 +72,36 @@
   ],
   "workflowPresets": [
     {
-      "name": "default",
+      "name": "testnet",
       "steps": [
         {
           "type": "configure",
-          "name": "default"
+          "name": "testnet"
         },
         {
           "type": "build",
-          "name": "default"
-        },
-        {
-          "type": "test",
-          "name": "default"
+          "name": "testnet"
         },
         {
           "type": "package",
-          "name": "default"
+          "name": "testnet"
+        }
+      ]
+    },
+    {
+      "name": "mainnet",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "mainnet"
+        },
+        {
+          "type": "build",
+          "name": "mainnet"
+        },
+        {
+          "type": "package",
+          "name": "mainnet"
         }
       ]
     }

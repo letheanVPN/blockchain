@@ -71,6 +71,12 @@ CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
 
 all: help
 
+testnet:
+	cmake --workflow testnet
+
+mainnet:
+	cmake --workflow mainnet
+
 release: docs build
 	(cd $(BUILD_FOLDER) && cpack)
 	@rm -rf $(CURDIR)/build/packages/_CPack_Packages
@@ -89,18 +95,6 @@ configure: build-deps
 docs: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=docs --config=Release --parallel=$(CPU_CORES)
-
-# allowing this target to error quietly saves cross brwoser file detection
-get-conan:
-	cmake -P cmake/GetConan.cmake
-	(CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote add conan_build $(CONAN_URL) && \
-	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote login conan_build $(CONAN_USER) -p $(CONAN_PASSWORD)) || true
-
-upload-conan-cache:
-	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) upload "*" -r=conan_build --confirm
-
-conan-profile-detect: get-conan
-	cmake -P cmake/ConanProfileSetup.cmake
 
 # Rule for each profile
 $(PROFILES): conan-profile-detect
@@ -143,6 +137,18 @@ test-debug:
 	cmake -S . -B build/test-debug -DCMAKE_TOOLCHAIN_FILE=build/test-debug/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Debug -D BUILD_TESTS=ON
 	cmake --build build/test-debug --config=Debug --parallel=$(CPU_CORES)
 	$(MAKE) test
+
+# allowing this target to error quietly saves cross brwoser file detection
+conan-get:
+	cmake -P cmake/GetConan.cmake
+	(CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote add conan_build $(CONAN_URL) && \
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote login conan_build $(CONAN_USER) -p $(CONAN_PASSWORD)) || true
+
+conan-upload:
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) upload "*" -r=conan_build --confirm
+
+conan-profile-detect: conan-get
+	cmake -P cmake/ConanProfileSetup.cmake
 
 docs-dev: configure
 	@echo "Building Documentation"

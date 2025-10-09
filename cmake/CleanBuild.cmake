@@ -55,4 +55,22 @@ function(selective_clean_build_dir)
     endif()
 endfunction()
 
+function(reset_conan_presets)
+    set(CONAN_PRESETS_FILE "${CMAKE_SOURCE_DIR}/ConanPresets.json")
+
+    set(NEW_CONTENT [[{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+
+    ]
+}]])
+    message(STATUS "Resetting ${CONAN_PRESETS_FILE} to a clean state.")
+    file(WRITE "${CONAN_PRESETS_FILE}" "${NEW_CONTENT}")
+    message(STATUS "${CONAN_PRESETS_FILE} has been successfully reset.")
+endfunction()
+
 selective_clean_build_dir()
+reset_conan_presets()

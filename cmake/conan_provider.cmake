@@ -572,7 +572,7 @@ macro(conan_provide_dependency method package_name)
         endif ()
         if(NOT EXISTS ${CONAN_COMMAND})
             message(STATUS "CMake-Conan: Local conan not found, attempting to download it.")
-            execute_process(COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_LIST_DIR}/GetConan.cmake"
+            execute_process(COMMAND "${CMAKE_COMMAND}" -P "${CMAKE_SOURCE_DIR}/cmake/GetConan.cmake"
                     RESULT_VARIABLE result
                     WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
             if(NOT result EQUAL 0)
