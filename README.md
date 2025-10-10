@@ -9,14 +9,12 @@
 | [XCode](https://developer.apple.com/downloads/) (macOS)                     | 12.3                                       | 14.3           | 15.2                                    |
 | [CMake](https://cmake.org/download/)                                        | 3.26.3                                     | 3.26.3         | 3.31.6                                  |
 
-
 ## Cloning
 
 Be sure to clone the repository properly, with `--recursive` flag, or you'll get angry:
 `git clone --recursive https://github.com/letheanVPN/blockchain.git`
 
 # Building
---------
 
 The project uses a `Makefile` that provides a simple and powerful interface for building. It automatically handles dependency installation with Conan and compilation with CMake.
 
@@ -37,7 +35,6 @@ For most use cases, these two commands are all you need. They handle the entire 
 ## Custom Builds
 
 You can use the `make build` target with variables for more control over the final binaries.
-
 
 ## Creating Release Packages
 
@@ -87,7 +84,15 @@ For advanced use cases, you can override variables in the `Makefile` to customiz
 
 ## Cleaning the Build Directory
 
-You can nuke the build directory with `make clean-build`
+ALWAYS USE `make clean` to clean the build directory, manually deleting the `build/release`, `build/SOME_FOLDER` will cause you issues.
 
-To completely reset the build directory to its cached warm-up state, run `make clean`; 
-the selective clean script can be edited here: `cmake/CleanBuild.cmake`
+Our `make clean` triggers a cmake script that completely resets the build directory &amp; dynamically added CMakePresets to its cached warm-up state,  
+the selective clean script can be edited here: `cmake/CleanBuild.cmake` or directly run from the repo root `cmake -P cmake/CleanBuild.cmake`
+
+You can NUKE the build directory with `make clean-build` which is `rm -rf build`.
+
+If you do manually delete build folders and get CMake errors (if you have compiled anything previously, you will), 
+the ConanPresets.json file has entries in the `include` property, delete them all and try again.
+
+This happens because CMakePresets.json includes ConanPresets.json, that has the list of toolchains to use that gets populated during the CMake config step, 
+when you manually delete a folder, the toolchain is now a broken path, and CMake throws a fatal error.
