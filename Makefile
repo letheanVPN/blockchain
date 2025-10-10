@@ -140,7 +140,7 @@ test-debug:
 
 # allowing this target to error quietly saves cross brwoser file detection
 conan-get:
-	cmake -P cmake/GetConan.cmake
+	cmake -P cmake/ConanGet.cmake
 	(CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote add conan_build $(CONAN_URL) && \
 	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote login conan_build $(CONAN_USER) -p $(CONAN_PASSWORD)) || true
 
