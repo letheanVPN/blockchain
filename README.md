@@ -1,3 +1,11 @@
+# Lethean Network—Ethics, Encoded.
+
+A buildkit for deploying confidential information networks and commerce systems with immutable auditability.
+
+Free for commercial, private, and patent use, self-host or join the community-run network that guarantees participant sovereignty by design.
+
+
+
 [![Discord](https://img.shields.io/discord/379876792003067906?label=discord&logo=discord)](https://discord.gg/pfgT2Kz)
 
 Web2 Website: https://lt.hn/
