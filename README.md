@@ -11,12 +11,21 @@
 
 ## Cloning
 
-Be sure to clone the repository properly, with `--recursive` flag, or you'll get angry:
+Be sure to clone the repository properly, with `--recursive` flag, or you'll get angry:<br/>
 `git clone --recursive https://github.com/letheanVPN/blockchain.git`
 
 # Building
 
-The project uses a `Makefile` that provides a simple and powerful interface for building. It automatically handles dependency installation with Conan and compilation with CMake.
+The project uses a `Makefile` that provides a simple and powerful interface for building.
+It automatically handles dependency installation with Conan and compilation with CMake.
+
+You need CMake and Make installed on your system, other than that you don't need to worry about Python, Conan, Boost, OpenSSL, or any other dependencies.
+
+The final packages are created as they are due to a historical distribution method used in china: USB Stick, CD, DVD, etc.
+
+We use CPack, so our pakages are self-contained, have searchable HTML documentation, and are ready to be installed on any system.
+
+To skip the packing step, use `make build` as defined in the section below for Advanced Build Customization
 
 ## Simple Workflow Builds (Recommended)
 
@@ -31,10 +40,6 @@ For most use cases, these two commands are all you need. They handle the entire 
     ```shell
     make testnet
     ```
-
-## Custom Builds
-
-You can use the `make build` target with variables for more control over the final binaries.
 
 ## Creating Release Packages
 
