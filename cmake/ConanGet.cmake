@@ -1,4 +1,4 @@
-# cmake/GetConan.cmake
+# cmake/ConanGet.cmake
 
 # This module downloads and installs Conan if it's not found.
 

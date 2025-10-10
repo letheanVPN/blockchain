@@ -5,7 +5,7 @@ services:
     build:
       tags:
         - lthn/chain:testnet
-      dockerfile: utils/docker/images/lthn-chain/Dockerfile
+      dockerfile: utils/docker/lthn-chain/Dockerfile
       context: .
       target: chain-service
       args:
