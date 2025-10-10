@@ -115,3 +115,4 @@ the ConanPresets.json file has entries in the `include` property, delete them al
 
 This happens because CMakePresets.json includes ConanPresets.json, that has the list of toolchains to use that gets populated during the CMake config step, 
 when you manually delete a folder, the toolchain is now a broken path, and CMake throws a fatal error.
+

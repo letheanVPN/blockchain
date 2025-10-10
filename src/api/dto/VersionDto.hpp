@@ -15,22 +15,25 @@
 // SPDX‑License‑Identifier: EUPL-1.2
 //
 
-#ifndef DTOs_hpp
-#define DTOs_hpp
+#ifndef VersionDto_hpp
+#define VersionDto_hpp
 
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
-class MyDto : public oatpp::DTO {
+class VersionDto final : public oatpp::DTO
+{
+  DTO_INIT(VersionDto, DTO);
 
-  DTO_INIT(MyDto, DTO);
-
-  DTO_FIELD(String, message);
-
+  DTO_FIELD(String, version);
+  DTO_FIELD(String, version_long);
+  DTO_FIELD(String, major);
+  DTO_FIELD(String, minor);
+  DTO_FIELD(String, revision);
 };
 
 #include OATPP_CODEGEN_END(DTO)
 
-#endif /* DTOs_hpp */
+#endif /* VersionDto_hpp */

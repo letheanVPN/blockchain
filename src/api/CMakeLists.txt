@@ -19,12 +19,17 @@ endif()
 add_library(lthn_api INTERFACE)
 add_library(lthn::api ALIAS lthn_api)
 
-target_include_directories(lthn_api INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+# Add the current directory for API headers and the main src directory for core headers
+target_include_directories(lthn_api INTERFACE 
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}/src
+)
+
 include_directories(${oatpp_INCLUDE_DIRS})
 include_directories(${oatpp-swagger_INCLUDE_DIRS})
-add_executable(lethean-api main.cpp)
+add_executable(lethean-api main.cpp ApiServer.cpp)
 
-target_link_libraries(lethean-api PRIVATE lthn::api PUBLIC oatpp::oatpp oatpp::oatpp-swagger)
+target_link_libraries(lethean-api PRIVATE lthn::api PUBLIC common config oatpp::oatpp oatpp::oatpp-swagger)
 
 add_definitions(-DOATPP_SWAGGER_RES_PATH="${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res")
 #add_subdirectory(tests)
