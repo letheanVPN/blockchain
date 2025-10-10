@@ -1,5 +1,11 @@
 [![Discord](https://img.shields.io/discord/379876792003067906?label=discord&logo=discord)](https://discord.gg/pfgT2Kz)
 
+Web2 Website: https://lt.hn/
+
+Web3 Network Gateway [HNS](https://handshake.org): [https://lthn](https://www.namebase.io/domains/lthn)
+<br/>_(our chain aliases come with a working Web2(`*.lt.hn`)+Web3(`*.lthn`) domain name)_
+
+
 ### Dependencies
 | component / version                                                         | minimum <br>(not recommended but may work) | recommended    | most recent of what we have ever tested |
 |-----------------------------------------------------------------------------|--------------------------------------------|----------------|-----------------------------------------|
@@ -23,7 +29,7 @@ You need CMake and Make installed on your system, other than that you don't need
 
 The final packages are created as they are due to a historical distribution method used in china: USB Stick, CD, DVD, etc.
 
-We use CPack, so our pakages are self-contained, have searchable HTML documentation, and are ready to be installed on any system.
+We use CPack, so our packages are self-contained, have searchable HTML documentation, and are ready to be installed on any system.
 
 To skip the packing step, use `make build` as defined in the section below for Advanced Build Customization
 
