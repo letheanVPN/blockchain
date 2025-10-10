@@ -140,7 +140,7 @@ if(MSVC)
     endforeach()
   endif()
   include_directories(SYSTEM src/platform/msc)
-  configure_file(utils/Directory.Build.props.in ${CMAKE_BINARY_DIR}/Directory.Build.props)
+
 else()
   set(ARCH default CACHE STRING "CPU to build for: -march value or default")
   if("${ARCH}" STREQUAL "default")
