@@ -157,7 +157,7 @@ docs-dev: configure
 clean:
 	@cmake -P cmake/CleanBuild.cmake
 
-clean-build:
+clean-build: clean
 	rm -rf build
 
 tags:
