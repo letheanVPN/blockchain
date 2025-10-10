@@ -26,7 +26,9 @@ class BlockchainConan(ConanFile):
         "boost/1.85.0",
         "openssl/3.2.0",
         "miniupnpc/2.2.5",
-        "jwt-cpp/0.7.1"
+        "jwt-cpp/0.7.1",
+        "oatpp/1.3.0.latest",
+        "oatpp-swagger/1.3.0.latest"
     ]
 
     def generate(self):

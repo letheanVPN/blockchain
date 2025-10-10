@@ -43,7 +43,7 @@ jobs:
           DOCKER_BUILD_SUMMARY: false
           DOCKER_BUILD_RECORD_UPLOAD: false
         with:
-          file: utils/docker/images/lthn-chain/Dockerfile
+          file: utils/docker/lthn-chain/Dockerfile
           context: ${{ github.workspace }}
           push: true
           build-args: |
