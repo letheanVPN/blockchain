@@ -34,7 +34,7 @@ jobs:
 
       - name: install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: sudo apt-get install -y autotools-dev  git build-essential
+        run: sudo apt-get install -y autotools-dev rpm git build-essential
 
       - uses: actions/setup-python@v5
         if: steps.cache.outputs.cache-hit != 'true'

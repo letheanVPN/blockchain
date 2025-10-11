@@ -75,10 +75,12 @@ all: help
 testnet:
 	$(MAKE) configure TESTNET=1
 	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) build .
+	$(MAKE) package
 
 mainnet:
 	$(MAKE) configure TESTNET=0
 	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) build .
+	$(MAKE) package
 
 release: docs build
 	(cd $(BUILD_FOLDER) && cpack)
@@ -90,6 +92,11 @@ build: configure
 build-deps: conan-profile-detect
 	@echo "Build Dependencies: $(BUILD_TYPE) testnet=$(TESTNET)"
 	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) install . --build=missing  -s build_type=$(BUILD_TYPE)
+
+package:
+	@echo "Packaging: $(BUILD_TYPE) testnet=$(TESTNET)"
+	(cd $(BUILD_FOLDER) && cpack)
+	@rm -rf $(CURDIR)/build/packages/_CPack_Packages
 
 configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
