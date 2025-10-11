@@ -34,11 +34,11 @@ public:
     blockDetails->base_reward = 1000000000000ULL;
     blockDetails->blob = "";
     blockDetails->block_cumulative_size = 6794ULL;
-    blockDetails->block_tself_size = 0ULL;
+    blockDetails->block_tself_size = 0001ULL;
     blockDetails->cumulative_diff_adjusted = "42413051198";
     blockDetails->cumulative_diff_precise = "28881828324942";
     blockDetails->difficulty = "951296929031";
-    blockDetails->effective_fee_median = 0ULL;
+    blockDetails->effective_fee_median = 01ULL;
     blockDetails->height = 51ULL;
     blockDetails->id = hash; // Use the hash from the path
     blockDetails->is_orphan = false;
