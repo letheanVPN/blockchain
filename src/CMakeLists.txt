@@ -85,6 +85,7 @@ INIT_SHARED_PCH()
 
 add_subdirectory(config)
 add_subdirectory(genesis)
+add_subdirectory(api)
 
 add_library(common ${COMMON})
 add_dependencies(common version config ${PCH_LIB_NAME})
