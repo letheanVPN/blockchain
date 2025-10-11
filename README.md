@@ -1,5 +1,7 @@
 # Lethean Network—Ethics, Encoded.
 
+> We are building upto a mainnet launch in 2026, documentation written as if mainnet is live.
+
 A buildkit for deploying confidential information networks and commerce systems with immutable auditability.
 
 Free for commercial, private, and patent use, self-host or join the community-run network that guarantees participant sovereignty by design.
@@ -11,7 +13,7 @@ Free for commercial, private, and patent use, self-host or join the community-ru
 Web2 Website: https://lt.hn/
 
 Web3 Network Gateway [HNS](https://handshake.org): [https://lthn](https://www.namebase.io/domains/lthn)
-<br/>_(our chain aliases come with a working Web2(`*.lt.hn`)+Web3(`*.lthn`) domain name)_
+<br/>_(our chain aliases will come with a working Web2(`*.lt.hn`)+Web3(`*.lthn`) domain name)_
 
 
 ### Dependencies
