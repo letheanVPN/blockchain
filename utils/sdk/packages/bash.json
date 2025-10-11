@@ -1,0 +1,9 @@
+{
+  "additionalProperties": {
+    "apiPackage": "lethean-chain-sdk-bash",
+    "generateBashCompletion": true,
+    "generateZshCompletion":  true,
+    "processMarkdown":  true,
+    "scriptName":"lthn-cli"
+  }
+}

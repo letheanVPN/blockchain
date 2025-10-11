@@ -58,16 +58,17 @@ CPU_CORES := $(or $(CPU_CORES),1)
 CPU_CORES := $(shell expr $(CPU_CORES) + 0 2>/dev/null || echo 1)
 CONAN_CPU_COUNT=$(CPU_CORES)
 
-
-PROFILES := $(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
-SORTED_PROFILES := $(sort $(PROFILES))
-CONAN_CACHE := $(CURDIR)/build/sdk
-CONAN_URL:=https://artifacts.host.uk.com/artifactory/api/conan/conan-build
-CONAN_USER:=public
-CONAN_PASSWORD:=Lethean1234
-DEFAULT_CONAN_PROFILE := $(CONAN_CACHE)/profiles/default
-CONAN_EXECUTABLE := $(CURDIR)/build/bin/conan
-CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
+PROFILES 			:=$(patsubst cmake/profiles/%,%,$(wildcard cmake/profiles/*))
+SORTED_PROFILES 	:=$(sort $(PROFILES))
+CONAN_CACHE 		:=$(CURDIR)/build/sdk
+CONAN_URL			:=https://artifacts.host.uk.com/artifactory/api/conan/conan-build
+CONAN_USER			:=public
+CONAN_PASSWORD		:=Lethean1234
+CONAN_EXECUTABLE  	:=$(CURDIR)/build/bin/conan
+CC_DOCKER_FILE	  	?=utils/docker/images/lthn-chain/Dockerfile
+SDK_PACKAGES_JSON	:=$(wildcard utils/sdk/packages/*.json)
+SDK_TARGETS			:=$(patsubst utils/sdk/packages/%.json,%,$(SDK_PACKAGES_JSON))
+SORTED_SDK_TARGETS  :=$(sort $(SDK_TARGETS))
 
 all: help
 
@@ -98,6 +99,9 @@ docs: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=docs --config=Release --parallel=$(CPU_CORES)
 
+sdk:
+	$(MAKE) -C utils/sdk $(filter-out $@,$(MAKECMDGOALS)) PACKAGE_VERSION=$(BUILD_VERSION)
+
 # Rule for each profile
 $(PROFILES): conan-profile-detect
 	@echo "Building profile: $@"
@@ -107,6 +111,12 @@ $(PROFILES): conan-profile-detect
 	(cd $(BUILD_FOLDER) && cpack)
 
 help:
+	@echo "Lethean VPN Blockchain"
+	@echo "======================"
+	@echo "Website: https://lt.hn"
+	@echo "GitHub:  https://github.com/letheanVPN/blockchain/"
+	@echo "Discord: https://discord.lt.hn"
+	@echo ""
 	@echo "Available targets:"
 	@printf "  %-42s %s\n" "make clean" "Clean all build directories"
 	@printf "  %-42s %s\n" "make get-conan" "Download and install conan locally"
@@ -118,12 +128,14 @@ help:
 	@printf "  %-42s %s\n" "make docs-dev" "Runs local doc server, for editing/adding docs"
 	@printf "  %-42s %s\n" "make conan-profile-detect" "Creates host config"
 	@printf "  %-42s %s\n" "make configure" "Runs a cmake configure within conan build flow"
+	@printf "\n  --- Conan Cross-Compilation Profiles ---\n"
 	@$(foreach profile,$(SORTED_PROFILES),printf "  %-42s %s\n" "make $(profile)" "Build the $(profile) profile";)
+	@printf "\n  --- SDK Generation ---\n"
+	@printf "  %-42s %s\n" "make sdk" "Build all SDK packages"
+	@$(foreach sdk,$(SORTED_SDK_TARGETS),printf "  %-42s %s\n" "make sdk $(sdk)" "Build the $(sdk) SDK package";)
+	@printf "\n"
 	@printf "  %-42s %s\n" "make help" "Show this help message"
 
-#
-# Tests
-#
 
 test: test-release
 test-release:
@@ -156,6 +168,9 @@ docs-dev: configure
 	@echo "Building Documentation"
 	cmake --build build/release --target=serve_docs --config=Release
 
+$(SDK_TARGETS):
+	@# This is a proxy target. Handled by the 'sdk' rule.
+
 clean:
 	@cmake -P cmake/CleanBuild.cmake
 
@@ -165,4 +180,4 @@ clean-build: clean
 tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
-.PHONY: all release upload-conan-cache docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect get-conan $(PROFILES)
+.PHONY: all release upload-conan-cache docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect get-conan $(PROFILES) sdk $(SDK_TARGETS)
