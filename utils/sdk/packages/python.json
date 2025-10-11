@@ -1,0 +1,7 @@
+{
+  "additionalProperties": {
+    "packageName": "lthnchainsdk",
+    "projectName": "lthnchainsdk",
+    "packageUrl": "https://github.com/letheanVPN"
+  }
+}

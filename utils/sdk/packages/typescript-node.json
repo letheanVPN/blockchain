@@ -1,0 +1,6 @@
+{
+    "additionalProperties": {
+        "npmName":"@snider/sdk-typescript-node-ts",
+        "supportsES6": true
+    }
+}
