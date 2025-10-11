@@ -21,6 +21,10 @@ class BlockchainConan(ConanFile):
         "boost/*:without_test": True
     }
 
+    tool_requires = [
+        "cmake/3.31.9"
+    ]
+
     requires = [
         "zlib/1.3.1",
         "boost/1.85.0",

@@ -72,10 +72,12 @@ CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
 all: help
 
 testnet:
-	cmake --workflow testnet
+	$(MAKE) configure TESTNET=1
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) build .
 
 mainnet:
-	cmake --workflow mainnet
+	$(MAKE) configure TESTNET=0
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) build .
 
 release: docs build
 	(cd $(BUILD_FOLDER) && cpack)
