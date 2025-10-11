@@ -72,10 +72,12 @@ CC_DOCKER_FILE?=utils/docker/images/lthn-chain/Dockerfile
 all: help
 
 testnet:
-	cmake --workflow testnet
+	$(MAKE) configure TESTNET=1
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) build .
 
 mainnet:
-	cmake --workflow mainnet
+	$(MAKE) configure TESTNET=0
+	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) build .
 
 release: docs build
 	(cd $(BUILD_FOLDER) && cpack)
@@ -140,7 +142,7 @@ test-debug:
 
 # allowing this target to error quietly saves cross brwoser file detection
 conan-get:
-	cmake -P cmake/GetConan.cmake
+	cmake -P cmake/ConanGet.cmake
 	(CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote add conan_build $(CONAN_URL) && \
 	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) remote login conan_build $(CONAN_USER) -p $(CONAN_PASSWORD)) || true
 
@@ -157,7 +159,7 @@ docs-dev: configure
 clean:
 	@cmake -P cmake/CleanBuild.cmake
 
-clean-build:
+clean-build: clean
 	rm -rf build
 
 tags:
