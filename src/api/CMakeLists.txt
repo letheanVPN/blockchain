@@ -27,9 +27,31 @@ target_include_directories(lthn_api INTERFACE
 
 include_directories(${oatpp_INCLUDE_DIRS})
 include_directories(${oatpp-swagger_INCLUDE_DIRS})
-add_executable(lethean-api main.cpp ApiServer.cpp)
 
-target_link_libraries(lethean-api PRIVATE lthn::api PUBLIC common config oatpp::oatpp oatpp::oatpp-swagger)
+# Add P2P and currency_protocol sources directly to the executable, like the main daemon does
+add_executable(lethean-api main.cpp ApiServer.cpp ${P2P} ${CURRENCY_PROTOCOL})
+
+# Explicitly add the project's main src directory to the executable's include paths
+target_include_directories(lethean-api PRIVATE ${CMAKE_SOURCE_DIR}/src)
+
+# Link against the correct, existing library targets
+target_link_libraries(lethean-api 
+    PRIVATE
+        lthn::api
+        rpc
+        stratum
+        currency_core
+        crypto
+        common
+        config
+        ethash
+        oatpp::oatpp 
+        oatpp::oatpp-swagger
+        ${Boost_LIBRARIES}
+        OpenSSL::SSL
+        OpenSSL::Crypto
+        ZLIB::ZLIB
+)
 
 add_definitions(-DOATPP_SWAGGER_RES_PATH="${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res")
 #add_subdirectory(tests)

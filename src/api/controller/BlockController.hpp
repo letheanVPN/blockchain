@@ -2,10 +2,14 @@
 #define BlockController_hpp
 
 #include "../dto/BlockDetailsDto.hpp"
+#include "../dto/TransactionDetailsDto.hpp"
+#include "ApiCoreInfoComponent.hpp"
 
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
+
+#include "rpc/core_rpc_server_commands_defs.h"
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
@@ -13,6 +17,8 @@
  *  Block Controller
  */
 class BlockController : public oatpp::web::server::api::ApiController {
+private:
+  OATPP_COMPONENT(std::shared_ptr<ApiCoreInfoComponent>, m_core_info);
 public:
   BlockController(OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper))
     : oatpp::web::server::api::ApiController(objectMapper)
@@ -24,41 +30,55 @@ public:
     info->addTag("Block");
     info->pathParams["hash"].description = "The hash of the block to retrieve";
     info->addResponse<Object<BlockDetailsDto>>(Status::CODE_200, "application/json");
+    info->addResponse(Status::CODE_404, "text/plain");
+    info->addResponse(Status::CODE_400, "text/plain");
   }
   ENDPOINT("GET", "/block/{hash}", getBlockByHash, PATH(String, hash)) {
-    // TODO: Actually fetch the block from the blockchain core
+    
+    crypto::hash block_hash;
+    if (!epee::string_tools::hex_to_pod(*hash, block_hash)) {
+        return createResponse(Status::CODE_400, "Invalid block hash format");
+    }
 
+    currency::block_rpc_extended_info rpc_details;
+    if (!m_core_info->getCore().get_blockchain_storage().get_main_block_rpc_details(block_hash, rpc_details)) {
+        return createResponse(Status::CODE_404, "Block not found");
+    }
+    
     auto blockDetails = BlockDetailsDto::createShared();
-    blockDetails->actual_timestamp = 1557345925ULL;
-    blockDetails->already_generated_coins = "17517253670000000000";
-    blockDetails->base_reward = 1000000000000ULL;
-    blockDetails->blob = "";
-    blockDetails->block_cumulative_size = 6794ULL;
-    blockDetails->block_tself_size = 0001ULL;
-    blockDetails->cumulative_diff_adjusted = "42413051198";
-    blockDetails->cumulative_diff_precise = "28881828324942";
-    blockDetails->difficulty = "951296929031";
-    blockDetails->effective_fee_median = 01ULL;
-    blockDetails->height = 51ULL;
-    blockDetails->id = hash; // Use the hash from the path
-    blockDetails->is_orphan = false;
-    blockDetails->miner_text_info = "";
-    blockDetails->object_in_json = "";
-    blockDetails->penalty = 0.0f;
-    blockDetails->prev_id = "37fe382c755bb8869e4f5255f2aed6a8fb503e195bb4180b65b8e1450b84cafe";
-    blockDetails->summary_reward = 1001000000000ULL;
-    blockDetails->this_block_fee_median = 1000000000ULL;
-    blockDetails->timestamp = 1557345925ULL;
-    blockDetails->total_fee = 1000000000ULL;
-    blockDetails->total_txs_size = 6794ULL;
-    blockDetails->type = 1U;
+    
+    blockDetails->id = rpc_details.id;
+    blockDetails->height = rpc_details.height;
+    blockDetails->timestamp = rpc_details.timestamp;
+    blockDetails->actual_timestamp = rpc_details.actual_timestamp;
+    blockDetails->difficulty = rpc_details.difficulty;
+    blockDetails->prev_id = rpc_details.prev_id;
+    blockDetails->is_orphan = rpc_details.is_orphan;
+    blockDetails->base_reward = rpc_details.base_reward;
+    blockDetails->summary_reward = rpc_details.summary_reward;
+    blockDetails->total_fee = rpc_details.total_fee;
+    blockDetails->penalty = rpc_details.penalty;
+    blockDetails->already_generated_coins = rpc_details.already_generated_coins;
+    blockDetails->block_cumulative_size = rpc_details.block_cumulative_size;
+    blockDetails->total_txs_size = rpc_details.total_txs_size;
+    blockDetails->cumulative_diff_adjusted = rpc_details.cumulative_diff_adjusted;
+    blockDetails->cumulative_diff_precise = rpc_details.cumulative_diff_precise;
+    blockDetails->blob = rpc_details.blob;
+    blockDetails->miner_text_info = rpc_details.miner_text_info;
+    blockDetails->type = rpc_details.type;
 
-    auto txDetails = TransactionDetailsDto::createShared();
-    txDetails->id = "a6e8da986858e6825fce7a192097e6afae4e889cabe853a9c29b964985b23da8";
-    txDetails->fee = 1000000000ULL;
-    // ... populate other txDetails fields as needed
-
-    blockDetails->transactions_details = {txDetails};
+    auto tx_details_list = oatpp::List<oatpp::Object<TransactionDetailsDto>>::createShared();
+    for(const auto& tx_rpc_info : rpc_details.transactions_details) {
+        auto tx_dto = TransactionDetailsDto::createShared();
+        tx_dto->id = tx_rpc_info.id;
+        tx_dto->fee = tx_rpc_info.fee;
+        tx_dto->amount = tx_rpc_info.amount;
+        tx_dto->blob_size = tx_rpc_info.blob_size;
+        tx_dto->keeper_block = tx_rpc_info.keeper_block;
+        tx_dto->timestamp = tx_rpc_info.timestamp;
+        tx_details_list->push_back(tx_dto);
+    }
+    blockDetails->transactions_details = tx_details_list;
 
     return createDtoResponse(Status::CODE_200, blockDetails);
   }
