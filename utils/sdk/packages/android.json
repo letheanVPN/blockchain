@@ -1,0 +1,9 @@
+{
+  "additionalProperties": {
+    "groupId": "org.lethean.chain",
+    "apiPackage":"org.lethean.chain.android.client",
+    "invokerPackage":"org.lethean.chain.android.client",
+    "artifactId":"org.lethean.chain.android.client",
+    "modelPackage":"org.lethean.chain.android.models"
+  }
+}
