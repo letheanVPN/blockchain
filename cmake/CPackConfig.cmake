@@ -26,8 +26,16 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebI
       #      message(STATUS "Registered CPACK_GENERATOR: productbuild")
         endif ()
     elseif(WIN32)
-#         set(CPACK_GENERATOR "WIX")
-#         message(STATUS "Registered CPACK_GENERATOR: WIX")
+         set(CPACK_GENERATOR "NSIS")
+         set(CPACK_NSIS_MODIFY_PATH ON)
+         set(CPACK_NSIS_HELP_LINK "https://lt.hn/getting-started/chain.html")
+         set(CPACK_NSIS_URL_INFO_ABOUT "https://lt.hn")
+         set(CPACK_NSIS_CONTACT "support@lt.hn")
+         set(CPACK_NSIS_UNINSTALL_NAME "Lethean CLI")
+         set(CPACK_NSIS_BRANDING_TEXT "Lethean Community")
+         set(CPACK_NSIS_MUI_FINISHPAGE_RUN "lethean-testnet-chain-node.exe")
+
+         message(STATUS "Registered CPACK_GENERATOR: Inno exe")
 #        set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/resources/windows_icon.ico")
 #        set(CPACK_WIX_LICENSE_RTF "${CMAKE_SOURCE_DIR}/LICENSE.rtf")
 #        set(CPACK_WIX_UPGRADE_GUID "D3F5A9C1-4B2E-4F5A-9C71-123456789ABC") # change once per major version
