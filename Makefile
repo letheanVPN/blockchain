@@ -96,7 +96,9 @@ build-deps: conan-profile-detect
 package:
 	@echo "Packaging: $(BUILD_TYPE) testnet=$(TESTNET)"
 	(cd $(BUILD_FOLDER) && cpack)
+ifneq ($(OS),Windows_NT)
 	@rm -rf $(CURDIR)/build/packages/_CPack_Packages
+endif
 
 configure: build-deps
 	@echo "Running Configure: $(BUILD_TYPE) testnet=$(TESTNET)"
