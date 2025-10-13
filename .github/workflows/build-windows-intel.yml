@@ -64,6 +64,7 @@ jobs:
             ${{ github.workspace }}/build/bin
           key: ${{ runner.os }}-${{ runner.arch }}-sdk
 
+      - run: choco install nsis.install
       - uses: actions/setup-python@v5
         with:
           python-version: 3.x
