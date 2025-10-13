@@ -1,0 +1,5 @@
+{
+  "additionalProperties": {
+    "packageName":"@snider/sdk-rust"
+  }
+}
