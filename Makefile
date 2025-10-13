@@ -73,12 +73,12 @@ SORTED_SDK_TARGETS  :=$(sort $(SDK_TARGETS))
 all: help
 
 testnet:
-	$(MAKE) configure TESTNET=1
+	$(MAKE) configure TESTNET=1 STATIC=$(STATIC)
 	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) build .
 	$(MAKE) package
 
 mainnet:
-	$(MAKE) configure TESTNET=0
+	$(MAKE) configure TESTNET=0 STATIC=$(STATIC)
 	CONAN_HOME=$(CONAN_CACHE) $(CONAN_EXECUTABLE) build .
 	$(MAKE) package
 
