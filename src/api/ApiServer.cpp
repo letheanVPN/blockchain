@@ -40,7 +40,7 @@ void ApiServer::run() {
          .setContactUrl("https://lt.hn/")
          .setLicenseName("EUPL-1.2")
          .setLicenseUrl("https://joinup.ec.europa.eu/software/page/eupl/licence-eupl")
-         .addServer("http://localhost:8000", "server on localhost");
+         .addServer("http://127.0.0.1:8000", "server on localhost");
 
      return builder.build(); }());
 
