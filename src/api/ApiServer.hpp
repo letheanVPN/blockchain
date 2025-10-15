@@ -10,7 +10,15 @@
 #include "oatpp/core/macro/component.hpp"
 #include "oatpp-swagger/Resources.hpp"
 
+#include "oatpp/network/Server.hpp"
+#include <thread>
+
 class ApiServer {
+private:
+  std::thread m_server_thread;
+  std::shared_ptr<oatpp::network::Server> m_server;
+  
+  void run();
 
 public:
 
@@ -44,7 +52,9 @@ public:
 
   };
 
-  void run();
+  void start();
+  void stop();
+  void wait();
 
 };
 

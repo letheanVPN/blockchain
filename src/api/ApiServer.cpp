@@ -21,11 +21,11 @@ void ApiServer::run() {
   auto infoController = std::make_shared<InfoController>();
   docEndpoints->append(infoController->getEndpoints());
 
-  auto blockController = std::make_shared<BlockController>();
-  docEndpoints->append(blockController->getEndpoints());
+  // auto blockController = std::make_shared<BlockController>();
+  // docEndpoints->append(blockController->getEndpoints());
 
   router->addController(infoController);
-  router->addController(blockController);
+  // router->addController(blockController);
 
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::DocumentInfo>, swaggerDocumentInfo)
   ([]
@@ -55,12 +55,28 @@ void ApiServer::run() {
   OATPP_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, connectionProvider);
 
   /* Create a server which takes provided TCP connections and passes them to the HTTP connection handler */
-  oatpp::network::Server server(connectionProvider, connectionHandler);
+  m_server = std::make_shared<oatpp::network::Server>(connectionProvider, connectionHandler);
 
   /* Print server port */
   OATPP_LOGI("lethean-api", "Server running, API Docs: http://127.0.0.1:%s/swagger/ui",  static_cast<const char*>(connectionProvider->getProperty("port").getData()));
 
   /* Run server */
-  server.run();
+  m_server->run();
   
+}
+
+void ApiServer::start() {
+  m_server_thread = std::thread(&ApiServer::run, this);
+}
+
+void ApiServer::stop() {
+  if (m_server) {
+    m_server->stop();
+  }
+}
+
+void ApiServer::wait() {
+  if (m_server_thread.joinable()) {
+    m_server_thread.join();
+  }
 }
