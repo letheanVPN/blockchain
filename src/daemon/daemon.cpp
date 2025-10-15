@@ -489,7 +489,7 @@ int main(int argc, char* argv[])
   LOG_PRINT_L0("Stopping API server...");
   api_server.stop();
   api_server.wait();
-  LOG_PRINT_L0("API server thread joined.");
+  LOG_PRINT_L0("API server stopped");
 
   //stop other components
   if (stratum_enabled)
