@@ -58,13 +58,14 @@ void ApiServer::run() {
 
      builder
          .setTitle("Lethean Blockchain API")
-         .setDescription("New API layer for Lethean")
+         .setDescription("OpenAPI for Lethean Blockchain")
          .setVersion(PROJECT_VERSION)
          .setContactName("Lethean")
          .setContactUrl("https://lt.hn/")
          .setLicenseName("EUPL-1.2")
          .setLicenseUrl("https://joinup.ec.europa.eu/software/page/eupl/licence-eupl")
-         .addServer("http://127.0.0.1:8000", "server on localhost");
+         .addServer("http://" + ApiServer::m_host + ":" + std::to_string(ApiServer::m_port), "Local Daemon")
+         .addServer("http://seed.lethean.io:36943", "Seed Server");
 
      return builder.build(); }());
 
