@@ -7,6 +7,30 @@
 
 #include <iostream>
 #include "version.h"
+#include "common/command_line.h"
+
+namespace
+{
+  const command_line::arg_descriptor<uint16_t> arg_api_bind_port = {"api-bind-port", "Port for API server to bind to", 36943};
+  const command_line::arg_descriptor<std::string> arg_api_bind_host = {"api-bind-host", "IP/Hostname for API server to bind to", "127.0.0.1"};
+}
+
+uint16_t ApiServer::m_port = 8000;
+std::string ApiServer::m_host = "127.0.0.1";
+
+void ApiServer::init_options(boost::program_options::options_description& desc) {
+  command_line::add_arg(desc, arg_api_bind_port);
+  command_line::add_arg(desc, arg_api_bind_host);
+}
+
+ApiServer::ApiServer(const boost::program_options::variables_map& vm) : m_vm(vm) {
+  if (vm.count(arg_api_bind_port.name)) {
+    m_port = vm[arg_api_bind_port.name].as<uint16_t>();
+  }
+  if (vm.count(arg_api_bind_host.name)) {
+    m_host = vm[arg_api_bind_host.name].as<std::string>();
+  }
+}
 
 void ApiServer::run() {
 

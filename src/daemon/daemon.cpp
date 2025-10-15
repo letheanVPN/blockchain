@@ -201,6 +201,7 @@ int main(int argc, char* argv[])
   bc_services::bc_offers_service::init_options(desc_cmd_sett);
   currency::stratum_server::init_options(desc_cmd_sett);
   tools::db::db_backend_selector::init_options(desc_cmd_sett);
+  ApiServer::init_options(desc_cmd_sett);
 
   po::options_description desc_options("Allowed options");
   desc_options.add(desc_cmd_only).add(desc_cmd_sett);
@@ -469,7 +470,7 @@ int main(int argc, char* argv[])
 
   // Initialize API server
   oatpp::base::Environment::init();
-  ApiServer api_server;
+  ApiServer api_server(vm);
   api_server.start();
 
   // Setup signal handler to gracefully stop the main p2p loop
