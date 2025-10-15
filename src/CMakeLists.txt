@@ -164,7 +164,7 @@ target_link_libraries(currency_core config lmdb mdbx)
 
 add_executable(daemon ${DAEMON} ${P2P} ${CURRENCY_PROTOCOL})
 add_dependencies(daemon version)
-target_link_libraries(daemon  rpc stratum currency_core crypto common miniupnpc::miniupnpc ZLIB::ZLIB ethash ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(daemon  rpc stratum currency_core crypto common miniupnpc::miniupnpc ZLIB::ZLIB ethash lthn::api ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES} OpenSSL::SSL OpenSSL::Crypto)
 ENABLE_SHARED_PCH(daemon DAEMON)
 ENABLE_SHARED_PCH_EXECUTABLE(daemon)
                      
