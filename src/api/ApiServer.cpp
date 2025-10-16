@@ -1,7 +1,23 @@
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; but maintains OSS status,
+// where regional copyright law requires ownership to dictate licence terms.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
+
 #include "ApiServer.hpp"
 #include "controller/ApiCoreInfoComponent.hpp"
-#include "controller/InfoController.hpp"
-#include "controller/BlockController.hpp"
+#include "controller/path/info.hpp"
+#include "controller/path/block.hpp"
+#include "controller/path/block/hash.hpp"
+#include "controller/path/block/id.hpp"
 
 #include "oatpp/network/Server.hpp"
 #include "oatpp-swagger/Controller.hpp"
@@ -49,14 +65,23 @@ void ApiServer::run() {
 
   auto docEndpoints = std::make_shared<oatpp::web::server::api::Endpoints>();
 
+  /* Create and register controllers */
   auto infoController = std::make_shared<InfoController>();
   docEndpoints->append(infoController->getEndpoints());
+  router->addController(infoController);
 
   auto blockController = std::make_shared<BlockController>();
   docEndpoints->append(blockController->getEndpoints());
-
-  router->addController(infoController);
   router->addController(blockController);
+
+  auto blockByHashController = std::make_shared<BlockByHashController>();
+  docEndpoints->append(blockByHashController->getEndpoints());
+  router->addController(blockByHashController);
+
+  auto blockByIdController = std::make_shared<BlockByIdController>();
+  docEndpoints->append(blockByIdController->getEndpoints());
+  router->addController(blockByIdController);
+
 
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::DocumentInfo>, swaggerDocumentInfo)
   ([]

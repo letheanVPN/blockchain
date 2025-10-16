@@ -1,9 +1,23 @@
-#ifndef BlockController_hpp
-#define BlockController_hpp
+// Copyright (c) 2017-2025 Lethean (https://lt.hn)
+//
+// Licensed under the European Union Public Licence (EUPL) version 1.2.
+// You may obtain a copy of the licence at:
+//
+//     https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+//
+// The EUPL is a copyleft licence that is compatible with the MIT/X11
+// licence used by the original projects; but maintains OSS status,
+// where regional copyright law requires ownership to dictate licence terms.
+//
+// SPDX‑License‑Identifier: EUPL-1.2
+//
 
-#include "../dto/BlockDetailsDto.hpp"
-#include "../dto/TransactionDetailsDto.hpp"
-#include "ApiCoreInfoComponent.hpp"
+#ifndef BlockByHashController_hpp
+#define BlockByHashController_hpp
+
+#include "dto/BlockDetailsDto.hpp"
+#include "dto/TransactionDetailsDto.hpp"
+#include "controller/ApiCoreInfoComponent.hpp"
 
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/core/macro/codegen.hpp"
@@ -14,13 +28,13 @@
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 /**
- *  Block Controller
+ *  Block-by-Hash Controller
  */
-class BlockController : public oatpp::web::server::api::ApiController {
+class BlockByHashController : public oatpp::web::server::api::ApiController {
 private:
   OATPP_COMPONENT(std::shared_ptr<ApiCoreInfoComponent>, m_core_info);
 public:
-  BlockController(OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper))
+  explicit BlockByHashController(OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper))
     : oatpp::web::server::api::ApiController(objectMapper)
   {}
 public:
@@ -34,8 +48,9 @@ public:
     info->addResponse(Status::CODE_400, "text/plain");
   }
   ENDPOINT("GET", "/block/{hash}", getBlockByHash, PATH(String, hash)) {
-    
-    crypto::hash block_hash;
+
+    crypto::hash block_hash{};
+
     if (!epee::string_tools::hex_to_pod(*hash, block_hash)) {
         return createResponse(Status::CODE_400, "Invalid block hash format");
     }
@@ -44,9 +59,9 @@ public:
     if (!m_core_info->getCore().get_blockchain_storage().get_main_block_rpc_details(block_hash, rpc_details)) {
         return createResponse(Status::CODE_404, "Block not found");
     }
-    
+
     auto blockDetails = BlockDetailsDto::createShared();
-    
+
     blockDetails->id = rpc_details.id;
     blockDetails->height = rpc_details.height;
     blockDetails->timestamp = rpc_details.timestamp;
@@ -87,4 +102,4 @@ public:
 
 #include OATPP_CODEGEN_END(ApiController)
 
-#endif /* BlockController_hpp */
+#endif /* BlockByHashController_hpp */
