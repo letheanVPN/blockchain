@@ -31,7 +31,15 @@ target_link_libraries(lthn_api PUBLIC
   oatpp::oatpp-swagger
 )
 
-target_compile_definitions(lthn_api PUBLIC -DOATPP_SWAGGER_RES_PATH="${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res")
+# Define path to swagger resources for the installed package.
+# This assumes the executable is in 'bin' and resources are in 'share/lthn_api'.
+target_compile_definitions(lthn_api PUBLIC -DOATPP_SWAGGER_RES_PATH="../share/lthn_api/res")
+
+# Install swagger resources to a conventional location.
+install(DIRECTORY ${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res DESTINATION share/lthn_api)
+
+# Install OpenAPI spec for SDK generation
+install(FILES ${CMAKE_SOURCE_DIR}/utils/sdk/spec/oas-3.0.0.json DESTINATION share/lthn_api)
 
 
 #add_executable(lethean-api main.cpp)
