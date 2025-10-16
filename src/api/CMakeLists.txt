@@ -1,5 +1,5 @@
 if(NOT PROJECT_NAME)
-  project(lethean-api)
+  project(api-server)
 endif()
 
 find_package(oatpp 1.3.0 REQUIRED)
@@ -16,44 +16,43 @@ else()
   message(FATAL_ERROR "Could not find oatpp-swagger")
 endif()
 
-add_library(lthn_api ApiServer.cpp)
-add_library(lthn::api ALIAS lthn_api)
+add_library(api_server ApiServer.cpp)
+add_library(api::server ALIAS api_server)
 
-target_include_directories(lthn_api PUBLIC 
+target_include_directories(api_server PUBLIC 
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/src
   ${oatpp_INCLUDE_DIRS}
   ${oatpp-swagger_INCLUDE_DIRS}
 )
 
-target_link_libraries(lthn_api PUBLIC
+target_link_libraries(api_server PUBLIC
   oatpp::oatpp
   oatpp::oatpp-swagger
 )
 
 # Define path to swagger resources for the installed package.
-# This assumes the executable is in 'bin' and resources are in 'share/lthn_api'.
-target_compile_definitions(lthn_api PUBLIC -DOATPP_SWAGGER_RES_PATH="../share/lthn_api/res")
+# This assumes the executable is in 'bin' and resources are in 'share/api_server'.
+target_compile_definitions(api_server PUBLIC -DOATPP_SWAGGER_RES_PATH="../share/api_server/res")
 
 # Copy resources to build directory for development builds (e.g. running in CLion)
-file(COPY ${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res DESTINATION ${CMAKE_BINARY_DIR}/share/lthn_api)
-file(COPY ${CMAKE_SOURCE_DIR}/utils/sdk/spec/oas-3.0.0.json DESTINATION ${CMAKE_BINARY_DIR}/share/lthn_api)
+file(COPY ${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res DESTINATION ${CMAKE_BINARY_DIR}/share/api_server)
+file(COPY ${CMAKE_SOURCE_DIR}/utils/sdk/spec/oas-3.0.0.json DESTINATION ${CMAKE_BINARY_DIR}/share/api_server)
 
 # Install swagger resources to a conventional location for packaging.
-install(DIRECTORY ${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res DESTINATION share/lthn_api)
+install(DIRECTORY ${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res DESTINATION share/api_server)
 
 # Install OpenAPI spec for SDK generation for packaging.
-install(FILES ${CMAKE_SOURCE_DIR}/utils/sdk/spec/oas-3.0.0.json DESTINATION share/lthn_api)
+install(FILES ${CMAKE_SOURCE_DIR}/utils/sdk/spec/oas-3.0.0.json DESTINATION share/api_server)
 
 
 #add_executable(lethean-api main.cpp)
 #
 #target_include_directories(lethean-api PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
-target_link_libraries(lthn_api
+target_link_libraries(api_server
     PRIVATE
         config
-        lthn::api
         rpc
         stratum
         currency_core
