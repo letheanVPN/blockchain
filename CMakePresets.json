@@ -18,7 +18,7 @@
       "cacheVariables": {
         "TESTNET": "ON",
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES":"cmake/conan_provider.cmake"
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES":"cmake/ConanProvider.cmake"
       }
     },
     {
@@ -30,7 +30,7 @@
       "cacheVariables": {
         "TESTNET": "OFF",
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES":"cmake/conan_provider.cmake"
+        "CMAKE_PROJECT_TOP_LEVEL_INCLUDES":"cmake/ConanProvider.cmake"
       }
     }
   ],

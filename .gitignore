@@ -14,3 +14,4 @@ Thumbs.db
 .idea/*.iml
 .vs/*
 CMakeUserPresets.json
+ConanPresets.json

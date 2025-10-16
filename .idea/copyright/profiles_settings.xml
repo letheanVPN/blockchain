@@ -1,7 +1,8 @@
 <component name="CopyrightManager">
-  <settings default="Lethean">
+  <settings default="LTHN">
     <module2copyright>
-      <element module="All" copyright="Lethean" />
+      <element module="apiserver" copyright="LTHN" />
+      <element module="Project Files" copyright="Lethean" />
     </module2copyright>
   </settings>
 </component>

@@ -18,8 +18,11 @@
 // node.cpp : Defines the entry point for the console application.
 //
 
+#include "ApiServer.hpp"
 #include "include_base_utils.h"
 #include "version.h"
+
+#include "oatpp/core/base/Environment.hpp"
 
 using namespace epee;
 
@@ -56,6 +59,7 @@ BOOST_CLASS_VERSION(nodetool::node_server<currency::t_currency_protocol_handler<
 
 const command_line::arg_descriptor<uint32_t>    arg_rpc_server_threads("rpc-server-threads", "Specify number of RPC server threads. Default: 10", RPC_SERVER_DEFAULT_THREADS_NUM);
 const command_line::arg_descriptor<bool>        arg_do_warp_mode("do-warp-mode", "This option pre-loads and unserialize all data into RAM and provide significant speed increase in RPC-handling, requires 32GB psychical RAM at least(64GB recommended). Might be helpful for production servers(like remote nodes or public nodes for mobile apps).");
+
 
 namespace po = boost::program_options;
 
@@ -183,7 +187,7 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_cmd_sett, command_line::arg_disable_ntp);
 
   command_line::add_arg(desc_cmd_sett, arg_rpc_server_threads);
-  command_line::add_arg(desc_cmd_sett, arg_do_warp_mode); 
+  command_line::add_arg(desc_cmd_sett, arg_do_warp_mode);
 
   arg_market_disable.default_value = true;
   arg_market_disable.use_default = true;
@@ -198,6 +202,7 @@ int main(int argc, char* argv[])
   bc_services::bc_offers_service::init_options(desc_cmd_sett);
   currency::stratum_server::init_options(desc_cmd_sett);
   tools::db::db_backend_selector::init_options(desc_cmd_sett);
+  ApiServer::init_options(desc_cmd_sett);
 
   po::options_description desc_options("Allowed options");
   desc_options.add(desc_cmd_only).add(desc_cmd_sett);
@@ -464,18 +469,31 @@ int main(int argc, char* argv[])
     LOG_PRINT_L0("Stratum server started ok");
   }
 
-  tools::signal_handler::install([&dch, &p2psrv, &stratum_server_ptr] {
-    dch.stop_handling();
+  std::unique_ptr<ApiServer> api_server;
+  api_server = std::make_unique<ApiServer>(vm, &ccore, &p2psrv, &rpc_server);
+  api_server->start();
+
+  // Setup signal handler to gracefully stop the main p2p loop
+  tools::signal_handler::install([&p2psrv] {
+    LOG_PRINT_L0("SIGINT received, stopping p2p net loop...");
     p2psrv.send_stop_signal();
-    if (stratum_server_ptr)
-      stratum_server_ptr->send_stop_signal();
   });
 
   LOG_PRINT_L0("Starting p2p net loop...");
-  p2psrv.run();
-  LOG_PRINT_L0("p2p net loop stopped");
+  p2psrv.run(); // This blocks until the stop signal is received
+  LOG_PRINT_L0("p2p net loop stopped. Starting shutdown...");
 
-  //stop components
+  // Shutdown sequence
+  LOG_PRINT_L0("Stopping command handler...");
+  dch.stop_handling();
+
+  LOG_PRINT_L0("Stopping API server...");
+  api_server->stop();
+  api_server->wait();
+  LOG_PRINT_L0("API server stopped");
+
+
+  //stop other components
   if (stratum_enabled)
   {
     LOG_PRINT_L0("Stopping stratum server...");
@@ -505,6 +523,11 @@ int main(int argc, char* argv[])
   cprotocol.deinit();
   LOG_PRINT_L0("Deinitializing p2p...");
   p2psrv.deinit();
+
+  // LOG_PRINT_L0("Destroying oatpp environment...");
+  // oatpp::base::Environment::destroy();
+  // LOG_PRINT_L0("oatpp environment destroyed.");
+  //
 
   ccore.set_critical_error_handler(nullptr);
   ccore.set_currency_protocol(NULL);
