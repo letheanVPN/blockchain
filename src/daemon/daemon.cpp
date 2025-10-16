@@ -59,7 +59,7 @@ BOOST_CLASS_VERSION(nodetool::node_server<currency::t_currency_protocol_handler<
 
 const command_line::arg_descriptor<uint32_t>    arg_rpc_server_threads("rpc-server-threads", "Specify number of RPC server threads. Default: 10", RPC_SERVER_DEFAULT_THREADS_NUM);
 const command_line::arg_descriptor<bool>        arg_do_warp_mode("do-warp-mode", "This option pre-loads and unserialize all data into RAM and provide significant speed increase in RPC-handling, requires 32GB psychical RAM at least(64GB recommended). Might be helpful for production servers(like remote nodes or public nodes for mobile apps).");
-const command_line::arg_descriptor<bool>        arg_api_enabled("api-enabled", "Enable the API server", true);
+
 
 namespace po = boost::program_options;
 
@@ -187,8 +187,7 @@ int main(int argc, char* argv[])
   command_line::add_arg(desc_cmd_sett, command_line::arg_disable_ntp);
 
   command_line::add_arg(desc_cmd_sett, arg_rpc_server_threads);
-  command_line::add_arg(desc_cmd_sett, arg_do_warp_mode); 
-  command_line::add_arg(desc_cmd_sett, arg_api_enabled);
+  command_line::add_arg(desc_cmd_sett, arg_do_warp_mode);
 
   arg_market_disable.default_value = true;
   arg_market_disable.use_default = true;
@@ -471,13 +470,8 @@ int main(int argc, char* argv[])
   }
 
   std::unique_ptr<ApiServer> api_server;
-  bool api_enabled = command_line::get_arg(vm, arg_api_enabled);
-  if (api_enabled) {
-    // Initialize API server
-    oatpp::base::Environment::init();
-    api_server = std::make_unique<ApiServer>(vm, &ccore, &p2psrv, &rpc_server);
-    api_server->start();
-  }
+  api_server = std::make_unique<ApiServer>(vm, &ccore, &p2psrv, &rpc_server);
+  api_server->start();
 
   // Setup signal handler to gracefully stop the main p2p loop
   tools::signal_handler::install([&p2psrv] {
@@ -493,12 +487,11 @@ int main(int argc, char* argv[])
   LOG_PRINT_L0("Stopping command handler...");
   dch.stop_handling();
 
-  if (api_server) {
-    LOG_PRINT_L0("Stopping API server...");
-    api_server->stop();
-    api_server->wait();
-    LOG_PRINT_L0("API server stopped");
-  }
+  LOG_PRINT_L0("Stopping API server...");
+  api_server->stop();
+  api_server->wait();
+  LOG_PRINT_L0("API server stopped");
+
 
   //stop other components
   if (stratum_enabled)
@@ -531,11 +524,10 @@ int main(int argc, char* argv[])
   LOG_PRINT_L0("Deinitializing p2p...");
   p2psrv.deinit();
 
-  if (api_enabled) {
-    LOG_PRINT_L0("Destroying oatpp environment...");
-    oatpp::base::Environment::destroy();
-    LOG_PRINT_L0("oatpp environment destroyed.");
-  }
+  // LOG_PRINT_L0("Destroying oatpp environment...");
+  // oatpp::base::Environment::destroy();
+  // LOG_PRINT_L0("oatpp environment destroyed.");
+  //
 
   ccore.set_critical_error_handler(nullptr);
   ccore.set_currency_protocol(NULL);
