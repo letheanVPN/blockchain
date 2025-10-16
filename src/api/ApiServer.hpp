@@ -1,8 +1,11 @@
 #ifndef ApiServer_hpp
 #define ApiServer_hpp
 
-#include "currency_core/blockchain_storage.h"
 #include "currency_core/currency_core.h"
+#include "p2p/net_node.h"
+#include "currency_protocol/currency_protocol_handler.h"
+#include "rpc/core_rpc_server.h"
+
 #include "oatpp/web/server/HttpConnectionHandler.hpp"
 #include "oatpp/network/tcp/server/ConnectionProvider.hpp"
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
@@ -14,12 +17,19 @@
 
 namespace po = boost::program_options;
 
+// Define the p2p server type to avoid verbose template syntax
+typedef nodetool::node_server<currency::t_currency_protocol_handler<currency::core>> p2psrv_t;
+
 class ApiServer {
 private:
   std::thread m_server_thread;
   std::shared_ptr<oatpp::network::Server> m_server;
   boost::program_options::variables_map m_vm;
   
+  currency::core* m_ccore;
+  p2psrv_t* m_p2p;
+  currency::core_rpc_server* m_rpc_server;
+
   void run();
 
 public:
@@ -28,7 +38,7 @@ public:
 
   static void init_options(po::options_description& desc);
 
-  ApiServer(const boost::program_options::variables_map& vm);
+  ApiServer(const boost::program_options::variables_map& vm, currency::core* ccore, p2psrv_t* p2p, currency::core_rpc_server* rpc_server);
   
   class Components  {
   public:

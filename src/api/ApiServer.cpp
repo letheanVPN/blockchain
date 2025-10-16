@@ -1,4 +1,5 @@
 #include "ApiServer.hpp"
+#include "controller/ApiCoreInfoComponent.hpp"
 #include "controller/InfoController.hpp"
 #include "controller/BlockController.hpp"
 
@@ -23,7 +24,8 @@ void ApiServer::init_options(boost::program_options::options_description& desc) 
   command_line::add_arg(desc, arg_api_bind_host);
 }
 
-ApiServer::ApiServer(const boost::program_options::variables_map& vm) : m_vm(vm) {
+ApiServer::ApiServer(const boost::program_options::variables_map& vm, currency::core* ccore, p2psrv_t* p2p, currency::core_rpc_server* rpc_server)
+  : m_vm(vm), m_ccore(ccore), m_p2p(p2p), m_rpc_server(rpc_server) {
   if (vm.count(arg_api_bind_port.name)) {
     m_port = vm[arg_api_bind_port.name].as<uint16_t>();
   }
@@ -37,6 +39,11 @@ void ApiServer::run() {
   /* Register Components in scope of run() method */
   Components components;
 
+  OATPP_CREATE_COMPONENT(std::shared_ptr<ApiCoreInfoComponent>, coreInfoComponent)
+  ([this] {
+    return std::make_shared<ApiCoreInfoComponent>(*m_ccore, *m_p2p, *m_rpc_server);
+  }());
+
   /* Get router component */
   OATPP_COMPONENT(std::shared_ptr<oatpp::web::server::HttpRouter>, router);
 
@@ -45,11 +52,11 @@ void ApiServer::run() {
   auto infoController = std::make_shared<InfoController>();
   docEndpoints->append(infoController->getEndpoints());
 
-  // auto blockController = std::make_shared<BlockController>();
-  // docEndpoints->append(blockController->getEndpoints());
+  auto blockController = std::make_shared<BlockController>();
+  docEndpoints->append(blockController->getEndpoints());
 
   router->addController(infoController);
-  // router->addController(blockController);
+  router->addController(blockController);
 
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::DocumentInfo>, swaggerDocumentInfo)
   ([]

@@ -470,7 +470,7 @@ int main(int argc, char* argv[])
 
   // Initialize API server
   oatpp::base::Environment::init();
-  ApiServer api_server(vm);
+  ApiServer api_server(vm, &ccore, &p2psrv, &rpc_server);
   api_server.start();
 
   // Setup signal handler to gracefully stop the main p2p loop

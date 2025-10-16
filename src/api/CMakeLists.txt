@@ -35,10 +35,14 @@ target_link_libraries(lthn_api PUBLIC
 # This assumes the executable is in 'bin' and resources are in 'share/lthn_api'.
 target_compile_definitions(lthn_api PUBLIC -DOATPP_SWAGGER_RES_PATH="../share/lthn_api/res")
 
-# Install swagger resources to a conventional location.
+# Copy resources to build directory for development builds (e.g. running in CLion)
+file(COPY ${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res DESTINATION ${CMAKE_BINARY_DIR}/share/lthn_api)
+file(COPY ${CMAKE_SOURCE_DIR}/utils/sdk/spec/oas-3.0.0.json DESTINATION ${CMAKE_BINARY_DIR}/share/lthn_api)
+
+# Install swagger resources to a conventional location for packaging.
 install(DIRECTORY ${oatpp-swagger_INCLUDE_DIRS}/../bin/oatpp-swagger/res DESTINATION share/lthn_api)
 
-# Install OpenAPI spec for SDK generation
+# Install OpenAPI spec for SDK generation for packaging.
 install(FILES ${CMAKE_SOURCE_DIR}/utils/sdk/spec/oas-3.0.0.json DESTINATION share/lthn_api)
 
 
