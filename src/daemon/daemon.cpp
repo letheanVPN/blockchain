@@ -18,8 +18,11 @@
 // node.cpp : Defines the entry point for the console application.
 //
 
+#include "ApiServer.hpp"
 #include "include_base_utils.h"
 #include "version.h"
+
+#include "oatpp/core/base/Environment.hpp"
 
 using namespace epee;
 
@@ -198,6 +201,7 @@ int main(int argc, char* argv[])
   bc_services::bc_offers_service::init_options(desc_cmd_sett);
   currency::stratum_server::init_options(desc_cmd_sett);
   tools::db::db_backend_selector::init_options(desc_cmd_sett);
+  ApiServer::init_options(desc_cmd_sett);
 
   po::options_description desc_options("Allowed options");
   desc_options.add(desc_cmd_only).add(desc_cmd_sett);
@@ -464,18 +468,31 @@ int main(int argc, char* argv[])
     LOG_PRINT_L0("Stratum server started ok");
   }
 
-  tools::signal_handler::install([&dch, &p2psrv, &stratum_server_ptr] {
-    dch.stop_handling();
+  // Initialize API server
+  oatpp::base::Environment::init();
+  ApiServer api_server(vm, &ccore, &p2psrv, &rpc_server);
+  api_server.start();
+
+  // Setup signal handler to gracefully stop the main p2p loop
+  tools::signal_handler::install([&p2psrv] {
+    LOG_PRINT_L0("SIGINT received, stopping p2p net loop...");
     p2psrv.send_stop_signal();
-    if (stratum_server_ptr)
-      stratum_server_ptr->send_stop_signal();
   });
 
   LOG_PRINT_L0("Starting p2p net loop...");
-  p2psrv.run();
-  LOG_PRINT_L0("p2p net loop stopped");
+  p2psrv.run(); // This blocks until the stop signal is received
+  LOG_PRINT_L0("p2p net loop stopped. Starting shutdown...");
 
-  //stop components
+  // Shutdown sequence
+  LOG_PRINT_L0("Stopping command handler...");
+  dch.stop_handling();
+
+  LOG_PRINT_L0("Stopping API server...");
+  api_server.stop();
+  api_server.wait();
+  LOG_PRINT_L0("API server stopped");
+
+  //stop other components
   if (stratum_enabled)
   {
     LOG_PRINT_L0("Stopping stratum server...");
@@ -505,6 +522,10 @@ int main(int argc, char* argv[])
   cprotocol.deinit();
   LOG_PRINT_L0("Deinitializing p2p...");
   p2psrv.deinit();
+
+  LOG_PRINT_L0("Destroying oatpp environment...");
+  oatpp::base::Environment::destroy();
+  LOG_PRINT_L0("oatpp environment destroyed.");
 
   ccore.set_critical_error_handler(nullptr);
   ccore.set_currency_protocol(NULL);
