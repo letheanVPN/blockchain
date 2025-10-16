@@ -132,14 +132,12 @@ void ApiServer::run() {
 }
 
 void ApiServer::start() {
-  oatpp::base::Environment::init();
   m_server_thread = std::thread(&ApiServer::run, this);
 }
 
 void ApiServer::stop() {
   if (m_server) {
     m_server->stop();
-    oatpp::base::Environment::destroy();
   }
 }
 

@@ -470,6 +470,7 @@ int main(int argc, char* argv[])
   }
 
   std::unique_ptr<ApiServer> api_server;
+    oatpp::base::Environment::init();
   api_server = std::make_unique<ApiServer>(vm, &ccore, &p2psrv, &rpc_server);
   api_server->start();
 
@@ -525,7 +526,7 @@ int main(int argc, char* argv[])
   p2psrv.deinit();
 
   // LOG_PRINT_L0("Destroying oatpp environment...");
-  // oatpp::base::Environment::destroy();
+  oatpp::base::Environment::destroy();
   // LOG_PRINT_L0("oatpp environment destroyed.");
   //
 
