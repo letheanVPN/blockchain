@@ -12,8 +12,8 @@
 // SPDX‑License‑Identifier: EUPL-1.2
 //
 
-#ifndef ApiCoreInfoComponent_hpp
-#define ApiCoreInfoComponent_hpp
+#ifndef ApiCoreInfo_hpp
+#define ApiCoreInfo_hpp
 
 #include "currency_core/currency_core.h"
 #include "p2p/net_node.h"
@@ -24,14 +24,14 @@
 typedef nodetool::node_server<currency::t_currency_protocol_handler<currency::core>> p2psrv_t;
 
 // A simple holder for core blockchain components that can be injected into controllers.
-class ApiCoreInfoComponent {
+class ApiCoreInfo {
 private:
   currency::core& m_core;
   p2psrv_t& m_p2p;
   currency::core_rpc_server& m_rpc_server;
 
 public:
-  ApiCoreInfoComponent(currency::core& core, p2psrv_t& p2p, currency::core_rpc_server& rpc_server)
+  ApiCoreInfo(currency::core& core, p2psrv_t& p2p, currency::core_rpc_server& rpc_server)
     : m_core(core), m_p2p(p2p), m_rpc_server(rpc_server)
   {}
 
@@ -40,4 +40,4 @@ public:
   currency::core_rpc_server& getRpcServer() { return m_rpc_server; }
 };
 
-#endif /* ApiCoreInfoComponent_hpp */
+#endif /* ApiCoreInfo_hpp */

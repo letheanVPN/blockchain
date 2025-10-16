@@ -13,15 +13,15 @@
 //
 
 #include "ApiServer.hpp"
-#include "controller/ApiCoreInfoComponent.hpp"
+#include "controller/ApiCoreInfo.hpp"
 #include "controller/path/info.hpp"
 #include "controller/path/block.hpp"
 #include "controller/path/block/hash.hpp"
 #include "controller/path/block/id.hpp"
+#include "controller/path/info/version.hpp"
 
 #include "oatpp/network/Server.hpp"
 #include "oatpp-swagger/Controller.hpp"
-
 #include <iostream>
 #include "version.h"
 #include "common/command_line.h"
@@ -55,9 +55,9 @@ void ApiServer::run() {
   /* Register Components in scope of run() method */
   Components components;
 
-  OATPP_CREATE_COMPONENT(std::shared_ptr<ApiCoreInfoComponent>, coreInfoComponent)
+  OATPP_CREATE_COMPONENT(std::shared_ptr<ApiCoreInfo>, coreInfoComponent)
   ([this] {
-    return std::make_shared<ApiCoreInfoComponent>(*m_ccore, *m_p2p, *m_rpc_server);
+    return std::make_shared<ApiCoreInfo>(*m_ccore, *m_p2p, *m_rpc_server);
   }());
 
   /* Get router component */
@@ -65,10 +65,19 @@ void ApiServer::run() {
 
   auto docEndpoints = std::make_shared<oatpp::web::server::api::Endpoints>();
 
-  /* Create and register controllers */
+  /*
+   * Create and register controllers, this list will get VERY large, but, it has to be this way as oatpp creates a
+   * static routing file before compile time, can't dynamically add controllers, or, be smart AND also have project code awareness
+   * by this list being large, it allows for per endpoint code separation;
+   * any PR that tries to reduce this, MUST have unit tests to prove it works, no exceptions.
+   */
   auto infoController = std::make_shared<InfoController>();
   docEndpoints->append(infoController->getEndpoints());
   router->addController(infoController);
+
+  auto infoVersionController = std::make_shared<InfoVersionController>();
+  docEndpoints->append(infoVersionController->getEndpoints());
+  router->addController(infoVersionController);
 
   auto blockController = std::make_shared<BlockController>();
   docEndpoints->append(blockController->getEndpoints());
