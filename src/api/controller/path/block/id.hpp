@@ -15,9 +15,9 @@
 #ifndef BlockByIdController_hpp
 #define BlockByIdController_hpp
 
-#include "dto/BlockDetailsDto.hpp"
-#include "dto/TransactionDetailsDto.hpp"
-#include "controller/ApiCoreInfoComponent.hpp"
+#include "modal/block/details.hpp"
+#include "modal/transaction/details.hpp"
+#include "controller/ApiCoreInfo.hpp"
 
 #include "oatpp/web/server/api/ApiController.hpp"
 #include "oatpp/core/macro/codegen.hpp"
@@ -32,7 +32,7 @@
  */
 class BlockByIdController : public oatpp::web::server::api::ApiController {
 private:
-  OATPP_COMPONENT(std::shared_ptr<ApiCoreInfoComponent>, m_core_info);
+  OATPP_COMPONENT(std::shared_ptr<ApiCoreInfo>, m_core_info);
 public:
   explicit BlockByIdController(OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper))
     : oatpp::web::server::api::ApiController(objectMapper)
@@ -43,7 +43,7 @@ public:
     info->summary = "Get a block by its ID (height)";
     info->addTag("Block");
     info->pathParams["id"].description = "The ID (height) of the block to retrieve";
-    info->addResponse<Object<BlockDetailsDto>>(Status::CODE_200, "application/json");
+    info->addResponse<Object<BlockDetailsModel>>(Status::CODE_200, "application/json");
     info->addResponse(Status::CODE_404, "text/plain");
   }
   ENDPOINT("GET", "/block/id/{id}", getBlockById, PATH(UInt64, id)) {
@@ -53,7 +53,7 @@ public:
         return createResponse(Status::CODE_404, "Block not found");
     }
 
-    auto blockDetails = BlockDetailsDto::createShared();
+    auto blockDetails = BlockDetailsModel::createShared();
 
     blockDetails->id = rpc_details.id;
     blockDetails->height = rpc_details.height;
@@ -75,16 +75,16 @@ public:
     blockDetails->miner_text_info = rpc_details.miner_text_info;
     blockDetails->type = rpc_details.type;
 
-    auto tx_details_list = oatpp::List<oatpp::Object<TransactionDetailsDto>>::createShared();
+    auto tx_details_list = oatpp::List<oatpp::Object<TransactionDetailsModel>>::createShared();
     for(const auto& tx_rpc_info : rpc_details.transactions_details) {
-        auto tx_dto = TransactionDetailsDto::createShared();
-        tx_dto->id = tx_rpc_info.id;
-        tx_dto->fee = tx_rpc_info.fee;
-        tx_dto->amount = tx_rpc_info.amount;
-        tx_dto->blob_size = tx_rpc_info.blob_size;
-        tx_dto->keeper_block = tx_rpc_info.keeper_block;
-        tx_dto->timestamp = tx_rpc_info.timestamp;
-        tx_details_list->push_back(tx_dto);
+        auto tx_model = TransactionDetailsModel::createShared();
+        tx_model->id = tx_rpc_info.id;
+        tx_model->fee = tx_rpc_info.fee;
+        tx_model->amount = tx_rpc_info.amount;
+        tx_model->blob_size = tx_rpc_info.blob_size;
+        tx_model->keeper_block = tx_rpc_info.keeper_block;
+        tx_model->timestamp = tx_rpc_info.timestamp;
+        tx_details_list->push_back(tx_model);
     }
     blockDetails->transactions_details = tx_details_list;
 

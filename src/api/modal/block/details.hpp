@@ -12,20 +12,20 @@
 // SPDX‑License‑Identifier: EUPL-1.2
 //
 
-#ifndef BlockDetailsDto_hpp
-#define BlockDetailsDto_hpp
+#ifndef BlockDetailsModel_hpp
+#define BlockDetailsModel_hpp
 
-#include "TransactionDetailsDto.hpp"
+#include "../transaction/details.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
 
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 /**
- *  DTO for detailed block information.
+ *  Model for detailed block information.
  */
-class BlockDetailsDto : public oatpp::DTO {
-  DTO_INIT(BlockDetailsDto, DTO);
+class BlockDetailsModel : public oatpp::DTO {
+  DTO_INIT(BlockDetailsModel, DTO);
 
   DTO_FIELD(UInt64, actual_timestamp, "actual_timestamp");
   DTO_FIELD(String, already_generated_coins, "already_generated_coins");
@@ -50,10 +50,10 @@ class BlockDetailsDto : public oatpp::DTO {
   DTO_FIELD(UInt64, timestamp, "timestamp");
   DTO_FIELD(UInt64, total_fee, "total_fee");
   DTO_FIELD(UInt64, total_txs_size, "total_txs_size");
-  DTO_FIELD(List<Object<TransactionDetailsDto>>, transactions_details, "transactions_details");
+  DTO_FIELD(List<Object<TransactionDetailsModel>>, transactions_details, "transactions_details");
   DTO_FIELD(UInt32, type, "type");
 };
 
 #include OATPP_CODEGEN_END(DTO)
 
-#endif /* BlockDetailsDto_hpp */
+#endif /* BlockDetailsModel_hpp */

@@ -12,20 +12,46 @@
 // SPDX‑License‑Identifier: EUPL-1.2
 //
 
-ENDPOINT_INFO(version)
-{
-  info->addTag("Info");
-  info->summary     = "Get API version";
-  info->description = "Returns the current version of the API.";
-  info->addResponse<Object<VersionDto>>(Status::CODE_200, "application/json");
-}
-ENDPOINT("GET", "/info/version", version)
-{
-  auto dto          = VersionDto::createShared();
-  dto->version      = PROJECT_VERSION;
-  dto->version_long = PROJECT_VERSION_LONG;
-  dto->major        = PROJECT_MAJOR_VERSION;
-  dto->minor        = PROJECT_MINOR_VERSION;
-  dto->revision     = PROJECT_REVISION;
-  return createDtoResponse(Status::CODE_200, dto);
-}
+#ifndef InfoVersionController_hpp
+#define InfoVersionController_hpp
+
+#include "oatpp/web/server/api/ApiController.hpp"
+#include "oatpp/core/macro/codegen.hpp"
+#include "version.h"
+#include "modal/meta/version.hpp"
+
+#include OATPP_CODEGEN_BEGIN(ApiController)
+
+/**
+ *  Version Controller
+ */
+class InfoVersionController : public oatpp::web::server::api::ApiController {
+public:
+  explicit InfoVersionController(OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper))
+    : oatpp::web::server::api::ApiController(objectMapper)
+  {}
+public:
+
+  ENDPOINT_INFO(version)
+  {
+    info->addTag("Info");
+    info->summary     = "Get API version";
+    info->description = "Returns the current version of the API.";
+    info->addResponse<Object<VersionModel>>(Status::CODE_200, "application/json");
+  }
+  ENDPOINT("GET", "/info/version", version)
+  {
+    auto model          = VersionModel::createShared();
+    model->version      = PROJECT_VERSION;
+    model->version_long = PROJECT_VERSION_LONG;
+    model->major        = PROJECT_MAJOR_VERSION;
+    model->minor        = PROJECT_MINOR_VERSION;
+    model->revision     = PROJECT_REVISION;
+    return createDtoResponse(Status::CODE_200, model);
+  }
+
+};
+
+#include OATPP_CODEGEN_END(ApiController)
+
+#endif /* InfoVersionController_hpp */

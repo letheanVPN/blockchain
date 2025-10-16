@@ -12,8 +12,8 @@
 // SPDX‑License‑Identifier: EUPL-1.2
 //
 
-#ifndef TransactionDetailsDto_hpp
-#define TransactionDetailsDto_hpp
+#ifndef TransactionDetailsModel_hpp
+#define TransactionDetailsModel_hpp
 
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
@@ -21,30 +21,30 @@
 #include OATPP_CODEGEN_BEGIN(DTO)
 
 /**
- *  DTO for transaction attachments.
+ *  Model for transaction attachments.
  */
-class TransactionAttachmentDto : public oatpp::DTO {
-  DTO_INIT(TransactionAttachmentDto, DTO);
+class TransactionAttachmentModel : public oatpp::DTO {
+  DTO_INIT(TransactionAttachmentModel, DTO);
   DTO_FIELD(String, type, "type");
   DTO_FIELD(String, short_view, "short_view");
   DTO_FIELD(String, details_view, "details_view");
 };
 
 /**
- *  DTO for transaction extra data.
+ *  Model for transaction extra data.
  */
-class TransactionExtraDto : public oatpp::DTO {
-  DTO_INIT(TransactionExtraDto, DTO);
+class TransactionExtraModel : public oatpp::DTO {
+  DTO_INIT(TransactionExtraModel, DTO);
   DTO_FIELD(String, type, "type");
   DTO_FIELD(String, short_view, "short_view");
   DTO_FIELD(String, details_view, "details_view");
 };
 
 /**
- *  DTO for transaction inputs.
+ *  Model for transaction inputs.
  */
-class TransactionInputDto : public oatpp::DTO {
-  DTO_INIT(TransactionInputDto, DTO);
+class TransactionInputModel : public oatpp::DTO {
+  DTO_INIT(TransactionInputModel, DTO);
   DTO_FIELD(UInt64, amount, "amount");
   DTO_FIELD(Vector<UInt64>, global_indexes, "global_indexes");
   DTO_FIELD(String, htlc_origin, "htlc_origin");
@@ -53,10 +53,10 @@ class TransactionInputDto : public oatpp::DTO {
 };
 
 /**
- *  DTO for transaction outputs.
+ *  Model for transaction outputs.
  */
-class TransactionOutputDto : public oatpp::DTO {
-  DTO_INIT(TransactionOutputDto, DTO);
+class TransactionOutputModel : public oatpp::DTO {
+  DTO_INIT(TransactionOutputModel, DTO);
   DTO_FIELD(UInt64, amount, "amount");
   DTO_FIELD(UInt64, global_index, "global_index");
   DTO_FIELD(Boolean, is_spent, "is_spent");
@@ -65,25 +65,25 @@ class TransactionOutputDto : public oatpp::DTO {
 };
 
 /**
- *  DTO for detailed transaction information.
+ *  Model for detailed transaction information.
  */
-class TransactionDetailsDto : public oatpp::DTO {
-  DTO_INIT(TransactionDetailsDto, DTO);
+class TransactionDetailsModel : public oatpp::DTO {
+  DTO_INIT(TransactionDetailsModel, DTO);
   DTO_FIELD(UInt64, amount, "amount");
-  DTO_FIELD(List<Object<TransactionAttachmentDto>>, attachments, "attachments");
+  DTO_FIELD(List<Object<TransactionAttachmentModel>>, attachments, "attachments");
   DTO_FIELD(String, blob, "blob");
   DTO_FIELD(UInt64, blob_size, "blob_size");
-  DTO_FIELD(List<Object<TransactionExtraDto>>, extra, "extra");
+  DTO_FIELD(List<Object<TransactionExtraModel>>, extra, "extra");
   DTO_FIELD(UInt64, fee, "fee");
   DTO_FIELD(String, id, "id");
-  DTO_FIELD(List<Object<TransactionInputDto>>, ins, "ins");
+  DTO_FIELD(List<Object<TransactionInputModel>>, ins, "ins");
   DTO_FIELD(Int64, keeper_block, "keeper_block");
   DTO_FIELD(String, object_in_json, "object_in_json");
-  DTO_FIELD(List<Object<TransactionOutputDto>>, outs, "outs");
+  DTO_FIELD(List<Object<TransactionOutputModel>>, outs, "outs");
   DTO_FIELD(String, pub_key, "pub_key");
   DTO_FIELD(UInt64, timestamp, "timestamp");
 };
 
 #include OATPP_CODEGEN_END(DTO)
 
-#endif /* TransactionDetailsDto_hpp */
+#endif /* TransactionDetailsModel_hpp */
