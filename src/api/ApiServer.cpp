@@ -22,7 +22,6 @@
 
 #include "oatpp/network/Server.hpp"
 #include "oatpp-swagger/Controller.hpp"
-#include <iostream>
 #include "version.h"
 #include "common/command_line.h"
 
@@ -135,7 +134,8 @@ void ApiServer::start() {
   m_server_thread = std::thread(&ApiServer::run, this);
 }
 
-void ApiServer::stop() {
+void ApiServer::stop() const
+{
   if (m_server) {
     m_server->stop();
   }

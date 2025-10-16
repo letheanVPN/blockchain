@@ -83,7 +83,7 @@ public:
   };
 
   void start();
-  void stop();
+  void stop() const;
   void wait();
 
 };
