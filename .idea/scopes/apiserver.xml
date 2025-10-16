@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="apiserver" pattern="file[blockchain]:src/api//*" />
+</component>

@@ -34,7 +34,7 @@ jobs:
 
       - name: install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
-        run: sudo apt-get install -y autotools-dev  git build-essential
+        run: sudo apt-get install -y autotools-dev rpm git build-essential
 
       - uses: actions/setup-python@v5
         if: steps.cache.outputs.cache-hit != 'true'
@@ -79,7 +79,7 @@ jobs:
       - run: pip install mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-git-committers-plugin-2 mkdocs-git-authors-plugin "mkdocs-material[imaging]"
 
       - name: Compile Release
-        run: make release CPU_CORES=4 TESTNET=${{ inputs.chain-network == 'testnet' && '1' || '0' }}
+        run: make ${{ inputs.chain-network }}
 
       - name: CLI Artifacts
         uses: ./.github/actions/upload-artifacts
