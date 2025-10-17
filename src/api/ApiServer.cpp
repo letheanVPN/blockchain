@@ -18,6 +18,8 @@
 #include "controller/path/block.hpp"
 #include "controller/path/block/identifier.hpp"
 #include "controller/path/block/height.hpp"
+#include "controller/path/block/template.hpp"
+#include "controller/path/block/submit.hpp"
 #include "controller/path/info/version.hpp"
 
 #include "oatpp/network/Server.hpp"
@@ -81,6 +83,14 @@ void ApiServer::run() {
   auto blockController = std::make_shared<BlockController>();
   docEndpoints->append(blockController->getEndpoints());
   router->addController(blockController);
+
+  auto blockTemplateController = std::make_shared<BlockTemplateController>();
+  docEndpoints->append(blockTemplateController->getEndpoints());
+  router->addController(blockTemplateController);
+
+  auto blockSubmitController = std::make_shared<BlockSubmitController>();
+  docEndpoints->append(blockSubmitController->getEndpoints());
+  router->addController(blockSubmitController);
 
   auto blockHeightController = std::make_shared<BlockHeightController>();
   docEndpoints->append(blockHeightController->getEndpoints());
