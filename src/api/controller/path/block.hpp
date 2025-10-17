@@ -24,61 +24,21 @@
 #include "oatpp/parser/json/mapping/ObjectMapper.hpp"
 
 #include "rpc/core_rpc_server_commands_defs.h"
-#include <string> // For std::string and std::stoull
+#include <string>
 
 #include OATPP_CODEGEN_BEGIN(ApiController)
 
 /**
  *  Block Controller
- *  Acts as a proxy to fetch blocks by hash or by height (ID).
+ *  Retrieves one or more blocks with optional pagination.
  */
 class BlockController : public oatpp::web::server::api::ApiController {
 private:
   OATPP_COMPONENT(std::shared_ptr<ApiCoreInfo>, m_core_info);
-public:
-  explicit BlockController(OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper))
-    : oatpp::web::server::api::ApiController(objectMapper)
-  {}
-public:
 
-  ENDPOINT_INFO(getBlock) {
-    info->summary = "Get a block by its hash or height (ID)";
-    info->addTag("Block");
-    info->pathParams["identifier"].description = "The hash (hex string) or height (integer) of the block to retrieve.";
-    info->addResponse<Object<BlockDetailsModel>>(Status::CODE_200, "application/json");
-    info->addResponse(Status::CODE_404, "text/plain");
-    info->addResponse(Status::CODE_400, "text/plain");
-  }
-  ENDPOINT("GET", "/block/{identifier}", getBlock, PATH(String, identifier)) {
-
-    currency::block_rpc_extended_info rpc_details;
-    bool block_found = false;
-
-    // Check if the identifier consists only of digits
-    if (identifier->find_first_not_of("0123456789") == std::string::npos) {
-        // It's a numeric ID (height)
-        try {
-            uint64_t height = std::stoull(identifier->c_str());
-            block_found = m_core_info->getCore().get_blockchain_storage().get_main_block_rpc_details(height, rpc_details);
-        } catch (const std::exception& e) {
-            return createResponse(Status::CODE_400, "Invalid block height format");
-        }
-    } else {
-        // It's a hash
-        crypto::hash block_hash{};
-        if (!epee::string_tools::hex_to_pod(*identifier, block_hash)) {
-            return createResponse(Status::CODE_400, "Invalid block hash format");
-        }
-        block_found = m_core_info->getCore().get_blockchain_storage().get_main_block_rpc_details(block_hash, rpc_details);
-    }
-
-    if (!block_found) {
-        return createResponse(Status::CODE_404, "Block not found");
-    }
-
-    // Common logic to populate the DTO
+  // Helper function to populate a block details model from RPC details
+  oatpp::Object<BlockDetailsModel> populateBlockDetailsModel(const currency::block_rpc_extended_info& rpc_details) {
     auto blockDetails = BlockDetailsModel::createShared();
-
     blockDetails->id = rpc_details.id;
     blockDetails->height = rpc_details.height;
     blockDetails->timestamp = rpc_details.timestamp;
@@ -111,8 +71,99 @@ public:
         tx_details_list->push_back(tx_model);
     }
     blockDetails->transactions_details = tx_details_list;
+    return blockDetails;
+  }
 
-    return createDtoResponse(Status::CODE_200, blockDetails);
+public:
+  explicit BlockController(OATPP_COMPONENT(std::shared_ptr<oatpp::data::mapping::ObjectMapper>, objectMapper))
+    : oatpp::web::server::api::ApiController(objectMapper)
+  {}
+public:
+
+  ENDPOINT_INFO(getBlocks) {
+    info->summary = "Get one or more blocks, with optional pagination.";
+    info->addTag("Block");
+    info->queryParams["limit"].description = "Number of blocks to retrieve. Default is 1. If limit is 1, a single block object is returned. Otherwise, a list of blocks is returned.";
+    info->queryParams["offset"].description = "Number of blocks to skip from the start height. Default is 0.";
+    info->queryParams["start"].description = "The starting block height. If not provided, the current top block height is used.";
+    info->addResponse<Object<BlockDetailsModel>>(Status::CODE_200, "application/json", "A single block object.");
+    info->addResponse<List<Object<BlockDetailsModel>>>(Status::CODE_200, "application/json", "A list of block objects.");
+    info->addResponse(Status::CODE_404, "text/plain");
+    info->addResponse(Status::CODE_400, "text/plain");
+  }
+  ENDPOINT("GET", "/block", getBlocks, QUERIES(QueryParams, queryParams)) {
+    const auto limitStr = queryParams.get("limit");
+    const auto offsetStr = queryParams.get("offset");
+    const auto startStr = queryParams.get("start");
+
+    uint64_t limit = 1;
+    if (limitStr) {
+        try {
+            limit = std::stoull(limitStr->c_str());
+        } catch (const std::exception& e) {
+            return createResponse(Status::CODE_400, "Invalid 'limit' parameter");
+        }
+    }
+
+    uint64_t offset = 0;
+    if (offsetStr) {
+        try {
+            offset = std::stoull(offsetStr->c_str());
+        } catch (const std::exception& e) {
+            return createResponse(Status::CODE_400, "Invalid 'offset' parameter");
+        }
+    }
+
+    uint64_t start_height;
+    if (startStr) {
+        try {
+            start_height = std::stoull(startStr->c_str());
+        } catch (const std::exception& e) {
+            return createResponse(Status::CODE_400, "Invalid 'start' parameter");
+        }
+    } else {
+        start_height = m_core_info->getCore().get_blockchain_storage().get_current_blockchain_size() - 1;
+    }
+    
+    if (limit == 0) {
+        return createResponse(Status::CODE_400, "'limit' must be greater than 0");
+    }
+
+    if (start_height < offset) {
+        return createResponse(Status::CODE_400, "'start' height cannot be less than 'offset'");
+    }
+
+    uint64_t current_height = start_height - offset;
+
+    if (limit == 1) {
+        currency::block_rpc_extended_info rpc_details;
+        if (!m_core_info->getCore().get_blockchain_storage().get_main_block_rpc_details(current_height, rpc_details)) {
+            return createResponse(Status::CODE_404, "Block not found at specified height");
+        }
+        return createDtoResponse(Status::CODE_200, populateBlockDetailsModel(rpc_details));
+    }
+
+    auto block_list = oatpp::List<oatpp::Object<BlockDetailsModel>>::createShared();
+    for(uint64_t i = 0; i < limit; ++i)
+    {
+      if(current_height < i)
+      {
+        break;  // Reached genesis
+      }
+      uint64_t height_to_fetch = current_height - i;
+      currency::block_rpc_extended_info rpc_details;
+      if(m_core_info->getCore().get_blockchain_storage().get_main_block_rpc_details(height_to_fetch, rpc_details))
+      {
+        block_list->push_back(populateBlockDetailsModel(rpc_details));
+      }
+      else
+      {
+        // Could be that we requested past genesis, or a block is missing for some reason.
+        // We'll just stop here.
+        break;
+      }
+    }
+    return createDtoResponse(Status::CODE_200, block_list);
   }
 
 };

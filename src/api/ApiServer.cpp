@@ -16,8 +16,7 @@
 #include "controller/ApiCoreInfo.hpp"
 #include "controller/path/info.hpp"
 #include "controller/path/block.hpp"
-#include "controller/path/block/hash.hpp"
-#include "controller/path/block/id.hpp"
+#include "controller/path/block/identifier.hpp"
 #include "controller/path/info/version.hpp"
 
 #include "oatpp/network/Server.hpp"
@@ -82,14 +81,9 @@ void ApiServer::run() {
   docEndpoints->append(blockController->getEndpoints());
   router->addController(blockController);
 
-  auto blockByHashController = std::make_shared<BlockByHashController>();
-  docEndpoints->append(blockByHashController->getEndpoints());
-  router->addController(blockByHashController);
-
-  auto blockByIdController = std::make_shared<BlockByIdController>();
-  docEndpoints->append(blockByIdController->getEndpoints());
-  router->addController(blockByIdController);
-
+  auto blockIdentifierController = std::make_shared<BlockIdentifierController>();
+  docEndpoints->append(blockIdentifierController->getEndpoints());
+  router->addController(blockIdentifierController);
 
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::DocumentInfo>, swaggerDocumentInfo)
   ([]
