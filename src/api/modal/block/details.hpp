@@ -15,7 +15,7 @@
 #ifndef BlockDetailsModel_hpp
 #define BlockDetailsModel_hpp
 
-#include "../transaction/details.hpp"
+#include "modal/transaction/details.hpp"
 #include "oatpp/core/macro/codegen.hpp"
 #include "oatpp/core/Types.hpp"
 
