@@ -17,6 +17,7 @@
 #include "controller/path/info.hpp"
 #include "controller/path/block.hpp"
 #include "controller/path/block/identifier.hpp"
+#include "controller/path/block/height.hpp"
 #include "controller/path/info/version.hpp"
 
 #include "oatpp/network/Server.hpp"
@@ -81,9 +82,14 @@ void ApiServer::run() {
   docEndpoints->append(blockController->getEndpoints());
   router->addController(blockController);
 
+  auto blockHeightController = std::make_shared<BlockHeightController>();
+  docEndpoints->append(blockHeightController->getEndpoints());
+  router->addController(blockHeightController);
+
   auto blockIdentifierController = std::make_shared<BlockIdentifierController>();
   docEndpoints->append(blockIdentifierController->getEndpoints());
   router->addController(blockIdentifierController);
+
 
   OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::swagger::DocumentInfo>, swaggerDocumentInfo)
   ([]
