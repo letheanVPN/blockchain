@@ -1,0 +1,8 @@
+{
+  "additionalProperties": {
+    "apiModulePrefix":"lthn",
+    "configurationPrefix":"lthn",
+    "npmName":"@lthn/angular",
+    "ngVersion": 20
+  }
+}
