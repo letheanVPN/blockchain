@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeSharedSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" GENERATION_DIR="build/release" CONFIG_NAME="Debug" GENERATION_OPTIONS="--preset testnet" BUILD_OPTIONS="--preset testnet --parallel 30" NO_GENERATOR="true" />
+    </configurations>
+  </component>
+</project>

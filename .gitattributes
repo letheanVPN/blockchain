@@ -1,2 +1,5 @@
 .git* export-ignore
 /CMakeLists.txt export-subst
+
+# Mark auto-generated SDK clients as "generated" to hide them in GitHub diffs
+utils/sdk/client/** linguist-generated=true
