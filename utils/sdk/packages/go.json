@@ -1,0 +1,10 @@
+{
+  "additionalProperties": {
+    "packageName": "utils/sdk/client/go",
+    "apiNameSuffix": "utils/sdk/client/go",
+    "apiPackage": "utils/sdk/client/go",
+    "modelPackage": "utils/sdk/client/go",
+    "isGoSubmodule": true,
+    "disallowAdditionalPropertiesIfNotPresent": false
+  }
+}

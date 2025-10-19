@@ -1,0 +1,7 @@
+{
+  "additionalProperties": {
+    "packageName": "lthn",
+    "projectName": "lthn",
+    "packageUrl": "https://github.com/letheanVPN/blockchain"
+  }
+}
