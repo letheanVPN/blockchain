@@ -1,0 +1,1329 @@
+openapi: 3.0.0
+info:
+  contact:
+    name: Lethean
+    url: https://lt.hn/
+  description: OpenAPI for Lethean Blockchain
+  license:
+    name: EUPL-1.2
+    url: https://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+  title: Lethean Blockchain API
+  version: 6.0.1
+servers:
+- description: Local Daemon
+  url: http://127.0.0.1:36943
+- description: Seed Server
+  url: http://seed.lethean.io:36943
+paths:
+  /info:
+    get:
+      operationId: getInfo
+      parameters:
+      - deprecated: false
+        description: "Possible values: net_time_delta_median, current_network_hashrate_50,\
+          \ current_network_hashrate_350, seconds_for_10_blocks, seconds_for_30_blocks,\
+          \ transactions_daily_stat, last_pos_timestamp, last_pow_timestamp, total_coins,\
+          \ last_block_size, tx_count_in_last_block, pos_sequence_factor, pow_sequence_factor,\
+          \ pos_difficulty, performance, outs_stat, expirations_median."
+        explode: true
+        in: query
+        name: flags
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InfoModel"
+          description: OK
+      summary: Get detailed information about the blockchain and daemon state
+      tags:
+      - Info
+  /info/version:
+    get:
+      description: Returns the current version of the API.
+      operationId: version
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VersionModel"
+          description: OK
+      summary: Get API version
+      tags:
+      - Info
+  /block:
+    get:
+      operationId: getBlocks
+      parameters: []
+      responses:
+        "404":
+          description: text/plain
+        "400":
+          description: text/plain
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: "#/components/schemas/BlockDetailsModel"
+                type: array
+          description: A list of block objects.
+      summary: "Get one or more blocks, with optional pagination."
+      tags:
+      - Block
+  /block/template:
+    post:
+      operationId: createBlockTemplate
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BlockTemplateRequestModel"
+        required: true
+      responses:
+        "500":
+          description: text/plain
+        "400":
+          description: text/plain
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlockTemplateModel"
+          description: OK
+      summary: Create a block template for mining
+      tags:
+      - Block
+  /block/submit:
+    post:
+      operationId: submitBlock
+      parameters: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitBlockRequestModel"
+        required: true
+      responses:
+        "406":
+          description: text/plain
+        "400":
+          description: text/plain
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubmitBlockResponseModel"
+          description: OK
+      summary: Submit a new block to the network
+      tags:
+      - Block
+  /block/height:
+    get:
+      operationId: getHeight
+      parameters: []
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HeightModel"
+          description: OK
+      summary: Get the current blockchain height
+      tags:
+      - Block
+  /block/{identifier}:
+    get:
+      operationId: getBlock
+      parameters:
+      - deprecated: false
+        description: The hash (hex string) or height (integer) of the block to retrieve.
+        explode: false
+        in: path
+        name: identifier
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "404":
+          description: text/plain
+        "400":
+          description: text/plain
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BlockDetailsModel"
+          description: OK
+      summary: Get a block by its hash or height (ID)
+      tags:
+      - Block
+components:
+  schemas:
+    DbStatInfoModel:
+      example:
+        write_tx_count: 4
+        tx_count: 8
+        map_size: 0
+      properties:
+        tx_count:
+          type: integer
+        write_tx_count:
+          type: integer
+        map_size:
+          type: integer
+      type: object
+    TxPoolPerformanceModel:
+      example:
+        begin_tx_time: 0
+        db_commit_time: 2
+        validate_amount_time: 3
+        update_db_time: 3
+        expiration_validate_time: 3
+        check_inputs_types_supported_time: 7
+        tx_processing_time: 8
+        check_keyimages_ws_ms_time: 5
+        check_inputs_time: 7
+        validate_alias_time: 9
+        check_post_hf4_balance: 3
+      properties:
+        tx_processing_time:
+          type: integer
+        check_inputs_types_supported_time:
+          type: integer
+        expiration_validate_time:
+          type: integer
+        validate_amount_time:
+          type: integer
+        validate_alias_time:
+          type: integer
+        check_keyimages_ws_ms_time:
+          type: integer
+        check_inputs_time:
+          type: integer
+        begin_tx_time:
+          type: integer
+        update_db_time:
+          type: integer
+        db_commit_time:
+          type: integer
+        check_post_hf4_balance:
+          type: integer
+      type: object
+    MaintainersInfoModel:
+      example:
+        mode: 126
+        build_no: 503831554
+        ver_revision: 190
+        ver_major: 37
+        ver_minor: 174
+      properties:
+        ver_major:
+          maximum: 255
+          minimum: 0
+          type: integer
+        ver_minor:
+          maximum: 255
+          minimum: 0
+          type: integer
+        ver_revision:
+          maximum: 255
+          minimum: 0
+          type: integer
+        build_no:
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+        mode:
+          maximum: 255
+          minimum: 0
+          type: integer
+      type: object
+    InfoModel:
+      example:
+        current_max_allowed_block_size: 7
+        tx_count_in_last_block: 5
+        transactions_cnt_per_day:
+        - 6
+        - 6
+        grey_peerlist_size: 3
+        minimum_fee: 9
+        pos_difficulty: pos_difficulty
+        block_reward: 3
+        last_pos_timestamp: 2
+        pos_sequence_factor: 6.704019297950036
+        pos_block_ts_shift_vs_actual: 6
+        current_network_hashrate_50: 8
+        last_block_timestamp: 7
+        pow_difficulty: 5
+        alias_count: 4
+        mi:
+          mode: 126
+          build_no: 503831554
+          ver_revision: 190
+          ver_major: 37
+          ver_minor: 174
+        pos_allowed: true
+        last_pow_timestamp: 6
+        is_hardfork_active:
+        - true
+        - true
+        height: 0
+        tx_pool_size: 1
+        performance_data:
+          tx_pool:
+            begin_tx_time: 0
+            db_commit_time: 2
+            validate_amount_time: 3
+            update_db_time: 3
+            expiration_validate_time: 3
+            check_inputs_types_supported_time: 7
+            tx_processing_time: 8
+            check_keyimages_ws_ms_time: 5
+            check_inputs_time: 7
+            validate_alias_time: 9
+            check_post_hf4_balance: 3
+          tx_processing:
+            tx_process_inputs: 5
+            tx_check_inputs_loop: 4
+            tx_prapare_append: 4
+            tx_check_inputs: 0
+            tx_append: 3
+            tx_check_exist: 6
+            tx_check_inputs_loop_scan_outputkeys_loop_get_subitem: 8
+            tx_mixin_count: 5
+            tx_append_rl_wait: 0
+            tx_check_inputs_loop_kimage_check: 8
+            tx_check_inputs_loop_scan_outputkeys_loop_find_tx: 0
+            tx_push_global_index: 4
+            tx_add_one_tx: 9
+            tx_check_inputs_loop_scan_outputkeys_get_item_size: 1
+            tx_print_log: 8
+            tx_check_inputs_prefix_hash: 8
+            tx_append_is_expired: 2
+            tx_check_inputs_loop_ch_in_val_sig: 9
+            tx_check_inputs_loop_scan_outputkeys_loop_handle_output: 5
+            tx_process_extra: 0
+            tx_process_attachment: 7
+            tx_check_inputs_loop_scan_outputkeys_loop: 9
+            tx_store_db: 1
+            tx_check_inputs_attachment_check: 6
+            tx_check_inputs_loop_scan_outputkeys_relative_to_absolute: 3
+          block_processing:
+            target_calculating_calc: 1
+            pos_validate_ki_search: 4
+            all_txs_insert_time_5: 3
+            etc_stuff_6: 7
+            target_calculating_enum_blocks: 4
+            target_calculating_time_2: 7
+            validate_miner_transaction_time: 4
+            verify_multiple_zc_outs_range_proofs_time: 6
+            raise_block_core_event: 3
+            insert_time_4: 5
+            pos_validate_get_out_keys_for_inputs: 7
+            block_processing_time_1: 8
+            block_processing_time_0: 4
+            pos_validate_zvp: 9
+            collect_rangeproofs_data_from_tx_time: 0
+            longhash_calculating_time_3: 3
+          db_stat_info:
+            write_tx_count: 4
+            tx_count: 8
+            map_size: 0
+        net_time_delta_median: 6
+        alt_blocks_count: 5
+        incoming_connections_count: 2
+        tx_count: 6
+        outgoing_connections_count: 5
+        transactions_volume_per_day:
+        - 1
+        - 1
+        current_blocks_median: 2
+        expiration_median_timestamp: 7
+        max_net_seen_height: 1
+        current_network_hashrate_350: 9
+        synchronized_connections_count: 7
+        last_block_total_reward: 7
+        default_fee: 9
+        seconds_for_10_blocks: 6
+        pow_sequence_factor: 3.353193347011243
+        synchronization_start_height: 1
+        last_block_hash: last_block_hash
+        white_peerlist_size: 9
+        total_coins: total_coins
+        seconds_for_30_blocks: 3
+        outs_stat:
+          key: 0
+        offers_count: 0
+        pos_diff_total_coins_rate: 0
+        daemon_network_state: daemon_network_state
+        last_block_size: 6
+      properties:
+        height:
+          type: integer
+        tx_count:
+          type: integer
+        tx_pool_size:
+          type: integer
+        alt_blocks_count:
+          type: integer
+        outgoing_connections_count:
+          type: integer
+        incoming_connections_count:
+          type: integer
+        synchronized_connections_count:
+          type: integer
+        white_peerlist_size:
+          type: integer
+        grey_peerlist_size:
+          type: integer
+        current_blocks_median:
+          type: integer
+        alias_count:
+          type: integer
+        current_max_allowed_block_size:
+          type: integer
+        daemon_network_state:
+          type: string
+        synchronization_start_height:
+          type: integer
+        max_net_seen_height:
+          type: integer
+        mi:
+          $ref: "#/components/schemas/MaintainersInfoModel"
+        pos_allowed:
+          type: boolean
+        pos_difficulty:
+          type: string
+        pow_difficulty:
+          type: integer
+        default_fee:
+          type: integer
+        minimum_fee:
+          type: integer
+        is_hardfork_active:
+          items:
+            type: boolean
+          type: array
+        net_time_delta_median:
+          format: int64
+          type: integer
+        current_network_hashrate_50:
+          type: integer
+        current_network_hashrate_350:
+          type: integer
+        seconds_for_10_blocks:
+          type: integer
+        seconds_for_30_blocks:
+          type: integer
+        transactions_cnt_per_day:
+          items:
+            type: integer
+          type: array
+        transactions_volume_per_day:
+          items:
+            type: integer
+          type: array
+        last_pos_timestamp:
+          type: integer
+        last_pow_timestamp:
+          type: integer
+        total_coins:
+          type: string
+        last_block_size:
+          type: integer
+        tx_count_in_last_block:
+          type: integer
+        pos_sequence_factor:
+          format: double
+          type: number
+        pow_sequence_factor:
+          format: double
+          type: number
+        block_reward:
+          type: integer
+        last_block_total_reward:
+          type: integer
+        pos_diff_total_coins_rate:
+          type: integer
+        last_block_timestamp:
+          type: integer
+        last_block_hash:
+          type: string
+        pos_block_ts_shift_vs_actual:
+          format: int64
+          type: integer
+        outs_stat:
+          additionalProperties:
+            type: integer
+          type: object
+        performance_data:
+          $ref: "#/components/schemas/PerformanceModel"
+        offers_count:
+          type: integer
+        expiration_median_timestamp:
+          type: integer
+      type: object
+    SubmitBlockResponseModel:
+      example:
+        status: status
+      properties:
+        status:
+          type: string
+      type: object
+    VersionModel:
+      example:
+        version_long: version_long
+        major: major
+        minor: minor
+        version: version
+        revision: revision
+      properties:
+        version:
+          type: string
+        version_long:
+          type: string
+        major:
+          type: string
+        minor:
+          type: string
+        revision:
+          type: string
+      type: object
+    TransactionOutputModel:
+      example:
+        amount: 5
+        pub_keys:
+        - pub_keys
+        - pub_keys
+        is_spent: true
+        minimum_sigs: 2147483647
+        global_index: 9
+      properties:
+        amount:
+          type: integer
+        global_index:
+          type: integer
+        is_spent:
+          type: boolean
+        minimum_sigs:
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+        pub_keys:
+          items:
+            type: string
+          type: array
+      type: object
+    TransactionInputModel:
+      example:
+        amount: 6
+        kimage_or_ms_id: kimage_or_ms_id
+        htlc_origin: htlc_origin
+        global_indexes:
+        - 7
+        - 7
+        multisig_count: 503831554
+      properties:
+        amount:
+          type: integer
+        global_indexes:
+          items:
+            type: integer
+          type: array
+        htlc_origin:
+          type: string
+        kimage_or_ms_id:
+          type: string
+        multisig_count:
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+      type: object
+    PerformanceModel:
+      example:
+        tx_pool:
+          begin_tx_time: 0
+          db_commit_time: 2
+          validate_amount_time: 3
+          update_db_time: 3
+          expiration_validate_time: 3
+          check_inputs_types_supported_time: 7
+          tx_processing_time: 8
+          check_keyimages_ws_ms_time: 5
+          check_inputs_time: 7
+          validate_alias_time: 9
+          check_post_hf4_balance: 3
+        tx_processing:
+          tx_process_inputs: 5
+          tx_check_inputs_loop: 4
+          tx_prapare_append: 4
+          tx_check_inputs: 0
+          tx_append: 3
+          tx_check_exist: 6
+          tx_check_inputs_loop_scan_outputkeys_loop_get_subitem: 8
+          tx_mixin_count: 5
+          tx_append_rl_wait: 0
+          tx_check_inputs_loop_kimage_check: 8
+          tx_check_inputs_loop_scan_outputkeys_loop_find_tx: 0
+          tx_push_global_index: 4
+          tx_add_one_tx: 9
+          tx_check_inputs_loop_scan_outputkeys_get_item_size: 1
+          tx_print_log: 8
+          tx_check_inputs_prefix_hash: 8
+          tx_append_is_expired: 2
+          tx_check_inputs_loop_ch_in_val_sig: 9
+          tx_check_inputs_loop_scan_outputkeys_loop_handle_output: 5
+          tx_process_extra: 0
+          tx_process_attachment: 7
+          tx_check_inputs_loop_scan_outputkeys_loop: 9
+          tx_store_db: 1
+          tx_check_inputs_attachment_check: 6
+          tx_check_inputs_loop_scan_outputkeys_relative_to_absolute: 3
+        block_processing:
+          target_calculating_calc: 1
+          pos_validate_ki_search: 4
+          all_txs_insert_time_5: 3
+          etc_stuff_6: 7
+          target_calculating_enum_blocks: 4
+          target_calculating_time_2: 7
+          validate_miner_transaction_time: 4
+          verify_multiple_zc_outs_range_proofs_time: 6
+          raise_block_core_event: 3
+          insert_time_4: 5
+          pos_validate_get_out_keys_for_inputs: 7
+          block_processing_time_1: 8
+          block_processing_time_0: 4
+          pos_validate_zvp: 9
+          collect_rangeproofs_data_from_tx_time: 0
+          longhash_calculating_time_3: 3
+        db_stat_info:
+          write_tx_count: 4
+          tx_count: 8
+          map_size: 0
+      properties:
+        block_processing:
+          $ref: "#/components/schemas/BlockProcessingPerformanceModel"
+        tx_processing:
+          $ref: "#/components/schemas/TxProcessingPerformanceModel"
+        tx_pool:
+          $ref: "#/components/schemas/TxPoolPerformanceModel"
+        db_stat_info:
+          $ref: "#/components/schemas/DbStatInfoModel"
+      type: object
+    TransactionExtraModel:
+      example:
+        details_view: details_view
+        type: type
+        short_view: short_view
+      properties:
+        type:
+          type: string
+        short_view:
+          type: string
+        details_view:
+          type: string
+      type: object
+    TxProcessingPerformanceModel:
+      example:
+        tx_process_inputs: 5
+        tx_check_inputs_loop: 4
+        tx_prapare_append: 4
+        tx_check_inputs: 0
+        tx_append: 3
+        tx_check_exist: 6
+        tx_check_inputs_loop_scan_outputkeys_loop_get_subitem: 8
+        tx_mixin_count: 5
+        tx_append_rl_wait: 0
+        tx_check_inputs_loop_kimage_check: 8
+        tx_check_inputs_loop_scan_outputkeys_loop_find_tx: 0
+        tx_push_global_index: 4
+        tx_add_one_tx: 9
+        tx_check_inputs_loop_scan_outputkeys_get_item_size: 1
+        tx_print_log: 8
+        tx_check_inputs_prefix_hash: 8
+        tx_append_is_expired: 2
+        tx_check_inputs_loop_ch_in_val_sig: 9
+        tx_check_inputs_loop_scan_outputkeys_loop_handle_output: 5
+        tx_process_extra: 0
+        tx_process_attachment: 7
+        tx_check_inputs_loop_scan_outputkeys_loop: 9
+        tx_store_db: 1
+        tx_check_inputs_attachment_check: 6
+        tx_check_inputs_loop_scan_outputkeys_relative_to_absolute: 3
+      properties:
+        tx_check_inputs:
+          type: integer
+        tx_add_one_tx:
+          type: integer
+        tx_process_extra:
+          type: integer
+        tx_process_attachment:
+          type: integer
+        tx_process_inputs:
+          type: integer
+        tx_push_global_index:
+          type: integer
+        tx_check_exist:
+          type: integer
+        tx_print_log:
+          type: integer
+        tx_prapare_append:
+          type: integer
+        tx_append:
+          type: integer
+        tx_append_rl_wait:
+          type: integer
+        tx_append_is_expired:
+          type: integer
+        tx_store_db:
+          type: integer
+        tx_check_inputs_prefix_hash:
+          type: integer
+        tx_check_inputs_attachment_check:
+          type: integer
+        tx_check_inputs_loop:
+          type: integer
+        tx_check_inputs_loop_kimage_check:
+          type: integer
+        tx_check_inputs_loop_ch_in_val_sig:
+          type: integer
+        tx_check_inputs_loop_scan_outputkeys_get_item_size:
+          type: integer
+        tx_check_inputs_loop_scan_outputkeys_relative_to_absolute:
+          type: integer
+        tx_check_inputs_loop_scan_outputkeys_loop:
+          type: integer
+        tx_check_inputs_loop_scan_outputkeys_loop_get_subitem:
+          type: integer
+        tx_check_inputs_loop_scan_outputkeys_loop_find_tx:
+          type: integer
+        tx_check_inputs_loop_scan_outputkeys_loop_handle_output:
+          type: integer
+        tx_mixin_count:
+          type: integer
+      type: object
+    TxGenerationContextModel:
+      example:
+        amount_commitments:
+        - amount_commitments
+        - amount_commitments
+        real_zc_ins_asset_ids:
+        - real_zc_ins_asset_ids
+        - real_zc_ins_asset_ids
+        amount_commitments_sum: amount_commitments_sum
+        asset_ids:
+        - asset_ids
+        - asset_ids
+        tx_key_sec: tx_key_sec
+        real_in_asset_id_blinding_mask_x_amount_sum: real_in_asset_id_blinding_mask_x_amount_sum
+        pseudo_outs_blinded_asset_ids:
+        - pseudo_outs_blinded_asset_ids
+        - pseudo_outs_blinded_asset_ids
+        ao_commitment_in_outputs: true
+        ao_asset_id_pt: ao_asset_id_pt
+        zc_input_amounts:
+        - 6
+        - 6
+        pseudo_outs_plus_real_out_blinding_masks:
+        - pseudo_outs_plus_real_out_blinding_masks
+        - pseudo_outs_plus_real_out_blinding_masks
+        tx_pub_key_p: tx_pub_key_p
+        amounts:
+        - amounts
+        - amounts
+        pseudo_out_amount_blinding_masks_sum: pseudo_out_amount_blinding_masks_sum
+        ao_amount_blinding_mask: ao_amount_blinding_mask
+        amount_blinding_masks:
+        - amount_blinding_masks
+        - amount_blinding_masks
+        tx_key_pub: tx_key_pub
+        amount_blinding_masks_sum: amount_blinding_masks_sum
+        asset_id_blinding_mask_x_amount_sum: asset_id_blinding_mask_x_amount_sum
+        blinded_asset_ids:
+        - blinded_asset_ids
+        - blinded_asset_ids
+        asset_id_blinding_masks:
+        - asset_id_blinding_masks
+        - asset_id_blinding_masks
+        pseudo_out_amount_commitments_sum: pseudo_out_amount_commitments_sum
+        ao_asset_id: ao_asset_id
+        ao_amount_commitment: ao_amount_commitment
+      properties:
+        asset_ids:
+          items:
+            type: string
+          type: array
+        blinded_asset_ids:
+          items:
+            type: string
+          type: array
+        amount_commitments:
+          items:
+            type: string
+          type: array
+        asset_id_blinding_masks:
+          items:
+            type: string
+          type: array
+        amounts:
+          items:
+            type: string
+          type: array
+        amount_blinding_masks:
+          items:
+            type: string
+          type: array
+        pseudo_outs_blinded_asset_ids:
+          items:
+            type: string
+          type: array
+        pseudo_outs_plus_real_out_blinding_masks:
+          items:
+            type: string
+          type: array
+        real_zc_ins_asset_ids:
+          items:
+            type: string
+          type: array
+        zc_input_amounts:
+          items:
+            type: integer
+          type: array
+        pseudo_out_amount_commitments_sum:
+          type: string
+        pseudo_out_amount_blinding_masks_sum:
+          type: string
+        real_in_asset_id_blinding_mask_x_amount_sum:
+          type: string
+        amount_commitments_sum:
+          type: string
+        amount_blinding_masks_sum:
+          type: string
+        asset_id_blinding_mask_x_amount_sum:
+          type: string
+        ao_asset_id:
+          type: string
+        ao_asset_id_pt:
+          type: string
+        ao_amount_commitment:
+          type: string
+        ao_amount_blinding_mask:
+          type: string
+        ao_commitment_in_outputs:
+          type: boolean
+        tx_key_pub:
+          type: string
+        tx_key_sec:
+          type: string
+        tx_pub_key_p:
+          type: string
+      type: object
+    HeightModel:
+      example:
+        height: 0
+      properties:
+        height:
+          type: integer
+      type: object
+    BlockTemplateModel:
+      example:
+        difficulty: difficulty
+        seed: seed
+        block_reward_without_fee: 1
+        block_reward: 5
+        prev_hash: prev_hash
+        miner_tx_tgc:
+          amount_commitments:
+          - amount_commitments
+          - amount_commitments
+          real_zc_ins_asset_ids:
+          - real_zc_ins_asset_ids
+          - real_zc_ins_asset_ids
+          amount_commitments_sum: amount_commitments_sum
+          asset_ids:
+          - asset_ids
+          - asset_ids
+          tx_key_sec: tx_key_sec
+          real_in_asset_id_blinding_mask_x_amount_sum: real_in_asset_id_blinding_mask_x_amount_sum
+          pseudo_outs_blinded_asset_ids:
+          - pseudo_outs_blinded_asset_ids
+          - pseudo_outs_blinded_asset_ids
+          ao_commitment_in_outputs: true
+          ao_asset_id_pt: ao_asset_id_pt
+          zc_input_amounts:
+          - 6
+          - 6
+          pseudo_outs_plus_real_out_blinding_masks:
+          - pseudo_outs_plus_real_out_blinding_masks
+          - pseudo_outs_plus_real_out_blinding_masks
+          tx_pub_key_p: tx_pub_key_p
+          amounts:
+          - amounts
+          - amounts
+          pseudo_out_amount_blinding_masks_sum: pseudo_out_amount_blinding_masks_sum
+          ao_amount_blinding_mask: ao_amount_blinding_mask
+          amount_blinding_masks:
+          - amount_blinding_masks
+          - amount_blinding_masks
+          tx_key_pub: tx_key_pub
+          amount_blinding_masks_sum: amount_blinding_masks_sum
+          asset_id_blinding_mask_x_amount_sum: asset_id_blinding_mask_x_amount_sum
+          blinded_asset_ids:
+          - blinded_asset_ids
+          - blinded_asset_ids
+          asset_id_blinding_masks:
+          - asset_id_blinding_masks
+          - asset_id_blinding_masks
+          pseudo_out_amount_commitments_sum: pseudo_out_amount_commitments_sum
+          ao_asset_id: ao_asset_id
+          ao_amount_commitment: ao_amount_commitment
+        blocktemplate_blob: blocktemplate_blob
+        height: 0
+        txs_fee: 5
+      properties:
+        blocktemplate_blob:
+          type: string
+        difficulty:
+          type: string
+        height:
+          type: integer
+        miner_tx_tgc:
+          $ref: "#/components/schemas/TxGenerationContextModel"
+        block_reward_without_fee:
+          type: integer
+        block_reward:
+          type: integer
+        txs_fee:
+          type: integer
+        prev_hash:
+          type: string
+        seed:
+          type: string
+      type: object
+    TransactionAttachmentModel:
+      example:
+        details_view: details_view
+        type: type
+        short_view: short_view
+      properties:
+        type:
+          type: string
+        short_view:
+          type: string
+        details_view:
+          type: string
+      type: object
+    BlockDetailsModel:
+      example:
+        miner_text_info: miner_text_info
+        block_tself_size: 5
+        penalty: 7
+        cumulative_diff_precise: cumulative_diff_precise
+        type: 2147483647
+        block_cumulative_size: 1
+        total_txs_size: 7
+        total_fee: 4
+        transactions_details:
+        - amount: 1
+          attachments:
+          - details_view: details_view
+            type: type
+            short_view: short_view
+          - details_view: details_view
+            type: type
+            short_view: short_view
+          object_in_json: object_in_json
+          fee: 1
+          ins:
+          - amount: 6
+            kimage_or_ms_id: kimage_or_ms_id
+            htlc_origin: htlc_origin
+            global_indexes:
+            - 7
+            - 7
+            multisig_count: 503831554
+          - amount: 6
+            kimage_or_ms_id: kimage_or_ms_id
+            htlc_origin: htlc_origin
+            global_indexes:
+            - 7
+            - 7
+            multisig_count: 503831554
+          pub_key: pub_key
+          outs:
+          - amount: 5
+            pub_keys:
+            - pub_keys
+            - pub_keys
+            is_spent: true
+            minimum_sigs: 2147483647
+            global_index: 9
+          - amount: 5
+            pub_keys:
+            - pub_keys
+            - pub_keys
+            is_spent: true
+            minimum_sigs: 2147483647
+            global_index: 9
+          blob: blob
+          blob_size: 1
+          keeper_block: 4
+          extra:
+          - details_view: details_view
+            type: type
+            short_view: short_view
+          - details_view: details_view
+            type: type
+            short_view: short_view
+          id: id
+          timestamp: 6
+        - amount: 1
+          attachments:
+          - details_view: details_view
+            type: type
+            short_view: short_view
+          - details_view: details_view
+            type: type
+            short_view: short_view
+          object_in_json: object_in_json
+          fee: 1
+          ins:
+          - amount: 6
+            kimage_or_ms_id: kimage_or_ms_id
+            htlc_origin: htlc_origin
+            global_indexes:
+            - 7
+            - 7
+            multisig_count: 503831554
+          - amount: 6
+            kimage_or_ms_id: kimage_or_ms_id
+            htlc_origin: htlc_origin
+            global_indexes:
+            - 7
+            - 7
+            multisig_count: 503831554
+          pub_key: pub_key
+          outs:
+          - amount: 5
+            pub_keys:
+            - pub_keys
+            - pub_keys
+            is_spent: true
+            minimum_sigs: 2147483647
+            global_index: 9
+          - amount: 5
+            pub_keys:
+            - pub_keys
+            - pub_keys
+            is_spent: true
+            minimum_sigs: 2147483647
+            global_index: 9
+          blob: blob
+          blob_size: 1
+          keeper_block: 4
+          extra:
+          - details_view: details_view
+            type: type
+            short_view: short_view
+          - details_view: details_view
+            type: type
+            short_view: short_view
+          id: id
+          timestamp: 6
+        id: id
+        height: 2
+        timestamp: 2
+        pow_seed: pow_seed
+        object_in_json: object_in_json
+        base_reward: 6
+        summary_reward: 9
+        cumulative_diff_adjusted: cumulative_diff_adjusted
+        already_generated_coins: already_generated_coins
+        prev_id: prev_id
+        actual_timestamp: 0
+        difficulty: difficulty
+        is_orphan: true
+        this_block_fee_median: 3
+        blob: blob
+        effective_fee_median: 5
+      properties:
+        actual_timestamp:
+          type: integer
+        already_generated_coins:
+          type: string
+        base_reward:
+          type: integer
+        blob:
+          type: string
+        block_cumulative_size:
+          type: integer
+        block_tself_size:
+          type: integer
+        cumulative_diff_adjusted:
+          type: string
+        cumulative_diff_precise:
+          type: string
+        difficulty:
+          type: string
+        effective_fee_median:
+          type: integer
+        height:
+          type: integer
+        id:
+          type: string
+        is_orphan:
+          type: boolean
+        miner_text_info:
+          type: string
+        object_in_json:
+          type: string
+        penalty:
+          type: integer
+        pow_seed:
+          type: string
+        prev_id:
+          type: string
+        summary_reward:
+          type: integer
+        this_block_fee_median:
+          type: integer
+        timestamp:
+          type: integer
+        total_fee:
+          type: integer
+        total_txs_size:
+          type: integer
+        transactions_details:
+          items:
+            $ref: "#/components/schemas/TransactionDetailsModel"
+          type: array
+        type:
+          maximum: 4294967295
+          minimum: 0
+          type: integer
+      type: object
+    PosEntryModel:
+      example:
+        amount: 0
+        stake_unlock_time: 5
+        g_index: 6
+        keyimage: keyimage
+        tx_out_index: 5
+        block_timestamp: 1
+        wallet_index: 2
+        tx_id: tx_id
+      properties:
+        amount:
+          type: integer
+        g_index:
+          type: integer
+        keyimage:
+          type: string
+        block_timestamp:
+          type: integer
+        stake_unlock_time:
+          type: integer
+        tx_id:
+          type: string
+        tx_out_index:
+          type: integer
+        wallet_index:
+          type: integer
+      type: object
+    TransactionDetailsModel:
+      example:
+        amount: 1
+        attachments:
+        - details_view: details_view
+          type: type
+          short_view: short_view
+        - details_view: details_view
+          type: type
+          short_view: short_view
+        object_in_json: object_in_json
+        fee: 1
+        ins:
+        - amount: 6
+          kimage_or_ms_id: kimage_or_ms_id
+          htlc_origin: htlc_origin
+          global_indexes:
+          - 7
+          - 7
+          multisig_count: 503831554
+        - amount: 6
+          kimage_or_ms_id: kimage_or_ms_id
+          htlc_origin: htlc_origin
+          global_indexes:
+          - 7
+          - 7
+          multisig_count: 503831554
+        pub_key: pub_key
+        outs:
+        - amount: 5
+          pub_keys:
+          - pub_keys
+          - pub_keys
+          is_spent: true
+          minimum_sigs: 2147483647
+          global_index: 9
+        - amount: 5
+          pub_keys:
+          - pub_keys
+          - pub_keys
+          is_spent: true
+          minimum_sigs: 2147483647
+          global_index: 9
+        blob: blob
+        blob_size: 1
+        keeper_block: 4
+        extra:
+        - details_view: details_view
+          type: type
+          short_view: short_view
+        - details_view: details_view
+          type: type
+          short_view: short_view
+        id: id
+        timestamp: 6
+      properties:
+        amount:
+          type: integer
+        attachments:
+          items:
+            $ref: "#/components/schemas/TransactionAttachmentModel"
+          type: array
+        blob:
+          type: string
+        blob_size:
+          type: integer
+        extra:
+          items:
+            $ref: "#/components/schemas/TransactionExtraModel"
+          type: array
+        fee:
+          type: integer
+        id:
+          type: string
+        ins:
+          items:
+            $ref: "#/components/schemas/TransactionInputModel"
+          type: array
+        keeper_block:
+          format: int64
+          type: integer
+        object_in_json:
+          type: string
+        outs:
+          items:
+            $ref: "#/components/schemas/TransactionOutputModel"
+          type: array
+        pub_key:
+          type: string
+        timestamp:
+          type: integer
+      type: object
+    BlockProcessingPerformanceModel:
+      example:
+        target_calculating_calc: 1
+        pos_validate_ki_search: 4
+        all_txs_insert_time_5: 3
+        etc_stuff_6: 7
+        target_calculating_enum_blocks: 4
+        target_calculating_time_2: 7
+        validate_miner_transaction_time: 4
+        verify_multiple_zc_outs_range_proofs_time: 6
+        raise_block_core_event: 3
+        insert_time_4: 5
+        pos_validate_get_out_keys_for_inputs: 7
+        block_processing_time_1: 8
+        block_processing_time_0: 4
+        pos_validate_zvp: 9
+        collect_rangeproofs_data_from_tx_time: 0
+        longhash_calculating_time_3: 3
+      properties:
+        block_processing_time_0:
+          type: integer
+        block_processing_time_1:
+          type: integer
+        target_calculating_time_2:
+          type: integer
+        longhash_calculating_time_3:
+          type: integer
+        all_txs_insert_time_5:
+          type: integer
+        etc_stuff_6:
+          type: integer
+        insert_time_4:
+          type: integer
+        raise_block_core_event:
+          type: integer
+        validate_miner_transaction_time:
+          type: integer
+        collect_rangeproofs_data_from_tx_time:
+          type: integer
+        verify_multiple_zc_outs_range_proofs_time:
+          type: integer
+        target_calculating_enum_blocks:
+          type: integer
+        target_calculating_calc:
+          type: integer
+        pos_validate_ki_search:
+          type: integer
+        pos_validate_get_out_keys_for_inputs:
+          type: integer
+        pos_validate_zvp:
+          type: integer
+      type: object
+    BlockTemplateRequestModel:
+      example:
+        miner_address: miner_address
+        pos_block: true
+        ex_nonce: ex_nonce
+        pe:
+          amount: 0
+          stake_unlock_time: 5
+          g_index: 6
+          keyimage: keyimage
+          tx_out_index: 5
+          block_timestamp: 1
+          wallet_index: 2
+          tx_id: tx_id
+        ignore_pow_ts_check: true
+        stakeholder_address: stakeholder_address
+        explicit_txs:
+        - explicit_txs
+        - explicit_txs
+      properties:
+        miner_address:
+          type: string
+        stakeholder_address:
+          type: string
+        ex_nonce:
+          type: string
+        pos_block:
+          type: boolean
+        ignore_pow_ts_check:
+          type: boolean
+        pe:
+          $ref: "#/components/schemas/PosEntryModel"
+        explicit_txs:
+          items:
+            type: string
+          type: array
+      type: object
+    SubmitBlockRequestModel:
+      example:
+        block_blob: block_blob
+      properties:
+        block_blob:
+          type: string
+      type: object

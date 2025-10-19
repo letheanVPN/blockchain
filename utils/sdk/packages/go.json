@@ -1,0 +1,7 @@
+{
+  "additionalProperties": {
+    "packageName": "lthn",
+    "generateInterfaces": true,
+    "isGoSubmodule": true
+  }
+}
