@@ -1,7 +1,7 @@
 {
   "additionalProperties": {
-    "packageName": "lthnchainsdk",
-    "projectName": "lthnchainsdk",
-    "packageUrl": "https://github.com/letheanVPN"
+    "packageName": "lthn",
+    "projectName": "lthn",
+    "packageUrl": "https://github.com/letheanVPN/blockchain"
   }
 }
