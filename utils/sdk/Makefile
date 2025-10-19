@@ -17,7 +17,11 @@ POST_BUILD_HOOK = @true
  	echo "go.sum" >> $(BUILD_DIR)/go/.openapi-generator-ignore
 
 # For the 'go' target, define specific post-build steps.
-go: POST_BUILD_HOOK = (cd $(BUILD_DIR)/go && go mod edit -module github.com/letheanVPN/blockchain/utils/sdk/client/go && go mod tidy)
+go: POST_BUILD_HOOK = @echo "--> Setting Go module path..."; \
+	echo "--> Fixing import paths in generated Go files..."; \
+	find "$(BUILD_DIR)/go" -type f -name '*.go' -exec sed -i '' 's|github.com/letheanVPN/blockchain/lthn|github.com/letheanVPN/blockchain/utils/sdk/client/go|g' {} +; \
+	find "$(BUILD_DIR)/go" -type f -name '*.md' -exec sed -i '' 's|github.com/letheanVPN/blockchain/lthn|github.com/letheanVPN/blockchain/utils/sdk/client/go|g' {} +; \
+	echo "--> Tidying Go module...";(cd $(BUILD_DIR)/go && go mod edit -module github.com/letheanVPN/blockchain/utils/sdk/client/go && go mod tidy)
 
 # For the 'go' target, set the generator name correctly.
 go: GENERATOR_NAME=go
@@ -35,6 +39,7 @@ build: $(SDK_TARGETS)
 $(SDK_TARGETS): %: packages/%.json
 	# Default generator name is the target name itself.
 	$(eval GENERATOR_NAME = $@)
+	rm -rf "$(BUILD_DIR)/$@"
 	# Ensure the output directory exists, cross-platform.
 	@cmake -E make_directory "$(BUILD_DIR)/$@"
 	@echo "--> Creating .openapi-generator-ignore file"
@@ -45,17 +50,16 @@ $(SDK_TARGETS): %: packages/%.json
 	@echo "--- Building package $@ with version $(PACKAGE_VERSION) ---"
 	# Run pre-build hook
 	$(PRE_BUILD_HOOK)
-	rm -rf "$(BUILD_DIR)/$@/*"
 	export TS_POST_PROCESS_FILE="/usr/local/bin/prettier --write" && \
 	openapi-generator generate  --minimal-update --git-host "github.com" --git-repo-id "blockchain" --git-user-id "letheanVPN" \
-		-i "$(BASE_DIR)/spec/oas-3.0.0.json" --group-id "lthn" \
+		-i "$(BASE_DIR)/spec/oas-3.0.0.json" \
+		-p 'developerEmail=support@lt.hn,developerName=Lethean Community,developerOrganization=lethean,developerOrganizationUrl=https://lt.hn' \
+		-p "packageName=lthn,licenseName=EUPL-1.2" \
 		-g "$(GENERATOR_NAME)" \
 		-o "$(BUILD_DIR)/$@" \
 		-c "$<" \
-		--artifact-version "$(PACKAGE_VERSION)" \
-		--package-name "lthn"
+		--artifact-version "$(PACKAGE_VERSION)"
 	# Run post-build hook
-	@echo "--> Running Post Build..."
 	$(POST_BUILD_HOOK)
 
 # Phony targets to avoid conflicts with file names and to ensure they always run.
