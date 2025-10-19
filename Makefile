@@ -190,3 +190,4 @@ tags:
 	ctags -R --sort=1 --c++-kinds=+p --fields=+iaS --extra=+q --language-force=C++ src contrib tests/gtest
 
 .PHONY: all release upload-conan-cache docs docs-dev configure static static-release test test-release test-debug clean tags conan-profile-detect get-conan $(PROFILES) sdk $(SDK_TARGETS)
+.PHONY: go-client

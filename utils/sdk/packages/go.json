@@ -1,6 +1,7 @@
 {
   "additionalProperties": {
-    "packageName": "lethean-chain-sdk-go",
-    "generateInterfaces": true
+    "packageName": "lthn",
+    "generateInterfaces": true,
+    "isGoSubmodule": true
   }
 }
