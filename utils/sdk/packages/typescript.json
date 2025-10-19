@@ -1,0 +1,10 @@
+{
+  "additionalProperties": {
+    "apiModulePrefix":"letheanchainsdk",
+    "configurationPrefix":"letheanchainsdk",
+    "npmName":"@snider/sdk-typescript",
+    "supportsES6": true,
+    "useInversify": true,
+    "useObjectParameters": true
+  }
+}
