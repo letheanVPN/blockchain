@@ -20,76 +20,12 @@ import (
 )
 
 
-type BlockAPI interface {
-
-	/*
-	CreateBlockTemplate Create a block template for mining
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiCreateBlockTemplateRequest
-	*/
-	CreateBlockTemplate(ctx context.Context) ApiCreateBlockTemplateRequest
-
-	// CreateBlockTemplateExecute executes the request
-	//  @return BlockTemplateModel
-	CreateBlockTemplateExecute(r ApiCreateBlockTemplateRequest) (*BlockTemplateModel, *http.Response, error)
-
-	/*
-	GetBlock Get a block by its hash or height (ID)
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@param identifier The hash (hex string) or height (integer) of the block to retrieve.
-	@return ApiGetBlockRequest
-	*/
-	GetBlock(ctx context.Context, identifier string) ApiGetBlockRequest
-
-	// GetBlockExecute executes the request
-	//  @return BlockDetailsModel
-	GetBlockExecute(r ApiGetBlockRequest) (*BlockDetailsModel, *http.Response, error)
-
-	/*
-	GetBlocks Get one or more blocks, with optional pagination.
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetBlocksRequest
-	*/
-	GetBlocks(ctx context.Context) ApiGetBlocksRequest
-
-	// GetBlocksExecute executes the request
-	//  @return []BlockDetailsModel
-	GetBlocksExecute(r ApiGetBlocksRequest) ([]BlockDetailsModel, *http.Response, error)
-
-	/*
-	GetHeight Get the current blockchain height
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetHeightRequest
-	*/
-	GetHeight(ctx context.Context) ApiGetHeightRequest
-
-	// GetHeightExecute executes the request
-	//  @return HeightModel
-	GetHeightExecute(r ApiGetHeightRequest) (*HeightModel, *http.Response, error)
-
-	/*
-	SubmitBlock Submit a new block to the network
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiSubmitBlockRequest
-	*/
-	SubmitBlock(ctx context.Context) ApiSubmitBlockRequest
-
-	// SubmitBlockExecute executes the request
-	//  @return SubmitBlockResponseModel
-	SubmitBlockExecute(r ApiSubmitBlockRequest) (*SubmitBlockResponseModel, *http.Response, error)
-}
-
-// BlockAPIService BlockAPI service
-type BlockAPIService service
+// BlockUtilsSdkClientGoService BlockUtilsSdkClientGo service
+type BlockUtilsSdkClientGoService service
 
 type ApiCreateBlockTemplateRequest struct {
 	ctx context.Context
-	ApiService BlockAPI
+	ApiService *BlockUtilsSdkClientGoService
 	blockTemplateRequestModel *BlockTemplateRequestModel
 }
 
@@ -108,7 +44,7 @@ CreateBlockTemplate Create a block template for mining
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiCreateBlockTemplateRequest
 */
-func (a *BlockAPIService) CreateBlockTemplate(ctx context.Context) ApiCreateBlockTemplateRequest {
+func (a *BlockUtilsSdkClientGoService) CreateBlockTemplate(ctx context.Context) ApiCreateBlockTemplateRequest {
 	return ApiCreateBlockTemplateRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -117,7 +53,7 @@ func (a *BlockAPIService) CreateBlockTemplate(ctx context.Context) ApiCreateBloc
 
 // Execute executes the request
 //  @return BlockTemplateModel
-func (a *BlockAPIService) CreateBlockTemplateExecute(r ApiCreateBlockTemplateRequest) (*BlockTemplateModel, *http.Response, error) {
+func (a *BlockUtilsSdkClientGoService) CreateBlockTemplateExecute(r ApiCreateBlockTemplateRequest) (*BlockTemplateModel, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -125,7 +61,7 @@ func (a *BlockAPIService) CreateBlockTemplateExecute(r ApiCreateBlockTemplateReq
 		localVarReturnValue  *BlockTemplateModel
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockAPIService.CreateBlockTemplate")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockUtilsSdkClientGoService.CreateBlockTemplate")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -197,7 +133,7 @@ func (a *BlockAPIService) CreateBlockTemplateExecute(r ApiCreateBlockTemplateReq
 
 type ApiGetBlockRequest struct {
 	ctx context.Context
-	ApiService BlockAPI
+	ApiService *BlockUtilsSdkClientGoService
 	identifier string
 }
 
@@ -212,7 +148,7 @@ GetBlock Get a block by its hash or height (ID)
  @param identifier The hash (hex string) or height (integer) of the block to retrieve.
  @return ApiGetBlockRequest
 */
-func (a *BlockAPIService) GetBlock(ctx context.Context, identifier string) ApiGetBlockRequest {
+func (a *BlockUtilsSdkClientGoService) GetBlock(ctx context.Context, identifier string) ApiGetBlockRequest {
 	return ApiGetBlockRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -222,7 +158,7 @@ func (a *BlockAPIService) GetBlock(ctx context.Context, identifier string) ApiGe
 
 // Execute executes the request
 //  @return BlockDetailsModel
-func (a *BlockAPIService) GetBlockExecute(r ApiGetBlockRequest) (*BlockDetailsModel, *http.Response, error) {
+func (a *BlockUtilsSdkClientGoService) GetBlockExecute(r ApiGetBlockRequest) (*BlockDetailsModel, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -230,7 +166,7 @@ func (a *BlockAPIService) GetBlockExecute(r ApiGetBlockRequest) (*BlockDetailsMo
 		localVarReturnValue  *BlockDetailsModel
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockAPIService.GetBlock")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockUtilsSdkClientGoService.GetBlock")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -298,7 +234,7 @@ func (a *BlockAPIService) GetBlockExecute(r ApiGetBlockRequest) (*BlockDetailsMo
 
 type ApiGetBlocksRequest struct {
 	ctx context.Context
-	ApiService BlockAPI
+	ApiService *BlockUtilsSdkClientGoService
 }
 
 func (r ApiGetBlocksRequest) Execute() ([]BlockDetailsModel, *http.Response, error) {
@@ -311,7 +247,7 @@ GetBlocks Get one or more blocks, with optional pagination.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetBlocksRequest
 */
-func (a *BlockAPIService) GetBlocks(ctx context.Context) ApiGetBlocksRequest {
+func (a *BlockUtilsSdkClientGoService) GetBlocks(ctx context.Context) ApiGetBlocksRequest {
 	return ApiGetBlocksRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -320,7 +256,7 @@ func (a *BlockAPIService) GetBlocks(ctx context.Context) ApiGetBlocksRequest {
 
 // Execute executes the request
 //  @return []BlockDetailsModel
-func (a *BlockAPIService) GetBlocksExecute(r ApiGetBlocksRequest) ([]BlockDetailsModel, *http.Response, error) {
+func (a *BlockUtilsSdkClientGoService) GetBlocksExecute(r ApiGetBlocksRequest) ([]BlockDetailsModel, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -328,7 +264,7 @@ func (a *BlockAPIService) GetBlocksExecute(r ApiGetBlocksRequest) ([]BlockDetail
 		localVarReturnValue  []BlockDetailsModel
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockAPIService.GetBlocks")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockUtilsSdkClientGoService.GetBlocks")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -395,7 +331,7 @@ func (a *BlockAPIService) GetBlocksExecute(r ApiGetBlocksRequest) ([]BlockDetail
 
 type ApiGetHeightRequest struct {
 	ctx context.Context
-	ApiService BlockAPI
+	ApiService *BlockUtilsSdkClientGoService
 }
 
 func (r ApiGetHeightRequest) Execute() (*HeightModel, *http.Response, error) {
@@ -408,7 +344,7 @@ GetHeight Get the current blockchain height
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetHeightRequest
 */
-func (a *BlockAPIService) GetHeight(ctx context.Context) ApiGetHeightRequest {
+func (a *BlockUtilsSdkClientGoService) GetHeight(ctx context.Context) ApiGetHeightRequest {
 	return ApiGetHeightRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -417,7 +353,7 @@ func (a *BlockAPIService) GetHeight(ctx context.Context) ApiGetHeightRequest {
 
 // Execute executes the request
 //  @return HeightModel
-func (a *BlockAPIService) GetHeightExecute(r ApiGetHeightRequest) (*HeightModel, *http.Response, error) {
+func (a *BlockUtilsSdkClientGoService) GetHeightExecute(r ApiGetHeightRequest) (*HeightModel, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -425,7 +361,7 @@ func (a *BlockAPIService) GetHeightExecute(r ApiGetHeightRequest) (*HeightModel,
 		localVarReturnValue  *HeightModel
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockAPIService.GetHeight")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockUtilsSdkClientGoService.GetHeight")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -492,7 +428,7 @@ func (a *BlockAPIService) GetHeightExecute(r ApiGetHeightRequest) (*HeightModel,
 
 type ApiSubmitBlockRequest struct {
 	ctx context.Context
-	ApiService BlockAPI
+	ApiService *BlockUtilsSdkClientGoService
 	submitBlockRequestModel *SubmitBlockRequestModel
 }
 
@@ -511,7 +447,7 @@ SubmitBlock Submit a new block to the network
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiSubmitBlockRequest
 */
-func (a *BlockAPIService) SubmitBlock(ctx context.Context) ApiSubmitBlockRequest {
+func (a *BlockUtilsSdkClientGoService) SubmitBlock(ctx context.Context) ApiSubmitBlockRequest {
 	return ApiSubmitBlockRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -520,7 +456,7 @@ func (a *BlockAPIService) SubmitBlock(ctx context.Context) ApiSubmitBlockRequest
 
 // Execute executes the request
 //  @return SubmitBlockResponseModel
-func (a *BlockAPIService) SubmitBlockExecute(r ApiSubmitBlockRequest) (*SubmitBlockResponseModel, *http.Response, error) {
+func (a *BlockUtilsSdkClientGoService) SubmitBlockExecute(r ApiSubmitBlockRequest) (*SubmitBlockResponseModel, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodPost
 		localVarPostBody     interface{}
@@ -528,7 +464,7 @@ func (a *BlockAPIService) SubmitBlockExecute(r ApiSubmitBlockRequest) (*SubmitBl
 		localVarReturnValue  *SubmitBlockResponseModel
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockAPIService.SubmitBlock")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "BlockUtilsSdkClientGoService.SubmitBlock")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}

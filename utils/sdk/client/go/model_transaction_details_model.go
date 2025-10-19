@@ -32,7 +32,10 @@ type TransactionDetailsModel struct {
 	Outs []TransactionOutputModel `json:"outs,omitempty"`
 	PubKey *string `json:"pub_key,omitempty"`
 	Timestamp *int32 `json:"timestamp,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TransactionDetailsModel TransactionDetailsModel
 
 // NewTransactionDetailsModel instantiates a new TransactionDetailsModel object
 // This constructor will assign default values to properties that have it defined,
@@ -516,7 +519,45 @@ func (o TransactionDetailsModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Timestamp) {
 		toSerialize["timestamp"] = o.Timestamp
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TransactionDetailsModel) UnmarshalJSON(data []byte) (err error) {
+	varTransactionDetailsModel := _TransactionDetailsModel{}
+
+	err = json.Unmarshal(data, &varTransactionDetailsModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TransactionDetailsModel(varTransactionDetailsModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "amount")
+		delete(additionalProperties, "attachments")
+		delete(additionalProperties, "blob")
+		delete(additionalProperties, "blob_size")
+		delete(additionalProperties, "extra")
+		delete(additionalProperties, "fee")
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "ins")
+		delete(additionalProperties, "keeper_block")
+		delete(additionalProperties, "object_in_json")
+		delete(additionalProperties, "outs")
+		delete(additionalProperties, "pub_key")
+		delete(additionalProperties, "timestamp")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTransactionDetailsModel struct {

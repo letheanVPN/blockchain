@@ -20,7 +20,10 @@ var _ MappedNullable = &SubmitBlockRequestModel{}
 // SubmitBlockRequestModel struct for SubmitBlockRequestModel
 type SubmitBlockRequestModel struct {
 	BlockBlob *string `json:"block_blob,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _SubmitBlockRequestModel SubmitBlockRequestModel
 
 // NewSubmitBlockRequestModel instantiates a new SubmitBlockRequestModel object
 // This constructor will assign default values to properties that have it defined,
@@ -84,7 +87,33 @@ func (o SubmitBlockRequestModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.BlockBlob) {
 		toSerialize["block_blob"] = o.BlockBlob
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *SubmitBlockRequestModel) UnmarshalJSON(data []byte) (err error) {
+	varSubmitBlockRequestModel := _SubmitBlockRequestModel{}
+
+	err = json.Unmarshal(data, &varSubmitBlockRequestModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = SubmitBlockRequestModel(varSubmitBlockRequestModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "block_blob")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableSubmitBlockRequestModel struct {

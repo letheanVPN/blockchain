@@ -44,7 +44,10 @@ type BlockDetailsModel struct {
 	TotalTxsSize *int32 `json:"total_txs_size,omitempty"`
 	TransactionsDetails []TransactionDetailsModel `json:"transactions_details,omitempty"`
 	Type *int32 `json:"type,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BlockDetailsModel BlockDetailsModel
 
 // NewBlockDetailsModel instantiates a new BlockDetailsModel object
 // This constructor will assign default values to properties that have it defined,
@@ -948,7 +951,57 @@ func (o BlockDetailsModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Type) {
 		toSerialize["type"] = o.Type
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BlockDetailsModel) UnmarshalJSON(data []byte) (err error) {
+	varBlockDetailsModel := _BlockDetailsModel{}
+
+	err = json.Unmarshal(data, &varBlockDetailsModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BlockDetailsModel(varBlockDetailsModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "actual_timestamp")
+		delete(additionalProperties, "already_generated_coins")
+		delete(additionalProperties, "base_reward")
+		delete(additionalProperties, "blob")
+		delete(additionalProperties, "block_cumulative_size")
+		delete(additionalProperties, "block_tself_size")
+		delete(additionalProperties, "cumulative_diff_adjusted")
+		delete(additionalProperties, "cumulative_diff_precise")
+		delete(additionalProperties, "difficulty")
+		delete(additionalProperties, "effective_fee_median")
+		delete(additionalProperties, "height")
+		delete(additionalProperties, "id")
+		delete(additionalProperties, "is_orphan")
+		delete(additionalProperties, "miner_text_info")
+		delete(additionalProperties, "object_in_json")
+		delete(additionalProperties, "penalty")
+		delete(additionalProperties, "pow_seed")
+		delete(additionalProperties, "prev_id")
+		delete(additionalProperties, "summary_reward")
+		delete(additionalProperties, "this_block_fee_median")
+		delete(additionalProperties, "timestamp")
+		delete(additionalProperties, "total_fee")
+		delete(additionalProperties, "total_txs_size")
+		delete(additionalProperties, "transactions_details")
+		delete(additionalProperties, "type")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBlockDetailsModel struct {

@@ -35,7 +35,10 @@ type BlockProcessingPerformanceModel struct {
 	PosValidateKiSearch *int32 `json:"pos_validate_ki_search,omitempty"`
 	PosValidateGetOutKeysForInputs *int32 `json:"pos_validate_get_out_keys_for_inputs,omitempty"`
 	PosValidateZvp *int32 `json:"pos_validate_zvp,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BlockProcessingPerformanceModel BlockProcessingPerformanceModel
 
 // NewBlockProcessingPerformanceModel instantiates a new BlockProcessingPerformanceModel object
 // This constructor will assign default values to properties that have it defined,
@@ -624,7 +627,48 @@ func (o BlockProcessingPerformanceModel) ToMap() (map[string]interface{}, error)
 	if !IsNil(o.PosValidateZvp) {
 		toSerialize["pos_validate_zvp"] = o.PosValidateZvp
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BlockProcessingPerformanceModel) UnmarshalJSON(data []byte) (err error) {
+	varBlockProcessingPerformanceModel := _BlockProcessingPerformanceModel{}
+
+	err = json.Unmarshal(data, &varBlockProcessingPerformanceModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BlockProcessingPerformanceModel(varBlockProcessingPerformanceModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "block_processing_time_0")
+		delete(additionalProperties, "block_processing_time_1")
+		delete(additionalProperties, "target_calculating_time_2")
+		delete(additionalProperties, "longhash_calculating_time_3")
+		delete(additionalProperties, "all_txs_insert_time_5")
+		delete(additionalProperties, "etc_stuff_6")
+		delete(additionalProperties, "insert_time_4")
+		delete(additionalProperties, "raise_block_core_event")
+		delete(additionalProperties, "validate_miner_transaction_time")
+		delete(additionalProperties, "collect_rangeproofs_data_from_tx_time")
+		delete(additionalProperties, "verify_multiple_zc_outs_range_proofs_time")
+		delete(additionalProperties, "target_calculating_enum_blocks")
+		delete(additionalProperties, "target_calculating_calc")
+		delete(additionalProperties, "pos_validate_ki_search")
+		delete(additionalProperties, "pos_validate_get_out_keys_for_inputs")
+		delete(additionalProperties, "pos_validate_zvp")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBlockProcessingPerformanceModel struct {

@@ -23,7 +23,10 @@ type PerformanceModel struct {
 	TxProcessing *TxProcessingPerformanceModel `json:"tx_processing,omitempty"`
 	TxPool *TxPoolPerformanceModel `json:"tx_pool,omitempty"`
 	DbStatInfo *DbStatInfoModel `json:"db_stat_info,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _PerformanceModel PerformanceModel
 
 // NewPerformanceModel instantiates a new PerformanceModel object
 // This constructor will assign default values to properties that have it defined,
@@ -192,7 +195,36 @@ func (o PerformanceModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DbStatInfo) {
 		toSerialize["db_stat_info"] = o.DbStatInfo
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *PerformanceModel) UnmarshalJSON(data []byte) (err error) {
+	varPerformanceModel := _PerformanceModel{}
+
+	err = json.Unmarshal(data, &varPerformanceModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = PerformanceModel(varPerformanceModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "block_processing")
+		delete(additionalProperties, "tx_processing")
+		delete(additionalProperties, "tx_pool")
+		delete(additionalProperties, "db_stat_info")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullablePerformanceModel struct {

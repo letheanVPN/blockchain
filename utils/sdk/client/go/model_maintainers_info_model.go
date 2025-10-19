@@ -24,7 +24,10 @@ type MaintainersInfoModel struct {
 	VerRevision *int32 `json:"ver_revision,omitempty"`
 	BuildNo *int32 `json:"build_no,omitempty"`
 	Mode *int32 `json:"mode,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _MaintainersInfoModel MaintainersInfoModel
 
 // NewMaintainersInfoModel instantiates a new MaintainersInfoModel object
 // This constructor will assign default values to properties that have it defined,
@@ -228,7 +231,37 @@ func (o MaintainersInfoModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Mode) {
 		toSerialize["mode"] = o.Mode
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *MaintainersInfoModel) UnmarshalJSON(data []byte) (err error) {
+	varMaintainersInfoModel := _MaintainersInfoModel{}
+
+	err = json.Unmarshal(data, &varMaintainersInfoModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = MaintainersInfoModel(varMaintainersInfoModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "ver_major")
+		delete(additionalProperties, "ver_minor")
+		delete(additionalProperties, "ver_revision")
+		delete(additionalProperties, "build_no")
+		delete(additionalProperties, "mode")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableMaintainersInfoModel struct {

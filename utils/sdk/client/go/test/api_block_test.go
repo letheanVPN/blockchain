@@ -1,7 +1,7 @@
 /*
 Lethean Blockchain API
 
-Testing BlockAPIService
+Testing BlockUtilsSdkClientGoService
 
 */
 
@@ -14,19 +14,19 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/letheanVPN/blockchain/lthn"
+	openapiclient "github.com/letheanVPN/blockchain/utils/sdk/client/go"
 )
 
-func Test_lthn_BlockAPIService(t *testing.T) {
+func Test_lthn_BlockUtilsSdkClientGoService(t *testing.T) {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
 
-	t.Run("Test BlockAPIService CreateBlockTemplate", func(t *testing.T) {
+	t.Run("Test BlockUtilsSdkClientGoService CreateBlockTemplate", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.BlockAPI.CreateBlockTemplate(context.Background()).Execute()
+		resp, httpRes, err := apiClient.BlockUtilsSdkClientGo.CreateBlockTemplate(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -34,13 +34,13 @@ func Test_lthn_BlockAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test BlockAPIService GetBlock", func(t *testing.T) {
+	t.Run("Test BlockUtilsSdkClientGoService GetBlock", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
 		var identifier string
 
-		resp, httpRes, err := apiClient.BlockAPI.GetBlock(context.Background(), identifier).Execute()
+		resp, httpRes, err := apiClient.BlockUtilsSdkClientGo.GetBlock(context.Background(), identifier).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -48,11 +48,11 @@ func Test_lthn_BlockAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test BlockAPIService GetBlocks", func(t *testing.T) {
+	t.Run("Test BlockUtilsSdkClientGoService GetBlocks", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.BlockAPI.GetBlocks(context.Background()).Execute()
+		resp, httpRes, err := apiClient.BlockUtilsSdkClientGo.GetBlocks(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -60,11 +60,11 @@ func Test_lthn_BlockAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test BlockAPIService GetHeight", func(t *testing.T) {
+	t.Run("Test BlockUtilsSdkClientGoService GetHeight", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.BlockAPI.GetHeight(context.Background()).Execute()
+		resp, httpRes, err := apiClient.BlockUtilsSdkClientGo.GetHeight(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -72,11 +72,11 @@ func Test_lthn_BlockAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test BlockAPIService SubmitBlock", func(t *testing.T) {
+	t.Run("Test BlockUtilsSdkClientGoService SubmitBlock", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.BlockAPI.SubmitBlock(context.Background()).Execute()
+		resp, httpRes, err := apiClient.BlockUtilsSdkClientGo.SubmitBlock(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)

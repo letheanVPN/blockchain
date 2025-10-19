@@ -4,15 +4,15 @@ api_block.go
 api_info.go
 client.go
 configuration.go
-docs/BlockAPI.md
 docs/BlockDetailsModel.md
 docs/BlockProcessingPerformanceModel.md
 docs/BlockTemplateModel.md
 docs/BlockTemplateRequestModel.md
+docs/BlockUtilsSdkClientGo.md
 docs/DbStatInfoModel.md
 docs/HeightModel.md
-docs/InfoAPI.md
 docs/InfoModel.md
+docs/InfoUtilsSdkClientGo.md
 docs/MaintainersInfoModel.md
 docs/PerformanceModel.md
 docs/PosEntryModel.md

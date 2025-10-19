@@ -30,7 +30,10 @@ type TxPoolPerformanceModel struct {
 	UpdateDbTime *int32 `json:"update_db_time,omitempty"`
 	DbCommitTime *int32 `json:"db_commit_time,omitempty"`
 	CheckPostHf4Balance *int32 `json:"check_post_hf4_balance,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TxPoolPerformanceModel TxPoolPerformanceModel
 
 // NewTxPoolPerformanceModel instantiates a new TxPoolPerformanceModel object
 // This constructor will assign default values to properties that have it defined,
@@ -444,7 +447,43 @@ func (o TxPoolPerformanceModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.CheckPostHf4Balance) {
 		toSerialize["check_post_hf4_balance"] = o.CheckPostHf4Balance
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TxPoolPerformanceModel) UnmarshalJSON(data []byte) (err error) {
+	varTxPoolPerformanceModel := _TxPoolPerformanceModel{}
+
+	err = json.Unmarshal(data, &varTxPoolPerformanceModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TxPoolPerformanceModel(varTxPoolPerformanceModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "tx_processing_time")
+		delete(additionalProperties, "check_inputs_types_supported_time")
+		delete(additionalProperties, "expiration_validate_time")
+		delete(additionalProperties, "validate_amount_time")
+		delete(additionalProperties, "validate_alias_time")
+		delete(additionalProperties, "check_keyimages_ws_ms_time")
+		delete(additionalProperties, "check_inputs_time")
+		delete(additionalProperties, "begin_tx_time")
+		delete(additionalProperties, "update_db_time")
+		delete(additionalProperties, "db_commit_time")
+		delete(additionalProperties, "check_post_hf4_balance")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTxPoolPerformanceModel struct {

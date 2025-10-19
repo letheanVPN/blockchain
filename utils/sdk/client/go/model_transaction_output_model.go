@@ -24,7 +24,10 @@ type TransactionOutputModel struct {
 	IsSpent *bool `json:"is_spent,omitempty"`
 	MinimumSigs *int32 `json:"minimum_sigs,omitempty"`
 	PubKeys []string `json:"pub_keys,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TransactionOutputModel TransactionOutputModel
 
 // NewTransactionOutputModel instantiates a new TransactionOutputModel object
 // This constructor will assign default values to properties that have it defined,
@@ -228,7 +231,37 @@ func (o TransactionOutputModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.PubKeys) {
 		toSerialize["pub_keys"] = o.PubKeys
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TransactionOutputModel) UnmarshalJSON(data []byte) (err error) {
+	varTransactionOutputModel := _TransactionOutputModel{}
+
+	err = json.Unmarshal(data, &varTransactionOutputModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TransactionOutputModel(varTransactionOutputModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "amount")
+		delete(additionalProperties, "global_index")
+		delete(additionalProperties, "is_spent")
+		delete(additionalProperties, "minimum_sigs")
+		delete(additionalProperties, "pub_keys")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTransactionOutputModel struct {

@@ -1,14 +1,14 @@
-# \BlockAPI
+# \BlockUtilsSdkClientGo
 
 All URIs are relative to *http://127.0.0.1:36943*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**CreateBlockTemplate**](BlockAPI.md#CreateBlockTemplate) | **Post** /block/template | Create a block template for mining
-[**GetBlock**](BlockAPI.md#GetBlock) | **Get** /block/{identifier} | Get a block by its hash or height (ID)
-[**GetBlocks**](BlockAPI.md#GetBlocks) | **Get** /block | Get one or more blocks, with optional pagination.
-[**GetHeight**](BlockAPI.md#GetHeight) | **Get** /block/height | Get the current blockchain height
-[**SubmitBlock**](BlockAPI.md#SubmitBlock) | **Post** /block/submit | Submit a new block to the network
+[**CreateBlockTemplate**](BlockUtilsSdkClientGo.md#CreateBlockTemplate) | **Post** /block/template | Create a block template for mining
+[**GetBlock**](BlockUtilsSdkClientGo.md#GetBlock) | **Get** /block/{identifier} | Get a block by its hash or height (ID)
+[**GetBlocks**](BlockUtilsSdkClientGo.md#GetBlocks) | **Get** /block | Get one or more blocks, with optional pagination.
+[**GetHeight**](BlockUtilsSdkClientGo.md#GetHeight) | **Get** /block/height | Get the current blockchain height
+[**SubmitBlock**](BlockUtilsSdkClientGo.md#SubmitBlock) | **Post** /block/submit | Submit a new block to the network
 
 
 
@@ -27,7 +27,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/letheanVPN/blockchain/lthn"
+	openapiclient "github.com/letheanVPN/blockchain/utils/sdk/client/go"
 )
 
 func main() {
@@ -35,13 +35,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.BlockAPI.CreateBlockTemplate(context.Background()).BlockTemplateRequestModel(blockTemplateRequestModel).Execute()
+	resp, r, err := apiClient.BlockUtilsSdkClientGo.CreateBlockTemplate(context.Background()).BlockTemplateRequestModel(blockTemplateRequestModel).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `BlockAPI.CreateBlockTemplate``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `BlockUtilsSdkClientGo.CreateBlockTemplate``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `CreateBlockTemplate`: BlockTemplateModel
-	fmt.Fprintf(os.Stdout, "Response from `BlockAPI.CreateBlockTemplate`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `BlockUtilsSdkClientGo.CreateBlockTemplate`: %v\n", resp)
 }
 ```
 
@@ -91,7 +91,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/letheanVPN/blockchain/lthn"
+	openapiclient "github.com/letheanVPN/blockchain/utils/sdk/client/go"
 )
 
 func main() {
@@ -99,13 +99,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.BlockAPI.GetBlock(context.Background(), identifier).Execute()
+	resp, r, err := apiClient.BlockUtilsSdkClientGo.GetBlock(context.Background(), identifier).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `BlockAPI.GetBlock``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `BlockUtilsSdkClientGo.GetBlock``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetBlock`: BlockDetailsModel
-	fmt.Fprintf(os.Stdout, "Response from `BlockAPI.GetBlock`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `BlockUtilsSdkClientGo.GetBlock`: %v\n", resp)
 }
 ```
 
@@ -159,20 +159,20 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/letheanVPN/blockchain/lthn"
+	openapiclient "github.com/letheanVPN/blockchain/utils/sdk/client/go"
 )
 
 func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.BlockAPI.GetBlocks(context.Background()).Execute()
+	resp, r, err := apiClient.BlockUtilsSdkClientGo.GetBlocks(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `BlockAPI.GetBlocks``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `BlockUtilsSdkClientGo.GetBlocks``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetBlocks`: []BlockDetailsModel
-	fmt.Fprintf(os.Stdout, "Response from `BlockAPI.GetBlocks`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `BlockUtilsSdkClientGo.GetBlocks`: %v\n", resp)
 }
 ```
 
@@ -218,20 +218,20 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/letheanVPN/blockchain/lthn"
+	openapiclient "github.com/letheanVPN/blockchain/utils/sdk/client/go"
 )
 
 func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.BlockAPI.GetHeight(context.Background()).Execute()
+	resp, r, err := apiClient.BlockUtilsSdkClientGo.GetHeight(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `BlockAPI.GetHeight``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `BlockUtilsSdkClientGo.GetHeight``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetHeight`: HeightModel
-	fmt.Fprintf(os.Stdout, "Response from `BlockAPI.GetHeight`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `BlockUtilsSdkClientGo.GetHeight`: %v\n", resp)
 }
 ```
 
@@ -277,7 +277,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/letheanVPN/blockchain/lthn"
+	openapiclient "github.com/letheanVPN/blockchain/utils/sdk/client/go"
 )
 
 func main() {
@@ -285,13 +285,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.BlockAPI.SubmitBlock(context.Background()).SubmitBlockRequestModel(submitBlockRequestModel).Execute()
+	resp, r, err := apiClient.BlockUtilsSdkClientGo.SubmitBlock(context.Background()).SubmitBlockRequestModel(submitBlockRequestModel).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `BlockAPI.SubmitBlock``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `BlockUtilsSdkClientGo.SubmitBlock``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `SubmitBlock`: SubmitBlockResponseModel
-	fmt.Fprintf(os.Stdout, "Response from `BlockAPI.SubmitBlock`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `BlockUtilsSdkClientGo.SubmitBlock`: %v\n", resp)
 }
 ```
 

@@ -44,7 +44,10 @@ type TxProcessingPerformanceModel struct {
 	TxCheckInputsLoopScanOutputkeysLoopFindTx *int32 `json:"tx_check_inputs_loop_scan_outputkeys_loop_find_tx,omitempty"`
 	TxCheckInputsLoopScanOutputkeysLoopHandleOutput *int32 `json:"tx_check_inputs_loop_scan_outputkeys_loop_handle_output,omitempty"`
 	TxMixinCount *int32 `json:"tx_mixin_count,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TxProcessingPerformanceModel TxProcessingPerformanceModel
 
 // NewTxProcessingPerformanceModel instantiates a new TxProcessingPerformanceModel object
 // This constructor will assign default values to properties that have it defined,
@@ -948,7 +951,57 @@ func (o TxProcessingPerformanceModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TxMixinCount) {
 		toSerialize["tx_mixin_count"] = o.TxMixinCount
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TxProcessingPerformanceModel) UnmarshalJSON(data []byte) (err error) {
+	varTxProcessingPerformanceModel := _TxProcessingPerformanceModel{}
+
+	err = json.Unmarshal(data, &varTxProcessingPerformanceModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TxProcessingPerformanceModel(varTxProcessingPerformanceModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "tx_check_inputs")
+		delete(additionalProperties, "tx_add_one_tx")
+		delete(additionalProperties, "tx_process_extra")
+		delete(additionalProperties, "tx_process_attachment")
+		delete(additionalProperties, "tx_process_inputs")
+		delete(additionalProperties, "tx_push_global_index")
+		delete(additionalProperties, "tx_check_exist")
+		delete(additionalProperties, "tx_print_log")
+		delete(additionalProperties, "tx_prapare_append")
+		delete(additionalProperties, "tx_append")
+		delete(additionalProperties, "tx_append_rl_wait")
+		delete(additionalProperties, "tx_append_is_expired")
+		delete(additionalProperties, "tx_store_db")
+		delete(additionalProperties, "tx_check_inputs_prefix_hash")
+		delete(additionalProperties, "tx_check_inputs_attachment_check")
+		delete(additionalProperties, "tx_check_inputs_loop")
+		delete(additionalProperties, "tx_check_inputs_loop_kimage_check")
+		delete(additionalProperties, "tx_check_inputs_loop_ch_in_val_sig")
+		delete(additionalProperties, "tx_check_inputs_loop_scan_outputkeys_get_item_size")
+		delete(additionalProperties, "tx_check_inputs_loop_scan_outputkeys_relative_to_absolute")
+		delete(additionalProperties, "tx_check_inputs_loop_scan_outputkeys_loop")
+		delete(additionalProperties, "tx_check_inputs_loop_scan_outputkeys_loop_get_subitem")
+		delete(additionalProperties, "tx_check_inputs_loop_scan_outputkeys_loop_find_tx")
+		delete(additionalProperties, "tx_check_inputs_loop_scan_outputkeys_loop_handle_output")
+		delete(additionalProperties, "tx_mixin_count")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTxProcessingPerformanceModel struct {

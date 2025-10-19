@@ -49,9 +49,9 @@ type APIClient struct {
 
 	// API Services
 
-	BlockAPI BlockAPI
+	BlockUtilsSdkClientGo *BlockUtilsSdkClientGoService
 
-	InfoAPI InfoAPI
+	InfoUtilsSdkClientGo *InfoUtilsSdkClientGoService
 }
 
 type service struct {
@@ -70,8 +70,8 @@ func NewAPIClient(cfg *Configuration) *APIClient {
 	c.common.client = c
 
 	// API Services
-	c.BlockAPI = (*BlockAPIService)(&c.common)
-	c.InfoAPI = (*InfoAPIService)(&c.common)
+	c.BlockUtilsSdkClientGo = (*BlockUtilsSdkClientGoService)(&c.common)
+	c.InfoUtilsSdkClientGo = (*InfoUtilsSdkClientGoService)(&c.common)
 
 	return c
 }

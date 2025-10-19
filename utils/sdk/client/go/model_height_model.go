@@ -20,7 +20,10 @@ var _ MappedNullable = &HeightModel{}
 // HeightModel struct for HeightModel
 type HeightModel struct {
 	Height *int32 `json:"height,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _HeightModel HeightModel
 
 // NewHeightModel instantiates a new HeightModel object
 // This constructor will assign default values to properties that have it defined,
@@ -84,7 +87,33 @@ func (o HeightModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Height) {
 		toSerialize["height"] = o.Height
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *HeightModel) UnmarshalJSON(data []byte) (err error) {
+	varHeightModel := _HeightModel{}
+
+	err = json.Unmarshal(data, &varHeightModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = HeightModel(varHeightModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "height")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableHeightModel struct {

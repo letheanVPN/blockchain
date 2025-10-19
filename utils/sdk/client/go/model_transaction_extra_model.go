@@ -22,7 +22,10 @@ type TransactionExtraModel struct {
 	Type *string `json:"type,omitempty"`
 	ShortView *string `json:"short_view,omitempty"`
 	DetailsView *string `json:"details_view,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TransactionExtraModel TransactionExtraModel
 
 // NewTransactionExtraModel instantiates a new TransactionExtraModel object
 // This constructor will assign default values to properties that have it defined,
@@ -156,7 +159,35 @@ func (o TransactionExtraModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DetailsView) {
 		toSerialize["details_view"] = o.DetailsView
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TransactionExtraModel) UnmarshalJSON(data []byte) (err error) {
+	varTransactionExtraModel := _TransactionExtraModel{}
+
+	err = json.Unmarshal(data, &varTransactionExtraModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TransactionExtraModel(varTransactionExtraModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "short_view")
+		delete(additionalProperties, "details_view")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTransactionExtraModel struct {

@@ -1,11 +1,11 @@
-# \InfoAPI
+# \InfoUtilsSdkClientGo
 
 All URIs are relative to *http://127.0.0.1:36943*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**GetInfo**](InfoAPI.md#GetInfo) | **Get** /info | Get detailed information about the blockchain and daemon state
-[**Version**](InfoAPI.md#Version) | **Get** /info/version | Get API version
+[**GetInfo**](InfoUtilsSdkClientGo.md#GetInfo) | **Get** /info | Get detailed information about the blockchain and daemon state
+[**Version**](InfoUtilsSdkClientGo.md#Version) | **Get** /info/version | Get API version
 
 
 
@@ -24,7 +24,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/letheanVPN/blockchain/lthn"
+	openapiclient "github.com/letheanVPN/blockchain/utils/sdk/client/go"
 )
 
 func main() {
@@ -32,13 +32,13 @@ func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.InfoAPI.GetInfo(context.Background()).Flags(flags).Execute()
+	resp, r, err := apiClient.InfoUtilsSdkClientGo.GetInfo(context.Background()).Flags(flags).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `InfoAPI.GetInfo``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `InfoUtilsSdkClientGo.GetInfo``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `GetInfo`: InfoModel
-	fmt.Fprintf(os.Stdout, "Response from `InfoAPI.GetInfo`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `InfoUtilsSdkClientGo.GetInfo`: %v\n", resp)
 }
 ```
 
@@ -90,20 +90,20 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/letheanVPN/blockchain/lthn"
+	openapiclient "github.com/letheanVPN/blockchain/utils/sdk/client/go"
 )
 
 func main() {
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.InfoAPI.Version(context.Background()).Execute()
+	resp, r, err := apiClient.InfoUtilsSdkClientGo.Version(context.Background()).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `InfoAPI.Version``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error when calling `InfoUtilsSdkClientGo.Version``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	// response from `Version`: VersionModel
-	fmt.Fprintf(os.Stdout, "Response from `InfoAPI.Version`: %v\n", resp)
+	fmt.Fprintf(os.Stdout, "Response from `InfoUtilsSdkClientGo.Version`: %v\n", resp)
 }
 ```
 

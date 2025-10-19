@@ -22,7 +22,10 @@ type DbStatInfoModel struct {
 	TxCount *int32 `json:"tx_count,omitempty"`
 	WriteTxCount *int32 `json:"write_tx_count,omitempty"`
 	MapSize *int32 `json:"map_size,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _DbStatInfoModel DbStatInfoModel
 
 // NewDbStatInfoModel instantiates a new DbStatInfoModel object
 // This constructor will assign default values to properties that have it defined,
@@ -156,7 +159,35 @@ func (o DbStatInfoModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.MapSize) {
 		toSerialize["map_size"] = o.MapSize
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *DbStatInfoModel) UnmarshalJSON(data []byte) (err error) {
+	varDbStatInfoModel := _DbStatInfoModel{}
+
+	err = json.Unmarshal(data, &varDbStatInfoModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = DbStatInfoModel(varDbStatInfoModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "tx_count")
+		delete(additionalProperties, "write_tx_count")
+		delete(additionalProperties, "map_size")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableDbStatInfoModel struct {

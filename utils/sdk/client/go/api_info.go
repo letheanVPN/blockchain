@@ -19,41 +19,12 @@ import (
 )
 
 
-type InfoAPI interface {
-
-	/*
-	GetInfo Get detailed information about the blockchain and daemon state
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiGetInfoRequest
-	*/
-	GetInfo(ctx context.Context) ApiGetInfoRequest
-
-	// GetInfoExecute executes the request
-	//  @return InfoModel
-	GetInfoExecute(r ApiGetInfoRequest) (*InfoModel, *http.Response, error)
-
-	/*
-	Version Get API version
-
-	Returns the current version of the API.
-
-	@param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
-	@return ApiVersionRequest
-	*/
-	Version(ctx context.Context) ApiVersionRequest
-
-	// VersionExecute executes the request
-	//  @return VersionModel
-	VersionExecute(r ApiVersionRequest) (*VersionModel, *http.Response, error)
-}
-
-// InfoAPIService InfoAPI service
-type InfoAPIService service
+// InfoUtilsSdkClientGoService InfoUtilsSdkClientGo service
+type InfoUtilsSdkClientGoService service
 
 type ApiGetInfoRequest struct {
 	ctx context.Context
-	ApiService InfoAPI
+	ApiService *InfoUtilsSdkClientGoService
 	flags *string
 }
 
@@ -73,7 +44,7 @@ GetInfo Get detailed information about the blockchain and daemon state
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiGetInfoRequest
 */
-func (a *InfoAPIService) GetInfo(ctx context.Context) ApiGetInfoRequest {
+func (a *InfoUtilsSdkClientGoService) GetInfo(ctx context.Context) ApiGetInfoRequest {
 	return ApiGetInfoRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -82,7 +53,7 @@ func (a *InfoAPIService) GetInfo(ctx context.Context) ApiGetInfoRequest {
 
 // Execute executes the request
 //  @return InfoModel
-func (a *InfoAPIService) GetInfoExecute(r ApiGetInfoRequest) (*InfoModel, *http.Response, error) {
+func (a *InfoUtilsSdkClientGoService) GetInfoExecute(r ApiGetInfoRequest) (*InfoModel, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -90,7 +61,7 @@ func (a *InfoAPIService) GetInfoExecute(r ApiGetInfoRequest) (*InfoModel, *http.
 		localVarReturnValue  *InfoModel
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "InfoAPIService.GetInfo")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "InfoUtilsSdkClientGoService.GetInfo")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}
@@ -160,7 +131,7 @@ func (a *InfoAPIService) GetInfoExecute(r ApiGetInfoRequest) (*InfoModel, *http.
 
 type ApiVersionRequest struct {
 	ctx context.Context
-	ApiService InfoAPI
+	ApiService *InfoUtilsSdkClientGoService
 }
 
 func (r ApiVersionRequest) Execute() (*VersionModel, *http.Response, error) {
@@ -175,7 +146,7 @@ Returns the current version of the API.
  @param ctx context.Context - for authentication, logging, cancellation, deadlines, tracing, etc. Passed from http.Request or context.Background().
  @return ApiVersionRequest
 */
-func (a *InfoAPIService) Version(ctx context.Context) ApiVersionRequest {
+func (a *InfoUtilsSdkClientGoService) Version(ctx context.Context) ApiVersionRequest {
 	return ApiVersionRequest{
 		ApiService: a,
 		ctx: ctx,
@@ -184,7 +155,7 @@ func (a *InfoAPIService) Version(ctx context.Context) ApiVersionRequest {
 
 // Execute executes the request
 //  @return VersionModel
-func (a *InfoAPIService) VersionExecute(r ApiVersionRequest) (*VersionModel, *http.Response, error) {
+func (a *InfoUtilsSdkClientGoService) VersionExecute(r ApiVersionRequest) (*VersionModel, *http.Response, error) {
 	var (
 		localVarHTTPMethod   = http.MethodGet
 		localVarPostBody     interface{}
@@ -192,7 +163,7 @@ func (a *InfoAPIService) VersionExecute(r ApiVersionRequest) (*VersionModel, *ht
 		localVarReturnValue  *VersionModel
 	)
 
-	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "InfoAPIService.Version")
+	localBasePath, err := a.client.cfg.ServerURLWithContext(r.ctx, "InfoUtilsSdkClientGoService.Version")
 	if err != nil {
 		return localVarReturnValue, nil, &GenericOpenAPIError{error: err.Error()}
 	}

@@ -27,7 +27,10 @@ type PosEntryModel struct {
 	TxId *string `json:"tx_id,omitempty"`
 	TxOutIndex *int32 `json:"tx_out_index,omitempty"`
 	WalletIndex *int32 `json:"wallet_index,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _PosEntryModel PosEntryModel
 
 // NewPosEntryModel instantiates a new PosEntryModel object
 // This constructor will assign default values to properties that have it defined,
@@ -336,7 +339,40 @@ func (o PosEntryModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.WalletIndex) {
 		toSerialize["wallet_index"] = o.WalletIndex
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *PosEntryModel) UnmarshalJSON(data []byte) (err error) {
+	varPosEntryModel := _PosEntryModel{}
+
+	err = json.Unmarshal(data, &varPosEntryModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = PosEntryModel(varPosEntryModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "amount")
+		delete(additionalProperties, "g_index")
+		delete(additionalProperties, "keyimage")
+		delete(additionalProperties, "block_timestamp")
+		delete(additionalProperties, "stake_unlock_time")
+		delete(additionalProperties, "tx_id")
+		delete(additionalProperties, "tx_out_index")
+		delete(additionalProperties, "wallet_index")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullablePosEntryModel struct {

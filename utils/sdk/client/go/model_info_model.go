@@ -65,7 +65,10 @@ type InfoModel struct {
 	PerformanceData *PerformanceModel `json:"performance_data,omitempty"`
 	OffersCount *int32 `json:"offers_count,omitempty"`
 	ExpirationMedianTimestamp *int32 `json:"expiration_median_timestamp,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _InfoModel InfoModel
 
 // NewInfoModel instantiates a new InfoModel object
 // This constructor will assign default values to properties that have it defined,
@@ -1704,7 +1707,78 @@ func (o InfoModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ExpirationMedianTimestamp) {
 		toSerialize["expiration_median_timestamp"] = o.ExpirationMedianTimestamp
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *InfoModel) UnmarshalJSON(data []byte) (err error) {
+	varInfoModel := _InfoModel{}
+
+	err = json.Unmarshal(data, &varInfoModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = InfoModel(varInfoModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "height")
+		delete(additionalProperties, "tx_count")
+		delete(additionalProperties, "tx_pool_size")
+		delete(additionalProperties, "alt_blocks_count")
+		delete(additionalProperties, "outgoing_connections_count")
+		delete(additionalProperties, "incoming_connections_count")
+		delete(additionalProperties, "synchronized_connections_count")
+		delete(additionalProperties, "white_peerlist_size")
+		delete(additionalProperties, "grey_peerlist_size")
+		delete(additionalProperties, "current_blocks_median")
+		delete(additionalProperties, "alias_count")
+		delete(additionalProperties, "current_max_allowed_block_size")
+		delete(additionalProperties, "daemon_network_state")
+		delete(additionalProperties, "synchronization_start_height")
+		delete(additionalProperties, "max_net_seen_height")
+		delete(additionalProperties, "mi")
+		delete(additionalProperties, "pos_allowed")
+		delete(additionalProperties, "pos_difficulty")
+		delete(additionalProperties, "pow_difficulty")
+		delete(additionalProperties, "default_fee")
+		delete(additionalProperties, "minimum_fee")
+		delete(additionalProperties, "is_hardfork_active")
+		delete(additionalProperties, "net_time_delta_median")
+		delete(additionalProperties, "current_network_hashrate_50")
+		delete(additionalProperties, "current_network_hashrate_350")
+		delete(additionalProperties, "seconds_for_10_blocks")
+		delete(additionalProperties, "seconds_for_30_blocks")
+		delete(additionalProperties, "transactions_cnt_per_day")
+		delete(additionalProperties, "transactions_volume_per_day")
+		delete(additionalProperties, "last_pos_timestamp")
+		delete(additionalProperties, "last_pow_timestamp")
+		delete(additionalProperties, "total_coins")
+		delete(additionalProperties, "last_block_size")
+		delete(additionalProperties, "tx_count_in_last_block")
+		delete(additionalProperties, "pos_sequence_factor")
+		delete(additionalProperties, "pow_sequence_factor")
+		delete(additionalProperties, "block_reward")
+		delete(additionalProperties, "last_block_total_reward")
+		delete(additionalProperties, "pos_diff_total_coins_rate")
+		delete(additionalProperties, "last_block_timestamp")
+		delete(additionalProperties, "last_block_hash")
+		delete(additionalProperties, "pos_block_ts_shift_vs_actual")
+		delete(additionalProperties, "outs_stat")
+		delete(additionalProperties, "performance_data")
+		delete(additionalProperties, "offers_count")
+		delete(additionalProperties, "expiration_median_timestamp")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableInfoModel struct {

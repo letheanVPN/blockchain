@@ -43,7 +43,10 @@ type TxGenerationContextModel struct {
 	TxKeyPub *string `json:"tx_key_pub,omitempty"`
 	TxKeySec *string `json:"tx_key_sec,omitempty"`
 	TxPubKeyP *string `json:"tx_pub_key_p,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TxGenerationContextModel TxGenerationContextModel
 
 // NewTxGenerationContextModel instantiates a new TxGenerationContextModel object
 // This constructor will assign default values to properties that have it defined,
@@ -912,7 +915,56 @@ func (o TxGenerationContextModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.TxPubKeyP) {
 		toSerialize["tx_pub_key_p"] = o.TxPubKeyP
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TxGenerationContextModel) UnmarshalJSON(data []byte) (err error) {
+	varTxGenerationContextModel := _TxGenerationContextModel{}
+
+	err = json.Unmarshal(data, &varTxGenerationContextModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TxGenerationContextModel(varTxGenerationContextModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "asset_ids")
+		delete(additionalProperties, "blinded_asset_ids")
+		delete(additionalProperties, "amount_commitments")
+		delete(additionalProperties, "asset_id_blinding_masks")
+		delete(additionalProperties, "amounts")
+		delete(additionalProperties, "amount_blinding_masks")
+		delete(additionalProperties, "pseudo_outs_blinded_asset_ids")
+		delete(additionalProperties, "pseudo_outs_plus_real_out_blinding_masks")
+		delete(additionalProperties, "real_zc_ins_asset_ids")
+		delete(additionalProperties, "zc_input_amounts")
+		delete(additionalProperties, "pseudo_out_amount_commitments_sum")
+		delete(additionalProperties, "pseudo_out_amount_blinding_masks_sum")
+		delete(additionalProperties, "real_in_asset_id_blinding_mask_x_amount_sum")
+		delete(additionalProperties, "amount_commitments_sum")
+		delete(additionalProperties, "amount_blinding_masks_sum")
+		delete(additionalProperties, "asset_id_blinding_mask_x_amount_sum")
+		delete(additionalProperties, "ao_asset_id")
+		delete(additionalProperties, "ao_asset_id_pt")
+		delete(additionalProperties, "ao_amount_commitment")
+		delete(additionalProperties, "ao_amount_blinding_mask")
+		delete(additionalProperties, "ao_commitment_in_outputs")
+		delete(additionalProperties, "tx_key_pub")
+		delete(additionalProperties, "tx_key_sec")
+		delete(additionalProperties, "tx_pub_key_p")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTxGenerationContextModel struct {

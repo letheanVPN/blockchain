@@ -28,7 +28,10 @@ type BlockTemplateModel struct {
 	TxsFee *int32 `json:"txs_fee,omitempty"`
 	PrevHash *string `json:"prev_hash,omitempty"`
 	Seed *string `json:"seed,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BlockTemplateModel BlockTemplateModel
 
 // NewBlockTemplateModel instantiates a new BlockTemplateModel object
 // This constructor will assign default values to properties that have it defined,
@@ -372,7 +375,41 @@ func (o BlockTemplateModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Seed) {
 		toSerialize["seed"] = o.Seed
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BlockTemplateModel) UnmarshalJSON(data []byte) (err error) {
+	varBlockTemplateModel := _BlockTemplateModel{}
+
+	err = json.Unmarshal(data, &varBlockTemplateModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BlockTemplateModel(varBlockTemplateModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "blocktemplate_blob")
+		delete(additionalProperties, "difficulty")
+		delete(additionalProperties, "height")
+		delete(additionalProperties, "miner_tx_tgc")
+		delete(additionalProperties, "block_reward_without_fee")
+		delete(additionalProperties, "block_reward")
+		delete(additionalProperties, "txs_fee")
+		delete(additionalProperties, "prev_hash")
+		delete(additionalProperties, "seed")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBlockTemplateModel struct {

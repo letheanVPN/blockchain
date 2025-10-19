@@ -26,7 +26,10 @@ type BlockTemplateRequestModel struct {
 	IgnorePowTsCheck *bool `json:"ignore_pow_ts_check,omitempty"`
 	Pe *PosEntryModel `json:"pe,omitempty"`
 	ExplicitTxs []string `json:"explicit_txs,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _BlockTemplateRequestModel BlockTemplateRequestModel
 
 // NewBlockTemplateRequestModel instantiates a new BlockTemplateRequestModel object
 // This constructor will assign default values to properties that have it defined,
@@ -300,7 +303,39 @@ func (o BlockTemplateRequestModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.ExplicitTxs) {
 		toSerialize["explicit_txs"] = o.ExplicitTxs
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *BlockTemplateRequestModel) UnmarshalJSON(data []byte) (err error) {
+	varBlockTemplateRequestModel := _BlockTemplateRequestModel{}
+
+	err = json.Unmarshal(data, &varBlockTemplateRequestModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = BlockTemplateRequestModel(varBlockTemplateRequestModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "miner_address")
+		delete(additionalProperties, "stakeholder_address")
+		delete(additionalProperties, "ex_nonce")
+		delete(additionalProperties, "pos_block")
+		delete(additionalProperties, "ignore_pow_ts_check")
+		delete(additionalProperties, "pe")
+		delete(additionalProperties, "explicit_txs")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableBlockTemplateRequestModel struct {

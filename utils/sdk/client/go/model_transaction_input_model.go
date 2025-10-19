@@ -24,7 +24,10 @@ type TransactionInputModel struct {
 	HtlcOrigin *string `json:"htlc_origin,omitempty"`
 	KimageOrMsId *string `json:"kimage_or_ms_id,omitempty"`
 	MultisigCount *int32 `json:"multisig_count,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TransactionInputModel TransactionInputModel
 
 // NewTransactionInputModel instantiates a new TransactionInputModel object
 // This constructor will assign default values to properties that have it defined,
@@ -228,7 +231,37 @@ func (o TransactionInputModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.MultisigCount) {
 		toSerialize["multisig_count"] = o.MultisigCount
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TransactionInputModel) UnmarshalJSON(data []byte) (err error) {
+	varTransactionInputModel := _TransactionInputModel{}
+
+	err = json.Unmarshal(data, &varTransactionInputModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TransactionInputModel(varTransactionInputModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "amount")
+		delete(additionalProperties, "global_indexes")
+		delete(additionalProperties, "htlc_origin")
+		delete(additionalProperties, "kimage_or_ms_id")
+		delete(additionalProperties, "multisig_count")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTransactionInputModel struct {

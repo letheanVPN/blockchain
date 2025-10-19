@@ -22,7 +22,10 @@ type TransactionAttachmentModel struct {
 	Type *string `json:"type,omitempty"`
 	ShortView *string `json:"short_view,omitempty"`
 	DetailsView *string `json:"details_view,omitempty"`
+	AdditionalProperties map[string]interface{}
 }
+
+type _TransactionAttachmentModel TransactionAttachmentModel
 
 // NewTransactionAttachmentModel instantiates a new TransactionAttachmentModel object
 // This constructor will assign default values to properties that have it defined,
@@ -156,7 +159,35 @@ func (o TransactionAttachmentModel) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.DetailsView) {
 		toSerialize["details_view"] = o.DetailsView
 	}
+
+	for key, value := range o.AdditionalProperties {
+		toSerialize[key] = value
+	}
+
 	return toSerialize, nil
+}
+
+func (o *TransactionAttachmentModel) UnmarshalJSON(data []byte) (err error) {
+	varTransactionAttachmentModel := _TransactionAttachmentModel{}
+
+	err = json.Unmarshal(data, &varTransactionAttachmentModel)
+
+	if err != nil {
+		return err
+	}
+
+	*o = TransactionAttachmentModel(varTransactionAttachmentModel)
+
+	additionalProperties := make(map[string]interface{})
+
+	if err = json.Unmarshal(data, &additionalProperties); err == nil {
+		delete(additionalProperties, "type")
+		delete(additionalProperties, "short_view")
+		delete(additionalProperties, "details_view")
+		o.AdditionalProperties = additionalProperties
+	}
+
+	return err
 }
 
 type NullableTransactionAttachmentModel struct {
