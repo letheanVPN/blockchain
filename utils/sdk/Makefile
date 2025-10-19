@@ -21,7 +21,7 @@ go: POST_BUILD_HOOK = (cd $(BUILD_DIR)/go && go mod edit -module github.com/leth
 
 # For the 'go' target, set the generator name correctly.
 go: GENERATOR_NAME = go
-
+php: GENERATOR_NAME = php-nextgen
 # --- Main Targets ---
 
 all: build
@@ -34,6 +34,8 @@ build: $(SDK_TARGETS)
 $(SDK_TARGETS): %: packages/%.json
 	# Default generator name is the target name itself.
 	$(eval GENERATOR_NAME = $@)
+	# Ensure the output directory exists, cross-platform.
+	@cmake -E make_directory "$(BUILD_DIR)/$@"
 	@echo "--> Creating .openapi-generator-ignore file"
 	@echo "git_push.sh" > "$(BUILD_DIR)/$@/.openapi-generator-ignore"
 	@echo ".travis.yml" >> "$(BUILD_DIR)/$@/.openapi-generator-ignore"
@@ -45,7 +47,7 @@ $(SDK_TARGETS): %: packages/%.json
 	rm -rf "$(BUILD_DIR)/$@/*"
 	export TS_POST_PROCESS_FILE="/usr/local/bin/prettier --write" && \
 	openapi-generator generate  --minimal-update --git-host "github.com" --git-repo-id "blockchain" --git-user-id "letheanVPN" \
-		-i "$(BASE_DIR)/spec/oas-3.0.0.json" \
+		-i "$(BASE_DIR)/spec/oas-3.0.0.json" --group-id "lthn" \
 		-g "$(GENERATOR_NAME)" \
 		-o "$(BUILD_DIR)/$@" \
 		-c "$<" \

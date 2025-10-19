@@ -1,1 +1,10 @@
-{}
+{
+  "additionalProperties": {
+    "apiPackage": "lthn",
+    "packageName": "lthn",
+    "modelPackage": "lthn",
+    "invokerPackage": "lthn",
+    "licenceName": "EUPL-1.2",
+    "composerPackageName": "letheanvpn/blockchain"
+  }
+}
