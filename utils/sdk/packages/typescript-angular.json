@@ -1,8 +1,0 @@
-{
-  "additionalProperties": {
-    "apiModulePrefix":"letheanchainsdk",
-    "configurationPrefix":"letheanchainsdk",
-    "npmName":"@snider/sdk-typescript-angular",
-    "ngVersion": 12
-  }
-}

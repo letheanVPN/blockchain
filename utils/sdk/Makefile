@@ -20,8 +20,9 @@ POST_BUILD_HOOK = @true
 go: POST_BUILD_HOOK = (cd $(BUILD_DIR)/go && go mod edit -module github.com/letheanVPN/blockchain/utils/sdk/client/go && go mod tidy)
 
 # For the 'go' target, set the generator name correctly.
-go: GENERATOR_NAME = go
-php: GENERATOR_NAME = php-nextgen
+go: GENERATOR_NAME=go
+php: GENERATOR_NAME=php-nextgen
+angular: GENERATOR_NAME=typescript-angular
 # --- Main Targets ---
 
 all: build
